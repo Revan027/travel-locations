@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <!-- Background circle -->
+  <circle cx="512" cy="512" r="512" fill="#1a1a2e"/>
+
+  <!-- Globe base circle -->
+  <circle cx="512" cy="460" r="220" fill="none" stroke="#4fc3f7" stroke-width="12"/>
+
+  <!-- Globe horizontal lines -->
+  <ellipse cx="512" cy="460" rx="220" ry="80" fill="none" stroke="#4fc3f7" stroke-width="8" opacity="0.6"/>
+  <ellipse cx="512" cy="460" rx="220" ry="150" fill="none" stroke="#4fc3f7" stroke-width="8" opacity="0.4"/>
+
+  <!-- Globe vertical lines -->
+  <line x1="512" y1="240" x2="512" y2="680" stroke="#4fc3f7" stroke-width="8" opacity="0.6"/>
+  <ellipse cx="512" cy="460" rx="110" ry="220" fill="none" stroke="#4fc3f7" stroke-width="8" opacity="0.5"/>
+
+  <!-- Globe fill -->
+  <circle cx="512" cy="460" r="220" fill="#0d47a1" opacity="0.3"/>
+
+  <!-- Location pin shape -->
+  <!-- Pin body (teardrop) -->
+  <path d="M512 180
+           C430 180, 365 245, 365 327
+           C365 435, 512 580, 512 580
+           C512 580, 659 435, 659 327
+           C659 245, 594 180, 512 180 Z"
+        fill="#ff5722" opacity="0.95"/>
+
+  <!-- Pin inner circle -->
+  <circle cx="512" cy="320" r="65" fill="white" opacity="0.95"/>
+
+  <!-- Pin inner dot -->
+  <circle cx="512" cy="320" r="30" fill="#ff5722"/>
+
+  <!-- Subtle shadow under pin -->
+  <ellipse cx="512" cy="590" rx="60" ry="18" fill="#000" opacity="0.25"/>
+
+  <!-- Small decorative stars -->
+  <circle cx="200" cy="200" r="6" fill="#ffd54f" opacity="0.8"/>
+  <circle cx="820" cy="180" r="5" fill="#ffd54f" opacity="0.6"/>
+  <circle cx="150" cy="700" r="4" fill="#ffd54f" opacity="0.5"/>
+  <circle cx="860" cy="720" r="6" fill="#ffd54f" opacity="0.7"/>
+  <circle cx="780" cy="300" r="4" fill="#ffd54f" opacity="0.5"/>
+  <circle cx="240" cy="600" r="5" fill="#ffd54f" opacity="0.6"/>
+
+  <!-- App name text -->
+  <text x="512" y="820"
+        font-family="Arial, sans-serif"
+        font-size="72"
+        font-weight="bold"
+        fill="white"
+        text-anchor="middle"
+        opacity="0.9">TravelLoc</text>
+</svg>

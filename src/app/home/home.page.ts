@@ -5,6 +5,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { addDoc, doc, getDoc, setDoc } from 'firebase/firestore';
 import { Location, LocationRequest } from '../models/Location';
 import { LocationType } from '../models/LocationType';
+import { Geolocation, GeolocationPluginPermissions } from '@capacitor/geolocation';
 
 @Component({
   selector: 'app-home',
@@ -60,7 +61,7 @@ export class HomePage {
 
         
   })
-  .catch((error) => {
+  .catch((error) => {alert(error.message)
     const errorCode = error.code;
     const errorMessage = error.message;
     // ...
@@ -78,4 +79,27 @@ export class HomePage {
 });
   }
 
+  async ngOnInit() { alert();
+     const perm1 = await Geolocation.checkPermissions();
+
+       if(perm1.location == "granted"){
+      const perm = await Geolocation.requestPermissions({ permissions: ['location', 'coarseLocation']})
+
+    if(perm.location == "granted"){
+      alert("ok")
+    }else{
+        alert("pas ok")
+    }
+    }else{
+        alert("pas ok")
+    }
+
+   
+const loc = await  Geolocation.getCurrentPosition().catch(()=>{
+alert("pas activ")
+});
+  alert(loc?.coords.altitude)
+   alert(loc?.coords.latitude)
+    alert(loc?.coords.longitude)
+  }
 }
