@@ -1,27 +1,106 @@
-#container {
-  text-align: center;
-
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+// Map
+#map {
+  height: 100%;
+  width: 100%;
 }
 
-#container strong {
-  font-size: 20px;
-  line-height: 26px;
+.custom-marker {
+  background: none;
 }
 
-#container p {
-  font-size: 16px;
-  line-height: 22px;
+// Header
+.travel-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: var(--ion-font-size-lg);
+  font-weight: 300;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
 
-  color: #8c8c8c;
+  .title-main {
+    color: var(--app-text-light);
+  }
 
-  margin: 0;
+  .title-accent {
+    color: var(--app-amber);
+    font-weight: 700;
+  }
 }
 
-#container a {
-  text-decoration: none;
+.app-logo {
+  font-size: 26px;
+  color: var(--app-amber);
+  margin-left: 12px;
+  filter: drop-shadow(0 0 6px var(--app-amber-glow));
+}
+
+// Footer
+.travel-footer {
+  .footer-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    background: var(--app-footer-bg);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-top: 1px solid var(--app-glass-border);
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.25);
+    padding: 10px 8px calc(10px + var(--ion-safe-area-bottom, 0px));
+  }
+
+  .footer-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    background: none;
+    border: none;
+    color: var(--app-tab-inactive);
+    font-size: var(--ion-font-size-xs);
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    font-family: var(--ion-font-family);
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: color 0.2s ease, transform 0.15s ease;
+
+    ion-icon {
+      font-size: 22px;
+    }
+
+    &.active {
+      color: var(--app-tab-active);
+    }
+
+    &:not(.footer-btn-add):hover {
+      color: rgba(255, 255, 255, 0.8);
+    }
+  }
+
+  .footer-btn-add {
+    max-width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    --background: linear-gradient(145deg, var(--app-amber), var(--app-amber-deep));
+     --color: #ffffff !important;
+    box-shadow: 0 4px 20px var(--app-amber-glow), inset 0 1px 1px rgba(255, 255, 255, 0.25);
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    ion-icon {
+      font-size: 30px;
+    }
+
+    &:hover {
+      transform: scale(1.08);
+    }
+
+    &:active {
+      transform: scale(0.96);
+    }
+  }
 }

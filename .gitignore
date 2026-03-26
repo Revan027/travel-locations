@@ -65,6 +65,9 @@ testem.log
 .DS_Store
 Thumbs.db
 
+# Claude Code
+.claude/
+
 # Environment files (contains sensitive keys)
 src/environments/environment.ts
 src/environments/environment.prod.ts
