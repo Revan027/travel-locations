@@ -14,14 +14,16 @@
         <ion-icon slot="icon-only" name="person-circle-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
-  </ion-toolbar>
+  </ion-toolbar>  
+  <span class="wrapper-localisation text-xs ">
+    <span class="ion-margin-end">Altitude : {{position?.coords?.altitude | number: '1.0-0'}}</span>
+    <span class="ion-margin-end">Longitude : {{position?.coords?.longitude}}</span>
+    <span class="ion-margin-end">Latitude : {{position?.coords?.latitude}}</span>
+  </span>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-fab slot="fixed" vertical="top" horizontal="end" [edge]="true" >
-  <ion-fab-button size="small">
-    <ion-icon name="filter-outline"></ion-icon>
-  </ion-fab-button>
-</ion-fab>
 
+  <div id="map"></div>
+  
 </ion-content>

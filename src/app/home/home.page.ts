@@ -81,27 +81,6 @@ export class HomePage {
   }
 
   async ngAfterViewInit() { 
-     /*const perm1 = await Geolocation.checkPermissions();
-
-       if(perm1.location == "granted"){
-      const perm = await Geolocation.requestPermissions({ permissions: ['location', 'coarseLocation']})
-
-    if(perm.location == "granted"){
-      alert("ok")
-    }else{
-        alert("pas ok")
-    }
-    }else{
-        alert("pas ok")
-    }
-*/
-
-/*const loc = await  Geolocation.getCurrentPosition().catch(()=>{
-alert("pas activ")
-});
-  alert(loc?.coords.altitude)
-   alert(loc?.coords.latitude)
-    alert(loc?.coords.longitude)*/
 
     //Création de la map
     var map = L.map('map', {doubleClickZoom: false,  minZoom: 3}).fitWorld();
