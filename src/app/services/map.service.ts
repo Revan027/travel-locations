@@ -46,7 +46,15 @@ export class MapService {
            className: 'custom-marker'
         });
       
-        this.userMarker = L.marker([this.position().latitude, this.position().longitude], { icon: monIcon}).addTo(this.map);  
+        this.userMarker = L.marker([this.position().latitude, this.position().longitude], {icon: monIcon, draggable: true}).addTo(this.map);  
+
+        this.userMarker.on('dragend', (e) => {
+          console.log(e);
+          });
+        
+
+        /*var draggable = new L.Draggable(elementToDrag);
+            draggable.enable();*/
     }
 
     private async getCurentPosition(): Promise<boolean>{    
