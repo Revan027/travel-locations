@@ -1,6 +1,6 @@
-// Global Ionic component overrides — TravelLocations design system
+// Global Ionic component overrides TravelLocations design system
 
-// ── Content ───────────────────────────────────────────────────────────────────
+// Content
 :host ion-content {
   --keyboard-offset: 0px !important;
 }
@@ -9,7 +9,7 @@ ion-content {
   --background: transparent;
 }
 
-// ── Header ────────────────────────────────────────────────────────────────────
+//  Header
 ion-header::after {
   display: none;
 }
@@ -43,7 +43,7 @@ ion-header ion-back-button {
   color: var(--app-text-light);
 }
 
-// ── Footer ────────────────────────────────────────────────────────────────────
+// Footer
 ion-footer {
   background: transparent;
   border: none;
@@ -54,7 +54,7 @@ ion-footer {
   }
 }
 
-// ── Cards ─────────────────────────────────────────────────────────────────────
+// Cards
 ion-card {
   --background: var(--app-card-bg);
   --color: var(--app-text-light);
@@ -65,7 +65,7 @@ ion-card {
   -webkit-backdrop-filter: blur(8px);
 }
 
-// ── Inputs ────────────────────────────────────────────────────────────────────
+// Inputs
 ion-input,
 ion-select,
 ion-searchbar {
@@ -83,7 +83,7 @@ ion-select::part(label) {
   color: var(--app-text-muted);
 }
 
-// ── Buttons ───────────────────────────────────────────────────────────────────
+// Buttons
 ion-button {
   --background: var(--app-amber);
   --color: #ffffff;
@@ -91,7 +91,7 @@ ion-button {
   font-weight: 600;
 }
 
-// ── Separator ────────────────────────────────────────────────────────────────
+// Separator
 hr {
   width: 90%;
   opacity: 0.2;
@@ -100,7 +100,7 @@ hr {
   background: var(--app-page-theme-color);
 }
 
-// ── Font utilities ────────────────────────────────────────────────────────────
+// Font utilities
 .bold         { font-weight: 700; }
 .text-xs      { font-size: var(--ion-font-size-xs); }
 .text-sm      { font-size: var(--ion-font-size-sm); }
@@ -110,7 +110,7 @@ hr {
 .text-2xl     { font-size: var(--ion-font-size-2xl); }
 .text-3xl     { font-size: var(--ion-font-size-3xl); }
 
-// ── Utilities ─────────────────────────────────────────────────────────────────
+// Utilities
 .d-none { display: none; }
 
 .loader-center {
@@ -125,7 +125,7 @@ hr {
   }
 }
 
-// ── Header title with icon ────────────────────────────────────────────────────
+// Header title with icon
 .header-title {
   display: inline-flex;
   align-items: center;

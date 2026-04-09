@@ -15,10 +15,10 @@
       </ion-button>
     </ion-buttons>
   </ion-toolbar>  
-  <span class="wrapper-localisation text-xs ">
-    <span class="ion-margin-end">Altitude : {{position?.coords?.altitude | number: '1.0-0'}}</span>
-    <span class="ion-margin-end">Longitude : {{position?.coords?.longitude}}</span>
-    <span class="ion-margin-end">Latitude : {{position?.coords?.latitude}}</span>
+  <span class="wrapper-localisation text-xs">
+    <span class="ion-margin-end">Alt : <span class="alt">{{ (position?.altitude | number: '1.0-0') || "-"}}</span></span>
+    <span class="ion-margin-end">Lng : <span class="lng">{{position?.longitude || "-"}}</span></span>
+    <span class="ion-margin-end">Lat : <span class="lat">{{position?.latitude || "-"}}</span></span>
   </span>
 </ion-header>
 
