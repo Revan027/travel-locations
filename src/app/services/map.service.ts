@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { Geolocation, GeolocationPluginPermissions, Position as GPosition } from '@capacitor/geolocation';
+import { Injectable, signal } from '@angular/core';
+import { Geolocation, Position as GPosition } from '@capacitor/geolocation';
 import * as L from 'leaflet';
 import { Position } from '../models/Position';
 
@@ -10,37 +10,57 @@ export class MapService {
     constructor() {}
 
     private map!: L.Map;
+    private userMarker?: L.Marker<any>;
+    position = signal<Position>(new Position);
 
-    init(){
+    async init(){
         this.createMap();
+
+        await this.initCurrentPosition();
 
         this.initZoom();
     }
 
-    initCurrentView(position: Position){
-        this.flyTo(position, 13);
+    async initCurrentPosition(){
+        await this.getCurentPosition();
 
-          const monIcon = L.divIcon({
+        if (this.position() == null){
+            return;
+        }   
+
+        // On supprime l'ancienne position 
+        if (this.userMarker != undefined){
+            this.userMarker.remove();
+        }
+
+        this.createUserMarker();
+
+        this.flyTo(this.position() as Position, 17);
+    }
+
+    private createUserMarker(){
+        const monIcon = L.divIcon({
            html: '<ion-icon name="accessibility-outline" style="font-size: 25px; color: red;"></ion-icon>',
-          iconAnchor: [16, 32],
-          popupAnchor: [0, -32],
+           iconAnchor: [16, 32],
+           popupAnchor: [0, -32],
            className: 'custom-marker'
         });
       
-        L.marker([position.latitude, position.longitude], { icon: monIcon}).addTo( this.map);
-       
+        this.userMarker = L.marker([this.position().latitude, this.position().longitude], { icon: monIcon}).addTo(this.map);  
     }
 
-    async getCurentPosition(): Promise<Position | null>{
+    private async getCurentPosition(): Promise<boolean>{    
         let authorisation = await this.checkAuthorisation();
 
         if (!authorisation){
-            return null;
+            return false;
         }
 
         const position = await Geolocation.getCurrentPosition({ timeout: 10000, enableHighAccuracy: true }).catch((e)=>{ alert(e); return null; })
 
-        return { latitude: position?.coords.latitude, longitude: position?.coords.longitude, altitude: position?.coords.altitude} as Position;
+        this.position.set({ latitude: position?.coords.latitude, longitude: position?.coords.longitude, altitude: position?.coords.altitude} as Position);
+        
+        return true;
     }
 
     private createMap(){

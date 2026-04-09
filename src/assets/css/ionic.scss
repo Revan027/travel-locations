@@ -91,6 +91,16 @@ ion-button {
   font-weight: 600;
 }
 
+ion-fab-button{
+ --background: linear-gradient(145deg, var(--app-amber), var(--app-amber-deep));
+ --box-shadow: 0 4px 20px var(--app-amber-glow), inset 0 1px 1px rgba(255, 255, 255, 0.25);
+
+}
+
+ion-fab-button.fab-button-disabled{
+  opacity: 1;
+}
+
 // Separator
 hr {
   width: 90%;

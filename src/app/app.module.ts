@@ -8,9 +8,11 @@ import { environment } from 'src/environments/environment';
 import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { provideAuth, getAuth } from '@angular/fire/auth';
+import { LoaderComponent } from './components/loader.component';
 
 @NgModule({
-    declarations: [AppComponent],
+    declarations: [AppComponent, LoaderComponent],
+    exports: [LoaderComponent],
     imports: [
         BrowserModule,
         IonicModule.forRoot(),

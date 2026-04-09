@@ -1,7 +1,3 @@
-ion-fab-button{
- --background: linear-gradient(145deg, var(--app-amber), var(--app-amber-deep));
- --box-shadow: 0 4px 20px var(--app-amber-glow), inset 0 1px 1px rgba(255, 255, 255, 0.25);
-}
 
 ion-fab{
     right: 30px;
@@ -13,12 +9,17 @@ ion-fab{
     background: var(--app-header-bg);
     padding: 5px;
     color: white;
-    text-align: center;
     white-space: nowrap;
     overflow: scroll;
     width: 80%;
 }
 
 .lat, .lng, .alt{
-    color: var(--app-amber)
+    color: var(--app-amber);
+}
+
+
+.btn-refresh{
+        position: absolute;
+    transform: translateY(80px);
 }

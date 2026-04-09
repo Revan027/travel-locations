@@ -1,6 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, WritableSignal } from '@angular/core';
 import { MapService } from 'src/app/services/map.service';
-import * as L from 'leaflet';
 import { Position } from 'src/app/models/Position';
 
 @Component({
@@ -11,17 +10,19 @@ import { Position } from 'src/app/models/Position';
 })
 export class MapPage  {
 
-  position!: Position | null;
+  position: WritableSignal<Position> = this.mapService.position;
+  isRefreshing = false;
 
   constructor(private mapService: MapService){
   }
 
   async ngAfterViewInit(){
-    this.mapService.init();
-    this.position = await this.mapService.getCurentPosition();
+    await this.mapService.init();  
+  }
 
-    if (this.position != null){
-      await this.mapService.initCurrentView(this.position);
-    }   
+  async onRefreshPosition(){
+    this.isRefreshing = true;
+    await this.mapService.initCurrentPosition();
+    this.isRefreshing = false;
   }
 }
