@@ -14,14 +14,26 @@
         <ion-icon slot="icon-only" name="person-circle-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
-  </ion-toolbar>
+  </ion-toolbar>  
+
+  <span class="wrapper-localisation ion-display-flex ion-align-content-center ion-justify-content-center">  
+    <span class="ion-margin-end text-xs ion-text-center">Alt : <span class="alt">{{ (position().altitude | number: '1.0-0') || "-"}}</span></span>
+    <span class="ion-margin-end text-xs ion-text-center">Lng : <span class="lng">{{position().longitude || "-"}}</span></span>
+    <span class="ion-margin-end text-xs ion-text-center">Lat : <span class="lat">{{position().latitude || "-"}}</span></span>
+  </span>
+
+  <ion-fab-button class="btn-refresh" size="small" expand="block" (click)="onRefreshPosition()" [disabled]="isRefreshing">
+    @if(isRefreshing){
+      <ion-spinner name="dots"></ion-spinner>
+    }
+    @else{
+      <ion-icon name="locate-outline"></ion-icon>
+    }
+  </ion-fab-button>  
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-fab slot="fixed" vertical="top" horizontal="end" [edge]="true" >
-  <ion-fab-button size="small">
-    <ion-icon name="filter-outline"></ion-icon>
-  </ion-fab-button>
-</ion-fab>
 
+  <div id="map"></div>
+  
 </ion-content>
