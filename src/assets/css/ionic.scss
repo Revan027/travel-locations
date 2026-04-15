@@ -54,7 +54,7 @@ ion-footer {
   }
 }
 
-// Cards
+// CARDS
 ion-card {
   --background: var(--app-card-bg);
   --color: var(--app-text-light);
@@ -65,24 +65,41 @@ ion-card {
   -webkit-backdrop-filter: blur(8px);
 }
 
-// Inputs
+/* INPUTS */
 ion-input,
 ion-select,
 ion-searchbar {
   --background: var(--app-input-bg) !important;
-  --color: var(--app-text-light);
+  --color: var(--app-text-color);
   --placeholder-color: var(--app-text-muted);
-  --border-color: var(--app-input-border);
 }
 
 ion-input .label-text {
-  color: var(--app-text-muted);
+  line-height: 1.2!important;
+}
+
+ion-searchbar{
+--border-radius: 4px!important;;
 }
 
 ion-select::part(label) {
-  color: var(--app-text-muted);
+  color: var(--app-label-color);
 }
 
+ion-input .label-text {
+  color: var(--app-label-color);
+}
+
+/* BUTTONS */
+ion-button {
+  --background: var(--app-accent);
+  --color: #fff;
+  --border-radius: 12px;
+}
+
+ion-button ion-label {
+  width: 100%;
+}
 // Buttons
 ion-button {
   --background: var(--app-amber);
@@ -160,6 +177,12 @@ hr {
 
 .custom-marker {
   background: none;
+  font-size: 25px;
+
+  &.new-location{
+    color: var(--app-navy);
+    font-size: 35px;
+  }
 }
 
 // Header

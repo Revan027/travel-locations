@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cours Complet Angular</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f1117;
+      --bg2: #161b22;
+      --bg3: #1f2937;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --accent: #58a6ff;
+      --accent2: #f78166;
+      --green: #3fb950;
+      --yellow: #d29922;
+      --purple: #bc8cff;
+      --sidebar-w: 280px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      display: flex;
+    }
+
+    /* ── SIDEBAR ── */
+    nav {
+      width: var(--sidebar-w);
+      min-width: var(--sidebar-w);
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      overflow-y: auto;
+      background: var(--bg2);
+      border-right: 1px solid var(--border);
+      padding: 24px 0;
+    }
+    nav h2 {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      padding: 0 20px 12px;
+    }
+    nav ul { list-style: none; }
+    nav ul li a {
+      display: block;
+      padding: 6px 20px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 13.5px;
+      border-left: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    nav ul li a:hover,
+    nav ul li a.active {
+      color: var(--accent);
+      border-left-color: var(--accent);
+      background: rgba(88,166,255,0.05);
+    }
+    nav .nav-section {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── MAIN ── */
+    main {
+      flex: 1;
+      padding: 48px 60px;
+      max-width: 960px;
+    }
+
+    .hero {
+      margin-bottom: 56px;
+    }
+    .hero h1 {
+      font-size: 36px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+    }
+    .hero p {
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    section {
+      margin-bottom: 72px;
+      scroll-margin-top: 24px;
+    }
+
+    h2 {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    h2 .num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, var(--accent), var(--purple));
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    h3 {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--accent);
+      margin: 28px 0 10px;
+    }
+
+    h4 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--yellow);
+      margin: 20px 0 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    p { margin-bottom: 14px; color: var(--text); }
+
+    /* ── CODE ── */
+    pre {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 18px 20px;
+      overflow-x: auto;
+      margin: 14px 0 20px;
+      font-size: 13.5px;
+      line-height: 1.6;
+    }
+    code {
+      font-family: 'Fira Code', 'Cascadia Code', Consolas, monospace;
+    }
+    pre code { color: var(--text); }
+    p code, li code {
+      background: var(--bg3);
+      color: var(--accent2);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+
+    /* Coloration syntaxique manuelle */
+    .kw { color: #ff7b72; }       /* keyword */
+    .cl { color: #ffa657; }       /* class/type */
+    .fn { color: #d2a8ff; }       /* function */
+    .st { color: #a5d6ff; }       /* string */
+    .cm { color: #8b949e; font-style: italic; } /* comment */
+    .dc { color: #3fb950; }       /* decorator */
+    .nb { color: #79c0ff; }       /* number/bool */
+    .pr { color: #e6edf3; }       /* property */
+
+    /* ── CALLOUTS ── */
+    .callout {
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin: 16px 0;
+      font-size: 14px;
+      border-left: 3px solid;
+    }
+    .callout.info { background: rgba(88,166,255,0.08); border-color: var(--accent); color: #cdd9e5; }
+    .callout.warn { background: rgba(210,153,34,0.08); border-color: var(--yellow); color: #cdd9e5; }
+    .callout.tip  { background: rgba(63,185,80,0.08);  border-color: var(--green);  color: #cdd9e5; }
+    .callout strong { display: block; margin-bottom: 4px; }
+
+    /* ── TABLE ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0 24px;
+      font-size: 13.5px;
+    }
+    th {
+      background: var(--bg3);
+      color: var(--muted);
+      font-weight: 600;
+      text-align: left;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+    td {
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      vertical-align: top;
+    }
+    tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+    /* ── LISTS ── */
+    ul, ol { padding-left: 22px; margin-bottom: 14px; }
+    li { margin-bottom: 5px; }
+
+    /* ── BADGE ── */
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+    .badge.new  { background: rgba(63,185,80,0.2);  color: var(--green); }
+    .badge.v16  { background: rgba(188,140,255,0.2); color: var(--purple); }
+    .badge.v17  { background: rgba(247,129,102,0.2); color: var(--accent2); }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+     SIDEBAR
+════════════════════════════════════════ -->
+<nav>
+  <h2>Cours Angular</h2>
+  <ul>
+    <li><a href="#intro">1. Introduction</a></li>
+    <li><a href="#ngmodule">2. NgModule</a></li>
+    <li><a href="#component">3. Composants</a></li>
+    <li><a href="#binding">4. Templates & Data Binding</a></li>
+    <li><a href="#directives">5. Directives</a></li>
+    <li><a href="#pipes">6. Pipes</a></li>
+    <li><a href="#lifecycle">7. Lifecycle Hooks</a></li>
+    <li><a href="#services">8. Services & DI</a></li>
+    <li><a href="#routing">9. Routing</a></li>
+    <li><a href="#forms">10. Formulaires</a></li>
+    <li><a href="#http">11. HTTP Client</a></li>
+    <li><a href="#rxjs">12. RxJS & Observables</a></li>
+    <li><a href="#signals">13. Signals</a></li>
+    <li><a href="#decorators">14. Décorateurs utiles</a></li>
+    <li><a href="#change-detection">15. Change Detection</a></li>
+    <li><a href="#dom">16. Accès au DOM</a></li>
+    <li><a href="#animations">17. Animations</a></li>
+  </ul>
+</nav>
+
+<!-- ════════════════════════════════════════
+     MAIN
+════════════════════════════════════════ -->
+<main>
+
+  <div class="hero">
+    <h1>Cours Complet Angular</h1>
+    <p>Toutes les notions fondamentales et avancées — explications, exemples et bonnes pratiques.</p>
+  </div>
+
+  <!-- ══════════════════════════════════
+       1. INTRODUCTION
+  ══════════════════════════════════ -->
+  <section id="intro">
+    <h2><span class="num">1</span> Introduction</h2>
+
+    <p><strong>Angular</strong> est un framework front-end développé par Google, écrit en TypeScript. Il fournit une structure complète pour construire des Single Page Applications (SPA) : routing, formulaires, HTTP, animations, etc.</p>
+
+    <h3>Architecture générale</h3>
+    <p>Une application Angular s'organise en couches :</p>
+    <ul>
+      <li><strong>Modules</strong> (<code>NgModule</code>) — regroupent et organisent le code</li>
+      <li><strong>Composants</strong> — blocs d'UI (HTML + logique)</li>
+      <li><strong>Services</strong> — logique métier, accès aux données</li>
+      <li><strong>Directives / Pipes</strong> — transformations dans les templates</li>
+      <li><strong>Router</strong> — navigation entre vues</li>
+    </ul>
+
+    <h3>CLI Angular</h3>
+    <p>La CLI Angular accélère le développement :</p>
+    <pre><code><span class="cm"># Créer un projet</span>
+ng new mon-projet
+
+<span class="cm"># Générer un composant</span>
+ng generate component pages/home
+ng g c pages/home  <span class="cm"># raccourci</span>
+
+<span class="cm"># Générer un service</span>
+ng g service services/auth
+
+<span class="cm"># Générer un module</span>
+ng g module features/user --routing
+
+<span class="cm"># Lancer le serveur de développement</span>
+ng serve
+
+<span class="cm"># Build de production</span>
+ng build --configuration production</code></pre>
+
+    <h3>Structure d'un projet Angular</h3>
+    <pre><code>src/
+├── app/
+│   ├── app.module.ts        <span class="cm"># module racine</span>
+│   ├── app.component.ts     <span class="cm"># composant racine</span>
+│   ├── app-routing.module.ts
+│   ├── components/
+│   ├── pages/
+│   ├── services/
+│   └── models/
+├── environments/
+│   ├── environment.ts       <span class="cm"># dev</span>
+│   └── environment.prod.ts  <span class="cm"># production</span>
+└── main.ts                  <span class="cm"># point d'entrée</span></code></pre>
+  </section>
+
+  <!-- ══════════════════════════════════
+       2. NGMODULE
+  ══════════════════════════════════ -->
+  <section id="ngmodule">
+    <h2><span class="num">2</span> NgModule</h2>
+
+    <p>Le décorateur <code>@NgModule</code> est le cœur de l'organisation d'une application Angular. Il déclare quels composants/services appartiennent à quel bloc fonctionnel.</p>
+
+    <pre><code><span class="kw">import</span> { NgModule } <span class="kw">from</span> <span class="st">'@angular/core'</span>;
+<span class="kw">import</span> { BrowserModule } <span class="kw">from</span> <span class="st">'@angular/platform-browser'</span>;
+<span class="kw">import</span> { AppRoutingModule } <span class="kw">from</span> <span class="st">'./app-routing.module'</span>;
+<span class="kw">import</span> { AppComponent } <span class="kw">from</span> <span class="st">'./app.component'</span>;
+<span class="kw">import</span> { UserService } <span class="kw">from</span> <span class="st">'./services/user.service'</span>;
+
+<span class="dc">@NgModule</span>({
+  <span class="pr">declarations</span>: [
+    AppComponent,        <span class="cm">// composants, directives, pipes de CE module</span>
+    HeaderComponent,
+    MonPipe,
+  ],
+  <span class="pr">imports</span>: [
+    BrowserModule,       <span class="cm">// modules Angular ou tiers nécessaires</span>
+    AppRoutingModule,
+    ReactiveFormsModule,
+  ],
+  <span class="pr">exports</span>: [
+    HeaderComponent,     <span class="cm">// expose HeaderComponent aux modules qui importent celui-ci</span>
+  ],
+  <span class="pr">providers</span>: [
+    UserService,         <span class="cm">// services disponibles dans ce module</span>
+  ],
+  <span class="pr">bootstrap</span>: [AppComponent], <span class="cm">// composant racine (app.module.ts uniquement)</span>
+})
+<span class="kw">export class</span> <span class="cl">AppModule</span> {}</code></pre>
+
+    <table>
+      <tr><th>Propriété</th><th>Contenu</th><th>Obligatoire</th></tr>
+      <tr><td><code>declarations</code></td><td>Composants, directives, pipes <em>appartenant</em> à ce module</td><td>Non</td></tr>
+      <tr><td><code>imports</code></td><td>Autres modules dont ce module a besoin</td><td>Non</td></tr>
+      <tr><td><code>exports</code></td><td>Ce que ce module rend disponible aux modules qui l'importent</td><td>Non</td></tr>
+      <tr><td><code>providers</code></td><td>Services disponibles dans ce module</td><td>Non</td></tr>
+      <tr><td><code>bootstrap</code></td><td>Composant lancé au démarrage (racine seulement)</td><td>Module racine</td></tr>
+    </table>
+
+    <div class="callout info">
+      <strong>Règle clé</strong>
+      Un composant ne peut être déclaré que dans <em>un seul</em> module. Pour le partager, on l'exporte depuis un module "shared" que les autres importent.
+    </div>
+
+    <h3>Module de fonctionnalité (Feature Module)</h3>
+    <p>On découpe l'app en modules par fonctionnalité pour organiser le code et activer le <strong>lazy loading</strong> :</p>
+    <pre><code><span class="cm">// user.module.ts</span>
+<span class="dc">@NgModule</span>({
+  <span class="pr">declarations</span>: [UserListComponent, UserDetailComponent],
+  <span class="pr">imports</span>: [CommonModule, UserRoutingModule],
+})
+<span class="kw">export class</span> <span class="cl">UserModule</span> {}</code></pre>
+
+    <h3>Shared Module</h3>
+    <p>Un module partagé contient les composants/directives/pipes utilisés dans toute l'app :</p>
+    <pre><code><span class="dc">@NgModule</span>({
+  <span class="pr">declarations</span>: [LoaderComponent, MonPipe],
+  <span class="pr">imports</span>: [CommonModule],
+  <span class="pr">exports</span>: [LoaderComponent, MonPipe, CommonModule], <span class="cm">// tout ce qu'on veut partager</span>
+})
+<span class="kw">export class</span> <span class="cl">SharedModule</span> {}</code></pre>
+  </section>
+
+  <!-- ══════════════════════════════════
+       3. COMPOSANTS
+  ══════════════════════════════════ -->
+  <section id="component">
+    <h2><span class="num">3</span> Composants</h2>
+
+    <p>Un composant = un bloc d'UI autonome. Il associe une <strong>logique TypeScript</strong>, un <strong>template HTML</strong> et un <strong>style CSS</strong>.</p>
+
+    <pre><code><span class="kw">import</span> { Component, OnInit, ChangeDetectionStrategy } <span class="kw">from</span> <span class="st">'@angular/core'</span>;
+
+<span class="dc">@Component</span>({
+  <span class="pr">selector</span>: <span class="st">'app-profil'</span>,       <span class="cm">// &lt;app-profil&gt; dans le HTML parent</span>
+  <span class="pr">templateUrl</span>: <span class="st">'./profil.component.html'</span>,  <span class="cm">// fichier HTML externe</span>
+  <span class="pr">styleUrls</span>: [<span class="st">'./profil.component.scss'</span>],   <span class="cm">// CSS scopé à ce composant</span>
+  <span class="pr">standalone</span>: <span class="nb">false</span>,              <span class="cm">// true = pas besoin de NgModule</span>
+  <span class="pr">changeDetection</span>: ChangeDetectionStrategy.OnPush, <span class="cm">// optimisation</span>
+})
+<span class="kw">export class</span> <span class="cl">ProfilComponent</span> <span class="kw">implements</span> <span class="cl">OnInit</span> {
+  <span class="pr">nom</span> = <span class="st">'Alice'</span>;
+
+  <span class="fn">ngOnInit</span>() {
+    <span class="cm">// initialisation</span>
+  }
+}</code></pre>
+
+    <table>
+      <tr><th>Propriété</th><th>Description</th></tr>
+      <tr><td><code>selector</code></td><td>Nom du tag HTML pour utiliser le composant. Peut être un attribut (<code>[app-profil]</code>) ou une classe (<code>.app-profil</code>)</td></tr>
+      <tr><td><code>templateUrl</code></td><td>Chemin vers le fichier HTML</td></tr>
+      <tr><td><code>template</code></td><td>HTML inline (à la place de templateUrl)</td></tr>
+      <tr><td><code>styleUrls</code></td><td>Tableau de fichiers CSS — le style est <em>encapsulé</em> (n'affecte pas les autres composants)</td></tr>
+      <tr><td><code>styles</code></td><td>CSS inline (tableau de chaînes)</td></tr>
+      <tr><td><code>standalone</code></td><td>Si <code>true</code>, le composant se déclare lui-même sans module</td></tr>
+      <tr><td><code>changeDetection</code></td><td><code>Default</code> ou <code>OnPush</code> — stratégie de mise à jour de la vue</td></tr>
+    </table>
+
+    <h3>Composant Standalone <span class="badge new">Angular 14+</span></h3>
+    <p>Permet de se passer de <code>NgModule</code>. Le composant déclare ses propres dépendances dans <code>imports</code> :</p>
+    <pre><code><span class="dc">@Component</span>({
+  <span class="pr">selector</span>: <span class="st">'app-carte'</span>,
+  <span class="pr">standalone</span>: <span class="nb">true</span>,
+  <span class="pr">imports</span>: [CommonModule, RouterModule], <span class="cm">// imports directs</span>
+  <span class="pr">templateUrl</span>: <span class="st">'./carte.component.html'</span>,
+})
+<span class="kw">export class</span> <span class="cl">CarteComponent</span> {}</code></pre>
+  </section>
+
+  <!-- ══════════════════════════════════
+       4. TEMPLATES & DATA BINDING
+  ══════════════════════════════════ -->
+  <section id="binding">
+    <h2><span class="num">4</span> Templates &amp; Data Binding</h2>
+
+    <p>Le data binding est le mécanisme qui synchronise le composant (TypeScript) et la vue (HTML).</p>
+
+    <h3>Interpolation <code>{{ }}</code></h3>
+    <p>Affiche la valeur d'une propriété dans le HTML :</p>
+    <pre><code><span class="cm">&lt;!-- composant : nom = 'Alice' --&gt;</span>
+&lt;p&gt;Bonjour {{ nom }} !&lt;/p&gt;
+&lt;p&gt;{{ 2 + 2 }}&lt;/p&gt;
+&lt;p&gt;{{ nom.toUpperCase() }}&lt;/p&gt;</code></pre>
+
+    <h3>Property Binding <code>[property]</code></h3>
+    <p>Lie une propriété HTML à une valeur du composant (sens : composant → DOM) :</p>
+    <pre><code><span class="cm">&lt;!-- src vient du composant --&gt;</span>
+&lt;img [src]="imageUrl" [alt]="imageAlt" /&gt;
+&lt;button [disabled]="isLoading"&gt;Envoyer&lt;/button&gt;
+&lt;input [value]="nom" /&gt;</code></pre>
+
+    <h3>Event Binding <code>(event)</code></h3>
+    <p>Écoute un événement DOM et appelle une méthode du composant (sens : DOM → composant) :</p>
+    <pre><code>&lt;button (click)="sauvegarder()"&gt;Sauvegarder&lt;/button&gt;
+&lt;input (input)="onInput($event)" /&gt;
+&lt;form (ngSubmit)="onSubmit()"&gt;&lt;/form&gt;</code></pre>
+
+    <h3>Two-Way Binding <code>[(ngModel)]</code></h3>
+    <p>Synchronisation bidirectionnelle entre l'input et la propriété. Nécessite <code>FormsModule</code> :</p>
+    <pre><code><span class="cm">&lt;!-- composant : nom = '' --&gt;</span>
+&lt;input [(ngModel)]="nom" /&gt;
+&lt;p&gt;{{ nom }}&lt;/p&gt;  <span class="cm">&lt;!-- se met à jour en temps réel --&gt;</span></code></pre>
+
+    <div class="callout info">
+      <strong>[(ngModel)] = "Banana in a box"</strong>
+      C'est la combinaison de <code>[ngModel]="nom"</code> (property binding) + <code>(ngModelChange)="nom=$event"</code> (event binding). Le <code>[()]</code> est du sucre syntaxique.
+    </div>
+
+    <h3>Récapitulatif</h3>
+    <table>
+      <tr><th>Syntaxe</th><th>Sens</th><th>Usage</th></tr>
+      <tr><td><code>{{ valeur }}</code></td><td>Composant → Vue</td><td>Afficher du texte</td></tr>
+      <tr><td><code>[propriété]</code></td><td>Composant → DOM</td><td>Attributs dynamiques</td></tr>
+      <tr><td><code>(événement)</code></td><td>DOM → Composant</td><td>Réagir aux actions utilisateur</td></tr>
+      <tr><td><code>[(ngModel)]</code></td><td>Les deux</td><td>Inputs de formulaire</td></tr>
+    </table>
+  </section>
+
+  <!-- ══════════════════════════════════
+       5. DIRECTIVES
+  ══════════════════════════════════ -->
+  <section id="directives">
+    <h2><span class="num">5</span> Directives</h2>
+
+    <p>Les directives modifient l'apparence ou le comportement des éléments DOM. Il en existe deux types : <strong>structurelles</strong> (modifient le DOM) et <strong>d'attribut</strong> (modifient l'apparence).</p>
+
+    <h3>Directives structurelles</h3>
+
+    <h4>*ngIf</h4>
+    <pre><code>&lt;div *ngIf="isLoaded"&gt;Contenu chargé&lt;/div&gt;
+&lt;div *ngIf="user; else loading"&gt;{{ user.nom }}&lt;/div&gt;
+&lt;ng-template #loading&gt;&lt;p&gt;Chargement...&lt;/p&gt;&lt;/ng-template&gt;</code></pre>
+
+    <h4>*ngFor</h4>
+    <pre><code>&lt;ul&gt;
+  &lt;li *ngFor="let item of items; let i = index; trackBy: trackById"&gt;
+    {{ i }} - {{ item.nom }}
+  &lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+    <p><code>trackBy</code> est une optimisation importante : Angular ne recrée pas les éléments si l'ID n'a pas changé.</p>
+    <pre><code><span class="fn">trackById</span>(index: <span class="cl">number</span>, item: <span class="cl">any</span>) {
+  <span class="kw">return</span> item.id;
+}</code></pre>
+
+    <h4>*ngSwitch</h4>
+    <pre><code>&lt;div [ngSwitch]="statut"&gt;
+  &lt;p *ngSwitchCase="'actif'"&gt;Actif&lt;/p&gt;
+  &lt;p *ngSwitchCase="'inactif'"&gt;Inactif&lt;/p&gt;
+  &lt;p *ngSwitchDefault&gt;Inconnu&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+
+    <h3>Nouvelle syntaxe de flux de contrôle <span class="badge v17">Angular 17+</span></h3>
+    <p>Angular 17 introduit une nouvelle syntaxe plus lisible, directement dans les templates :</p>
+    <pre><code><span class="cm">&lt;!-- @if --&gt;</span>
+@if (isLoaded) {
+  &lt;p&gt;Chargé&lt;/p&gt;
+} @else {
+  &lt;p&gt;Chargement...&lt;/p&gt;
+}
+
+<span class="cm">&lt;!-- @for --&gt;</span>
+@for (item of items; track item.id) {
+  &lt;li&gt;{{ item.nom }}&lt;/li&gt;
+} @empty {
+  &lt;p&gt;Aucun élément&lt;/p&gt;
+}
+
+<span class="cm">&lt;!-- @switch --&gt;</span>
+@switch (statut) {
+  @case ('actif') { &lt;span&gt;Actif&lt;/span&gt; }
+  @default { &lt;span&gt;Inconnu&lt;/span&gt; }
+}</code></pre>
+
+    <h3>Directives d'attribut</h3>
+
+    <h4>ngClass</h4>
+    <pre><code><span class="cm">&lt;!-- Objet : la clé est la classe, la valeur est la condition --&gt;</span>
+&lt;div [ngClass]="{ 'actif': isActif, 'erreur': hasError }"&gt;&lt;/div&gt;
+
+<span class="cm">&lt;!-- Tableau --&gt;</span>
+&lt;div [ngClass]="['classe-a', 'classe-b']"&gt;&lt;/div&gt;
+
+<span class="cm">&lt;!-- Raccourci --&gt;</span>
+&lt;div [class.actif]="isActif"&gt;&lt;/div&gt;</code></pre>
+
+    <h4>ngStyle</h4>
+    <pre><code>&lt;div [ngStyle]="{ 'color': couleur, 'font-size.px': taille }"&gt;&lt;/div&gt;
+
+<span class="cm">&lt;!-- Raccourci --&gt;</span>
+&lt;div [style.color]="couleur"&gt;&lt;/div&gt;</code></pre>
+
+    <h3>Créer une directive personnalisée</h3>
+    <pre><code><span class="kw">import</span> { Directive, ElementRef, HostListener, Input } <span class="kw">from</span> <span class="st">'@angular/core'</span>;
+
+<span class="dc">@Directive</span>({
+  <span class="pr">selector</span>: <span class="st">'[appSurbrillance]'</span> <span class="cm">// s'utilise comme attribut</span>
+})
+<span class="kw">export class</span> <span class="cl">SurbrillanceDirective</span> {
+  <span class="dc">@Input</span>() <span class="pr">appSurbrillance</span> = <span class="st">'yellow'</span>;
+
+  <span class="kw">constructor</span>(<span class="kw">private</span> el: <span class="cl">ElementRef</span>) {}
+
+  <span class="dc">@HostListener</span>(<span class="st">'mouseenter'</span>)
+  <span class="fn">onEnter</span>() {
+    <span class="kw">this</span>.el.nativeElement.style.backgroundColor = <span class="kw">this</span>.appSurbrillance;
+  }
+
+  <span class="dc">@HostListener</span>(<span class="st">'mouseleave'</span>)
+  <span class="fn">onLeave</span>() {
+    <span class="kw">this</span>.el.nativeElement.style.backgroundColor = <span class="st">''</span>;
+  }
+}
+
+<span class="cm">&lt;!-- Utilisation --&gt;</span>
+&lt;p [appSurbrillance]="'lightblue'"&gt;Survolez-moi&lt;/p&gt;</code></pre>
+  </section>
+
+  <!-- ══════════════════════════════════
+       6. PIPES
+  ══════════════════════════════════ -->
+  <section id="pipes">
+    <h2><span class="num">6</span> Pipes</h2>
+
+    <p>Les pipes transforment les données dans les templates, sans modifier la source. Syntaxe : <code>valeur | nomPipe:argument</code>.</p>
+
+    <h3>Pipes intégrés</h3>
+    <pre><code><span class="cm">&lt;!-- Texte --&gt;</span>
+&lt;p&gt;{{ 'angular' | uppercase }}&lt;/p&gt;        <span class="cm">&lt;!-- ANGULAR --&gt;</span>
+&lt;p&gt;{{ 'ANGULAR' | lowercase }}&lt;/p&gt;        <span class="cm">&lt;!-- angular --&gt;</span>
+&lt;p&gt;{{ 'hello world' | titlecase }}&lt;/p&gt;    <span class="cm">&lt;!-- Hello World --&gt;</span>
+
+<span class="cm">&lt;!-- Nombre --&gt;</span>
+&lt;p&gt;{{ 3.14159 | number:'1.2-2' }}&lt;/p&gt;    <span class="cm">&lt;!-- 3.14 --&gt;</span>
+&lt;p&gt;{{ 1500 | currency:'EUR':'symbol' }}&lt;/p&gt; <span class="cm">&lt;!-- €1,500.00 --&gt;</span>
+&lt;p&gt;{{ 0.75 | percent }}&lt;/p&gt;              <span class="cm">&lt;!-- 75% --&gt;</span>
+
+<span class="cm">&lt;!-- Date --&gt;</span>
+&lt;p&gt;{{ today | date:'dd/MM/yyyy' }}&lt;/p&gt;
+&lt;p&gt;{{ today | date:'fullDate':'':'fr' }}&lt;/p&gt;
+
+<span class="cm">&lt;!-- Objet --&gt;</span>
+&lt;p&gt;{{ obj | json }}&lt;/p&gt;                   <span class="cm">&lt;!-- debug --&gt;</span>
+
+<span class="cm">&lt;!-- Observable --&gt;</span>
+&lt;p&gt;{{ user$ | async }}&lt;/p&gt;               <span class="cm">&lt;!-- souscrit et unsubscribe automatiquement --&gt;</span>
+
+<span class="cm">&lt;!-- Tranche --&gt;</span>
+&lt;p&gt;{{ items | slice:0:3 | json }}&lt;/p&gt;    <span class="cm">&lt;!-- 3 premiers éléments --&gt;</span></code></pre>
+
+    <h3>Pipe personnalisé</h3>
+    <pre><code><span class="kw">import</span> { Pipe, PipeTransform } <span class="kw">from</span> <span class="st">'@angular/core'</span>;
+
+<span class="dc">@Pipe</span>({ <span class="pr">name</span>: <span class="st">'truncate'</span> })
+<span class="kw">export class</span> <span class="cl">TruncatePipe</span> <span class="kw">implements</span> <span class="cl">PipeTransform</span> {
+  <span class="fn">transform</span>(value: <span class="cl">string</span>, limit: <span class="cl">number</span> = <span class="nb">50</span>): <span class="cl">string</span> {
+    <span class="kw">if</span> (!value) <span class="kw">return</span> <span class="st">''</span>;
+    <span class="kw">return</span> value.length > limit ? value.substring(<span class="nb">0</span>, limit) + <span class="st">'...'</span> : value;
+  }
+}
+
+<span class="cm">&lt;!-- Utilisation --&gt;</span>
+&lt;p&gt;{{ description | truncate:100 }}&lt;/p&gt;</code></pre>
+
+    <div class="callout tip">
+      <strong>Pipe async</strong>
+      Le pipe <code>async</code> est très puissant : il souscrit automatiquement à un Observable ou une Promise, et se désabonne quand le composant est détruit — évitant les memory leaks.
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════
+       7. LIFECYCLE HOOKS
+  ══════════════════════════════════ -->
+  <section id="lifecycle">
+    <h2><span class="num">7</span> Lifecycle Hooks</h2>
+
+    <p>Angular appelle ces méthodes à des moments précis du cycle de vie d'un composant.</p>
+
+    <h3>Ordre d'exécution</h3>
+    <pre><code><span class="kw">export class</span> <span class="cl">MonComposant</span> <span class="kw">implements</span> <span class="cl">OnInit</span>, <span class="cl">OnDestroy</span>, <span class="cl">AfterViewInit</span>, <span class="cl">OnChanges</span> {
+
+  <span class="cm">// 1. Appelé avant ngOnInit, à chaque changement d'@Input()</span>
+  <span class="fn">ngOnChanges</span>(changes: <span class="cl">SimpleChanges</span>) {
+    console.log(changes); <span class="cm">// { nomPropriete: { currentValue, previousValue, firstChange } }</span>
+  }
+
+  <span class="cm">// 2. Appelé une fois après la création du composant</span>
+  <span class="fn">ngOnInit</span>() {
+    <span class="cm">// Initialiser les données, appels API, subscriptions</span>
+  }
+
+  <span class="cm">// 3. Appelé à chaque cycle de détection de changements</span>
+  <span class="fn">ngDoCheck</span>() { <span class="cm">/* peu utilisé, peut être coûteux */</span> }
+
+  <span class="cm">// 4. Après que le contenu projeté (ng-content) est initialisé</span>
+  <span class="fn">ngAfterContentInit</span>() {}
+  <span class="fn">ngAfterContentChecked</span>() {}
+
+  <span class="cm">// 5. Après que la vue et les vues enfants sont initialisées</span>
+  <span class="fn">ngAfterViewInit</span>() {
+    <span class="cm">// Accès aux @ViewChild disponibles ici</span>
+  }
+  <span class="fn">ngAfterViewChecked</span>() {}
+
+  <span class="cm">// 6. Appelé juste avant la destruction du composant</span>
+  <span class="fn">ngOnDestroy</span>() {
+    <span class="cm">// Se désabonner des Observables, vider les timers</span>
+  }
+}</code></pre>
+
+    <table>
+      <tr><th>Hook</th><th>Quand</th><th>Usage typique</th></tr>
+      <tr><td><code>ngOnInit</code></td><td>Une fois après la création</td><td>Chargement des données</td></tr>
+      <tr><td><code>ngOnChanges</code></td><td>À chaque changement d'@Input</td><td>Réagir aux changements de props</td></tr>
+      <tr><td><code>ngAfterViewInit</code></td><td>Après init de la vue</td><td>Accès @ViewChild, DOM, librairies JS</td></tr>
+      <tr><td><code>ngOnDestroy</code></td><td>Avant destruction</td><td>Unsubscribe, nettoyage</td></tr>
+    </table>
+
+    <h3>Nettoyage propre avec DestroyRef <span class="badge v16">Angular 16+</span></h3>
+    <pre><code><span class="kw">import</span> { inject, DestroyRef } <span class="kw">from</span> <span class="st">'@angular/core'</span>;
+<span class="kw">import</span> { takeUntilDestroyed } <span class="kw">from</span> <span class="st">'@angular/core/rxjs-interop'</span>;
+
+<span class="kw">export class</span> <span class="cl">MonComposant</span> {
+  <span class="kw">private</span> destroyRef = <span class="fn">inject</span>(<span class="cl">DestroyRef</span>);
+
+  <span class="fn">ngOnInit</span>() {
+    monObservable$.pipe(
+      <span class="fn">takeUntilDestroyed</span>(<span class="kw">this</span>.destroyRef) <span class="cm">// unsubscribe auto à la destruction</span>
+    ).subscribe(data => { <span class="cm">/* ... */</span> });
+  }
+}</code></pre>
+  </section>
+
+  <!-- ══════════════════════════════════
+       8. SERVICES & INJECTION
+  ══════════════════════════════════ -->
+  <section id="services">
+    <h2><span class="num">8</span> Services &amp; Injection de dépendances</h2>
+
+    <p>Les services contiennent la logique métier et l'accès aux données. L'injection de dépendances (DI) d'Angular les instancie et les injecte automatiquement là où on en a besoin.</p>
+
+    <h3>Créer un service</h3>
+    <pre><code><span class="kw">import</span> { Injectable } <span class="kw">from</span> <span class="st">'@angular/core'</span>;
+
+<span class="dc">@Injectable</span>({
+  <span class="pr">providedIn</span>: <span class="st">'root'</span> <span class="cm">// singleton disponible partout dans l'app</span>
+})
+<span class="kw">export class</span> <span class="cl">AuthService</span> {
+  <span class="kw">private</span> <span class="pr">_isLoggedIn</span> = <span class="nb">false</span>;
+
+  <span class="fn">login</span>(email: <span class="cl">string</span>, password: <span class="cl">string</span>): <span class="cl">boolean</span> {
+    <span class="cm">// logique de login</span>
+    <span class="kw">this</span>._isLoggedIn = <span class="nb">true</span>;
+    <span class="kw">return</span> <span class="nb">true</span>;
+  }
+
+  <span class="fn">logout</span>() { <span class="kw">this</span>._isLoggedIn = <span class="nb">false</span>; }
+
+  <span class="kw">get</span> <span class="fn">isLoggedIn</span>() { <span class="kw">return</span> <span class="kw">this</span>._isLoggedIn; }
+}</code></pre>
+
+    <h3>Injecter un service</h3>
+    <pre><code><span class="cm">// Méthode classique : via le constructeur</span>
+<span class="kw">export class</span> <span class="cl">MonComposant</span> {
+  <span class="kw">constructor</span>(<span class="kw">private</span> authService: <span class="cl">AuthService</span>) {}
+}
+
+<span class="cm">// Méthode moderne (Angular 14+) : inject()</span>
+<span class="kw">export class</span> <span class="cl">MonComposant</span> {
+  <span class="kw">private</span> authService = <span class="fn">inject</span>(<span class="cl">AuthService</span>);
+}</code></pre>
+
+    <h3>Portée des services — providedIn</h3>
+    <table>
+      <tr><th>Valeur</th><th>Portée</th><th>Instances</th></tr>
+      <tr><td><code>'root'</code></td><td>Toute l'application</td><td>1 singleton</td></tr>
+      <tr><td><code>'platform'</code></td><td>Plusieurs apps sur la même page</td><td>1 par plateforme</td></tr>
+      <tr><td><code>'any'</code></td><td>Chaque module lazy-loaded</td><td>1 par module</td></tr>
+      <tr><td>Module spécifique</td><td>Dans ce module uniquement</td><td>1 par module</td></tr>
+      <tr><td>@Component providers</td><td>Ce composant et ses enfants</td><td>1 par composant</td></tr>
+    </table>
+
+    <h3>Service avec état (pattern courant)</h3>
+    <pre><code><span class="dc">@Injectable</span>({ <span class="pr">providedIn</span>: <span class="st">'root'</span> })
+<span class="kw">export class</span> <span class="cl">PanierService</span> {
+  <span class="kw">private</span> items = <span class="fn">signal</span>&lt;<span class="cl">Produit</span>[]&gt;([]);
+
+  <span class="kw">readonly</span> <span class="pr">items$</span> = <span class="kw">this</span>.items.asReadonly();
+  <span class="kw">readonly</span> <span class="pr">total</span> = <span class="fn">computed</span>(() =>
+    <span class="kw">this</span>.items().reduce((acc, p) => acc + p.prix, <span class="nb">0</span>)
+  );
+
+  <span class="fn">ajouter</span>(produit: <span class="cl">Produit</span>) {
+    <span class="kw">this</span>.items.update(items => [...items, produit]);
+  }
+
+  <span class="fn">vider</span>() { <span class="kw">this</span>.items.set([]); }
+}</code></pre>
+  </section>
+
+  <!-- ══════════════════════════════════
+       9. ROUTING
+  ══════════════════════════════════ -->
+  <section id="routing">
+    <h2><span class="num">9</span> Routing</h2>
+
+    <h3>Configuration des routes</h3>
+    <pre><code><span class="cm">// app-routing.module.ts</span>
+<span class="kw">const</span> routes: <span class="cl">Routes</span> = [
+  { <span class="pr">path</span>: <span class="st">''</span>, <span class="pr">redirectTo</span>: <span class="st">'/home'</span>, <span class="pr">pathMatch</span>: <span class="st">'full'</span> },
+  { <span class="pr">path</span>: <span class="st">'home'</span>, <span class="pr">component</span>: <span class="cl">HomeComponent</span> },
+
+  <span class="cm">// Route avec paramètre</span>
+  { <span class="pr">path</span>: <span class="st">'user/:id'</span>, <span class="pr">component</span>: <span class="cl">UserDetailComponent</span> },
+
+  <span class="cm">// Lazy loading (chargement à la demande)</span>
+  {
+    <span class="pr">path</span>: <span class="st">'admin'</span>,
+    <span class="pr">loadChildren</span>: () => <span class="kw">import</span>(<span class="st">'./admin/admin.module'</span>).then(m => m.AdminModule)
+  },
+
+  <span class="cm">// Avec guard</span>
+  { <span class="pr">path</span>: <span class="st">'dashboard'</span>, <span class="pr">component</span>: <span class="cl">DashboardComponent</span>, <span class="pr">canActivate</span>: [<span class="cl">AuthGuard</span>] },
+
+  <span class="cm">// Route inconnue</span>
+  { <span class="pr">path</span>: <span class="st">'**'</span>, <span class="pr">component</span>: <span class="cl">NotFoundComponent</span> },
+];
+
+<span class="dc">@NgModule</span>({
+  <span class="pr">imports</span>: [RouterModule.forRoot(routes)],
+  <span class="pr">exports</span>: [RouterModule]
+})
+<span class="kw">export class</span> <span class="cl">AppRoutingModule</span> {}</code></pre>
+
+    <h3>Dans le template</h3>
+    <pre><code><span class="cm">&lt;!-- Emplacement de la vue active --&gt;</span>
+&lt;router-outlet&gt;&lt;/router-outlet&gt;
+
+<span class="cm">&lt;!-- Liens de navigation --&gt;</span>
+&lt;a routerLink="/home"&gt;Accueil&lt;/a&gt;
+&lt;a [routerLink]="['/user', userId]"&gt;Profil&lt;/a&gt;
+&lt;a routerLink="/home" routerLinkActive="actif"&gt;Home&lt;/a&gt;
+
+<span class="cm">&lt;!-- Avec query params --&gt;</span>
+&lt;a [routerLink]="['/search']" [queryParams]="{ q: 'angular' }"&gt;Chercher&lt;/a&gt;</code></pre>
+
+    <h3>Navigation programmatique</h3>
+    <pre><code><span class="kw">import</span> { Router, ActivatedRoute } <span class="kw">from</span> <span class="st">'@angular/router'</span>;
+
+<span class="kw">export class</span> <span class="cl">MonComposant</span> {
+  <span class="kw">constructor</span>(
+    <span class="kw">private</span> router: <span class="cl">Router</span>,
+    <span class="kw">private</span> route: <span class="cl">ActivatedRoute</span>
+  ) {}
+
+  <span class="fn">aller</span>() {
+    <span class="kw">this</span>.router.navigate([<span class="st">'/user'</span>, <span class="nb">42</span>]);
+    <span class="kw">this</span>.router.navigateByUrl(<span class="st">'/home'</span>);
+  }
+
+  <span class="fn">ngOnInit</span>() {
+    <span class="cm">// Lire les paramètres de l'URL</span>
+    <span class="kw">this</span>.route.paramMap.subscribe(params => {
+      <span class="kw">const</span> id = params.get(<span class="st">'id'</span>);
+    });
+
+    <span class="cm">// Lire les query params (?q=angular)</span>
+    <span class="kw">this</span>.route.queryParams.subscribe(params => {
+      <span class="kw">const</span> q = params[<span class="st">'q'</span>];
+    });
+  }
+}</code></pre>
+
+    <h3>Guards</h3>
+    <pre><code><span class="cm">// auth.guard.ts</span>
+<span class="kw">import</span> { inject } <span class="kw">from</span> <span class="st">'@angular/core'</span>;
+<span class="kw">import</span> { CanActivateFn, Router } <span class="kw">from</span> <span class="st">'@angular/router'</span>;
+
+<span class="kw">export const</span> <span class="fn">authGuard</span>: <span class="cl">CanActivateFn</span> = () => {
+  <span class="kw">const</span> authService = <span class="fn">inject</span>(<span class="cl">AuthService</span>);
+  <span class="kw">const</span> router = <span class="fn">inject</span>(<span class="cl">Router</span>);
+
+  <span class="kw">if</span> (authService.isLoggedIn) <span class="kw">return</span> <span class="nb">true</span>;
+
+  router.navigate([<span class="st">'/login'</span>]);
+  <span class="kw">return</span> <span class="nb">false</span>;
+};
+
+<span class="cm">// Utilisation dans les routes</span>
+{ <span class="pr">path</span>: <span class="st">'dashboard'</span>, <span class="pr">component</span>: <span class="cl">DashboardComponent</span>, <span class="pr">canActivate</span>: [authGuard] }</code></pre>
+  </section>
+
+  <!-- ══════════════════════════════════
+       10. FORMULAIRES
+  ══════════════════════════════════ -->
+  <section id="forms">
+    <h2><span class="num">10</span> Formulaires</h2>
+
+    <p>Angular propose deux approches : <strong>Template-driven</strong> (simple, piloté par le HTML) et <strong>Reactive</strong> (piloté par le TypeScript, plus puissant).</p>
+
+    <h3>Template-driven</h3>
+    <p>Nécessite <code>FormsModule</code>. La logique est dans le template :</p>
+    <pre><code><span class="cm">&lt;!-- Template --&gt;</span>
+&lt;form #monForm="ngForm" (ngSubmit)="onSubmit(monForm)"&gt;
+  &lt;input
+    name="email"
+    [(ngModel)]="email"
+    required
+    email
+    #emailField="ngModel"
+  /&gt;
+  &lt;div *ngIf="emailField.invalid &amp;&amp; emailField.touched"&gt;
+    Email invalide
+  &lt;/div&gt;
+  &lt;button [disabled]="monForm.invalid"&gt;Envoyer&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+    <pre><code><span class="cm">// Composant</span>
+<span class="pr">email</span> = <span class="st">''</span>;
+
+<span class="fn">onSubmit</span>(form: <span class="cl">NgForm</span>) {
+  <span class="kw">if</span> (form.valid) console.log(form.value);
+}</code></pre>
+
+    <h3>Reactive Forms (recommandé)</h3>
+    <p>Nécessite <code>ReactiveFormsModule</code>. La structure est définie en TypeScript :</p>
+    <pre><code><span class="kw">import</span> { FormBuilder, FormGroup, Validators } <span class="kw">from</span> <span class="st">'@angular/forms'</span>;
+
+<span class="kw">export class</span> <span class="cl">LoginComponent</span> {
+  <span class="kw">private</span> fb = <span class="fn">inject</span>(<span class="cl">FormBuilder</span>);
+
+  form = <span class="kw">this</span>.fb.group({
+    email: [<span class="st">''</span>, [Validators.required, Validators.email]],
+    password: [<span class="st">''</span>, [Validators.required, Validators.minLength(<span class="nb">8</span>)]],
+    age: [<span class="nb">null</span>, [Validators.min(<span class="nb">18</span>), Validators.max(<span class="nb">120</span>)]],
+  });
+
+  <span class="kw">get</span> <span class="fn">email</span>() { <span class="kw">return</span> <span class="kw">this</span>.form.get(<span class="st">'email'</span>)!; }
+
+  <span class="fn">onSubmit</span>() {
+    <span class="kw">if</span> (<span class="kw">this</span>.form.valid) {
+      console.log(<span class="kw">this</span>.form.value);
+    }
+  }
+}</code></pre>
+    <pre><code><span class="cm">&lt;!-- Template --&gt;</span>
+&lt;form [formGroup]="form" (ngSubmit)="onSubmit()"&gt;
+  &lt;input formControlName="email" /&gt;
+  &lt;div *ngIf="email.invalid &amp;&amp; email.touched"&gt;
+    &lt;span *ngIf="email.errors?.['required']"&gt;Champ requis&lt;/span&gt;
+    &lt;span *ngIf="email.errors?.['email']"&gt;Format invalide&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;button [disabled]="form.invalid"&gt;Connexion&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+
+    <h3>États d'un FormControl</h3>
+    <table>
+      <tr><th>Propriété</th><th>Description</th></tr>
+      <tr><td><code>valid / invalid</code></td><td>Passe les validateurs ou non</td></tr>
+      <tr><td><code>touched / untouched</code></td><td>L'utilisateur a focalisé puis quitté le champ</td></tr>
+      <tr><td><code>dirty / pristine</code></td><td>L'utilisateur a modifié la valeur</td></tr>
+      <tr><td><code>errors</code></td><td>Objet des erreurs actives ({ required: true, email: true... })</td></tr>
+      <tr><td><code>value</code></td><td>Valeur actuelle du champ</td></tr>
+    </table>
+
+    <h3>FormArray — liste dynamique de contrôles</h3>
+    <pre><code><span class="kw">import</span> { FormArray, FormControl } <span class="kw">from</span> <span class="st">'@angular/forms'</span>;
+
+form = <span class="kw">this</span>.fb.group({
+  tags: <span class="kw">this</span>.fb.array([<span class="kw">this</span>.fb.control(<span class="st">'angular'</span>)]),
+});
+
+<span class="kw">get</span> <span class="fn">tags</span>(): <span class="cl">FormArray</span> { <span class="kw">return</span> <span class="kw">this</span>.form.get(<span class="st">'tags'</span>) <span class="kw">as</span> <span class="cl">FormArray</span>; }
+
+<span class="fn">ajouterTag</span>() {
+  <span class="kw">this</span>.tags.push(<span class="kw">this</span>.fb.control(<span class="st">''</span>));
+}</code></pre>
+  </section>
+
+  <!-- ══════════════════════════════════
+       11. HTTP CLIENT
+  ══════════════════════════════════ -->
+  <section id="http">
+    <h2><span class="num">11</span> HTTP Client</h2>
+
+    <p>Angular fournit <code>HttpClient</code> pour communiquer avec des APIs REST. Toutes les méthodes retournent des <strong>Observables</strong>.</p>
+
+    <h3>Configuration</h3>
+    <pre><code><span class="cm">// app.module.ts</span>
+<span class="kw">import</span> { HttpClientModule } <span class="kw">from</span> <span class="st">'@angular/common/http'</span>;
+
+<span class="dc">@NgModule</span>({
+  <span class="pr">imports</span>: [HttpClientModule]
+})</code></pre>
+
+    <h3>Utilisation dans un service</h3>
+    <pre><code><span class="kw">import</span> { HttpClient, HttpHeaders, HttpParams } <span class="kw">from</span> <span class="st">'@angular/common/http'</span>;
+<span class="kw">import</span> { Observable } <span class="kw">from</span> <span class="st">'rxjs'</span>;
+
+<span class="dc">@Injectable</span>({ <span class="pr">providedIn</span>: <span class="st">'root'</span> })
+<span class="kw">export class</span> <span class="cl">UserService</span> {
+  <span class="kw">private</span> <span class="pr">api</span> = <span class="st">'https://api.example.com'</span>;
+
+  <span class="kw">constructor</span>(<span class="kw">private</span> http: <span class="cl">HttpClient</span>) {}
+
+  <span class="fn">getAll</span>(): <span class="cl">Observable</span>&lt;<span class="cl">User</span>[]&gt; {
+    <span class="kw">return</span> <span class="kw">this</span>.http.get&lt;<span class="cl">User</span>[]&gt;(<span class="st">`${this.api}/users`</span>);
+  }
+
+  <span class="fn">getById</span>(id: <span class="cl">number</span>): <span class="cl">Observable</span>&lt;<span class="cl">User</span>&gt; {
+    <span class="kw">return</span> <span class="kw">this</span>.http.get&lt;<span class="cl">User</span>&gt;(<span class="st">`${this.api}/users/${id}`</span>);
+  }
+
+  <span class="fn">create</span>(user: <span class="cl">Partial</span>&lt;<span class="cl">User</span>&gt;): <span class="cl">Observable</span>&lt;<span class="cl">User</span>&gt; {
+    <span class="kw">return</span> <span class="kw">this</span>.http.post&lt;<span class="cl">User</span>&gt;(<span class="st">`${this.api}/users`</span>, user);
+  }
+
+  <span class="fn">update</span>(id: <span class="cl">number</span>, data: <span class="cl">Partial</span>&lt;<span class="cl">User</span>&gt;): <span class="cl">Observable</span>&lt;<span class="cl">User</span>&gt; {
+    <span class="kw">return</span> <span class="kw">this</span>.http.put&lt;<span class="cl">User</span>&gt;(<span class="st">`${this.api}/users/${id}`</span>, data);
+  }
+
+  <span class="fn">delete</span>(id: <span class="cl">number</span>): <span class="cl">Observable</span>&lt;<span class="kw">void</span>&gt; {
+    <span class="kw">return</span> <span class="kw">this</span>.http.delete&lt;<span class="kw">void</span>&gt;(<span class="st">`${this.api}/users/${id}`</span>);
+  }
+
+  <span class="cm">// Avec paramètres et headers</span>
+  <span class="fn">search</span>(query: <span class="cl">string</span>): <span class="cl">Observable</span>&lt;<span class="cl">User</span>[]&gt; {
+    <span class="kw">const</span> params = <span class="kw">new</span> HttpParams().set(<span class="st">'q'</span>, query);
+    <span class="kw">const</span> headers = <span class="kw">new</span> HttpHeaders({ <span class="st">'Authorization'</span>: <span class="st">'Bearer token'</span> });
+    <span class="kw">return</span> <span class="kw">this</span>.http.get&lt;<span class="cl">User</span>[]&gt;(<span class="st">`${this.api}/users`</span>, { params, headers });
+  }
+}</code></pre>
+
+    <h3>Intercepteurs</h3>
+    <p>Les intercepteurs interceptent toutes les requêtes/réponses HTTP pour ajouter des headers, gérer les erreurs, etc. :</p>
+    <pre><code><span class="kw">import</span> { HttpInterceptorFn } <span class="kw">from</span> <span class="st">'@angular/common/http'</span>;
+
+<span class="kw">export const</span> <span class="fn">authInterceptor</span>: <span class="cl">HttpInterceptorFn</span> = (req, next) => {
+  <span class="kw">const</span> token = localStorage.getItem(<span class="st">'token'</span>);
+
+  <span class="kw">const</span> authReq = req.clone({
+    headers: req.headers.set(<span class="st">'Authorization'</span>, <span class="st">`Bearer ${token}`</span>)
+  });
+
+  <span class="kw">return</span> <span class="fn">next</span>(authReq);
+};
+
+<span class="cm">// Enregistrement dans app.module.ts</span>
+<span class="pr">providers</span>: [
+  provideHttpClient(withInterceptors([authInterceptor]))
+]</code></pre>
+  </section>
+
+  <!-- ══════════════════════════════════
+       12. RXJS & OBSERVABLES
+  ══════════════════════════════════ -->
+  <section id="rxjs">
+    <h2><span class="num">12</span> RxJS &amp; Observables</h2>
+
+    <p>RxJS est la bibliothèque de programmation réactive utilisée par Angular. Un <strong>Observable</strong> est un flux de données asynchrone auquel on peut s'abonner.</p>
+
+    <h3>Observable vs Promise</h3>
+    <table>
+      <tr><th></th><th>Observable</th><th>Promise</th></tr>
+      <tr><td>Valeurs</td><td>Plusieurs dans le temps</td><td>Une seule</td></tr>
+      <tr><td>Déclenchement</td><td>Lazy (au subscribe)</td><td>Eager (immédiat)</td></tr>
+      <tr><td>Annulable</td><td>Oui (unsubscribe)</td><td>Non</td></tr>
+      <tr><td>Opérateurs</td><td>map, filter, switchMap...</td><td>.then() uniquement</td></tr>
+    </table>
+
+    <h3>Opérateurs essentiels</h3>
+    <pre><code><span class="kw">import</span> { map, filter, switchMap, catchError, tap, debounceTime, distinctUntilChanged } <span class="kw">from</span> <span class="st">'rxjs/operators'</span>;
+<span class="kw">import</span> { of, from, combineLatest } <span class="kw">from</span> <span class="st">'rxjs'</span>;
+
+<span class="cm">// map — transformer chaque valeur</span>
+users$.pipe(
+  <span class="fn">map</span>(users => users.filter(u => u.actif))
+)
+
+<span class="cm">// switchMap — remplacer par un autre Observable (annule le précédent)</span>
+<span class="cm">// Parfait pour les recherches en temps réel</span>
+searchInput$.pipe(
+  <span class="fn">debounceTime</span>(<span class="nb">300</span>),           <span class="cm">// attendre 300ms après la dernière frappe</span>
+  <span class="fn">distinctUntilChanged</span>(),       <span class="cm">// ne pas relancer si la valeur n'a pas changé</span>
+  <span class="fn">switchMap</span>(query => api.search(query)) <span class="cm">// annule la requête précédente</span>
+)
+
+<span class="cm">// catchError — gérer les erreurs</span>
+api.getUsers().pipe(
+  <span class="fn">catchError</span>(err => {
+    console.error(err);
+    <span class="kw">return</span> <span class="fn">of</span>([]); <span class="cm">// retourner une valeur par défaut</span>
+  })
+)
+
+<span class="cm">// tap — effet de bord sans modifier la valeur (debug)</span>
+api.getUsers().pipe(
+  <span class="fn">tap</span>(users => console.log(<span class="st">'Reçu :'</span>, users))
+)
+
+<span class="cm">// combineLatest — combiner plusieurs observables</span>
+<span class="fn">combineLatest</span>([user$, roles$]).pipe(
+  <span class="fn">map</span>(([user, roles]) => ({ ...user, roles }))
+)</code></pre>
+
+    <h3>Subject et BehaviorSubject</h3>
+    <pre><code><span class="kw">import</span> { Subject, BehaviorSubject } <span class="kw">from</span> <span class="st">'rxjs'</span>;
+
+<span class="cm">// Subject : pas de valeur initiale, n'émet qu'aux abonnés actifs</span>
+<span class="kw">private</span> action$ = <span class="kw">new</span> Subject&lt;<span class="cl">string</span>&gt;();
+<span class="kw">this</span>.action$.next(<span class="st">'cliqué'</span>);
+
+<span class="cm">// BehaviorSubject : a une valeur initiale, les nouveaux abonnés reçoivent la dernière valeur</span>
+<span class="kw">private</span> user$ = <span class="kw">new</span> BehaviorSubject&lt;<span class="cl">User</span> | <span class="kw">null</span>&gt;(<span class="kw">null</span>);
+<span class="kw">this</span>.user$.next(newUser);
+<span class="kw">this</span>.user$.getValue(); <span class="cm">// valeur synchrone actuelle</span>
+
+<span class="cm">// Exposer en lecture seule</span>
+<span class="kw">readonly</span> <span class="pr">user</span> = <span class="kw">this</span>.user$.asObservable();</code></pre>
+  </section>
+
+  <!-- ══════════════════════════════════
+       13. SIGNALS
+  ══════════════════════════════════ -->
+  <section id="signals">
+    <h2><span class="num">13</span> Signals <span class="badge v16">Angular 16+</span></h2>
+
+    <p>Les Signals sont une alternative plus simple aux Observables pour gérer l'état réactif. Un signal est une valeur qui notifie automatiquement ses dépendants quand elle change.</p>
+
+    <h3>Concepts de base</h3>
+    <pre><code><span class="kw">import</span> { signal, computed, effect } <span class="kw">from</span> <span class="st">'@angular/core'</span>;
+
+<span class="cm">// signal() — état modifiable</span>
+<span class="kw">const</span> compteur = <span class="fn">signal</span>(<span class="nb">0</span>);
+
+compteur();           <span class="cm">// lire la valeur → 0</span>
+compteur.set(<span class="nb">5</span>);      <span class="cm">// remplacer</span>
+compteur.update(v => v + <span class="nb">1</span>); <span class="cm">// modifier à partir de la valeur actuelle</span>
+
+<span class="cm">// computed() — valeur dérivée (recalculée automatiquement)</span>
+<span class="kw">const</span> double = <span class="fn">computed</span>(() => compteur() * <span class="nb">2</span>);
+double(); <span class="cm">// 12 (si compteur = 6)</span>
+
+<span class="cm">// effect() — effet de bord déclenché à chaque changement</span>
+<span class="fn">effect</span>(() => {
+  console.log(<span class="st">'Compteur changed:'</span>, compteur());
+});</code></pre>
+
+    <h3>WritableSignal dans un composant</h3>
+    <pre><code><span class="kw">export class</span> <span class="cl">ProduitsComponent</span> {
+  produits = <span class="fn">signal</span>&lt;<span class="cl">Produit</span>[]&gt;([]);
+  filtre = <span class="fn">signal</span>(<span class="st">''</span>);
+
+  produitsFiltres = <span class="fn">computed</span>(() =>
+    <span class="kw">this</span>.produits().filter(p =>
+      p.nom.includes(<span class="kw">this</span>.filtre())
+    )
+  );
+
+  <span class="fn">charger</span>() {
+    <span class="kw">this</span>.produitService.getAll().subscribe(data => {
+      <span class="kw">this</span>.produits.set(data);
+    });
+  }
+}</code></pre>
+
+    <h3>Signal vs Observable</h3>
+    <table>
+      <tr><th></th><th>Signal</th><th>Observable</th></tr>
+      <tr><td>Lecture</td><td><code>valeur()</code></td><td><code>.subscribe()</code> ou <code>async</code> pipe</td></tr>
+      <tr><td>Écriture</td><td><code>signal.set()</code></td><td><code>subject.next()</code></td></tr>
+      <tr><td>Dérivé</td><td><code>computed()</code></td><td><code>pipe(map())</code></td></tr>
+      <tr><td>Effet</td><td><code>effect()</code></td><td><code>subscribe()</code></td></tr>
+      <tr><td>Syntaxe</td><td>Synchrone, simple</td><td>Asynchrone, puissant</td></tr>
+      <tr><td>Idéal pour</td><td>État local UI</td><td>Flux asynchrones, HTTP</td></tr>
+    </table>
+  </section>
+
+  <!-- ══════════════════════════════════
+       14. DÉCORATEURS UTILES
+  ══════════════════════════════════ -->
+  <section id="decorators">
+    <h2><span class="num">14</span> Décorateurs utiles</h2>
+
+    <h3>@Input() et @Output()</h3>
+    <p>Permettent la communication parent ↔ enfant :</p>
+    <pre><code><span class="cm">// Composant enfant</span>
+<span class="kw">export class</span> <span class="cl">CarteComponent</span> {
+  <span class="dc">@Input</span>() <span class="pr">titre</span>!: <span class="cl">string</span>;          <span class="cm">// reçoit une valeur du parent</span>
+  <span class="dc">@Input</span>({ <span class="pr">required</span>: <span class="nb">true</span> }) <span class="pr">id</span>!: <span class="cl">number</span>; <span class="cm">// obligatoire (Angular 16+)</span>
+
+  <span class="dc">@Output</span>() <span class="pr">supprime</span> = <span class="kw">new</span> EventEmitter&lt;<span class="cl">number</span>&gt;();
+
+  <span class="fn">onSupprimer</span>() {
+    <span class="kw">this</span>.supprime.emit(<span class="kw">this</span>.id); <span class="cm">// envoie l'événement au parent</span>
+  }
+}
+
+<span class="cm">&lt;!-- Parent --&gt;</span>
+&lt;app-carte
+  [titre]="'Mon titre'"
+  [id]="item.id"
+  (supprime)="onSupprimer($event)"
+&gt;&lt;/app-carte&gt;</code></pre>
+
+    <h3>@ViewChild() et @ViewChildren()</h3>
+    <p>Accèdent à un élément ou composant enfant de la vue :</p>
+    <pre><code><span class="kw">import</span> { ViewChild, ViewChildren, QueryList, ElementRef } <span class="kw">from</span> <span class="st">'@angular/core'</span>;
+
+<span class="kw">export class</span> <span class="cl">MonComposant</span> <span class="kw">implements</span> <span class="cl">AfterViewInit</span> {
+  <span class="cm">// Accès à un élément du template via la variable de référence #monInput</span>
+  <span class="dc">@ViewChild</span>(<span class="st">'monInput'</span>) <span class="pr">inputRef</span>!: <span class="cl">ElementRef</span>;
+
+  <span class="cm">// Accès à un composant enfant</span>
+  <span class="dc">@ViewChild</span>(<span class="cl">CarteComponent</span>) <span class="pr">carte</span>!: <span class="cl">CarteComponent</span>;
+
+  <span class="cm">// Accès à tous les éléments d'un type</span>
+  <span class="dc">@ViewChildren</span>(<span class="cl">CarteComponent</span>) <span class="pr">cartes</span>!: <span class="cl">QueryList</span>&lt;<span class="cl">CarteComponent</span>&gt;;
+
+  <span class="fn">ngAfterViewInit</span>() {
+    <span class="cm">// Disponible seulement ici (pas dans ngOnInit !)</span>
+    <span class="kw">this</span>.inputRef.nativeElement.focus();
+    <span class="kw">this</span>.cartes.forEach(c => console.log(c));
+  }
+}
+
+<span class="cm">&lt;!-- Template --&gt;</span>
+&lt;input #monInput type="text" /&gt;</code></pre>
+
+    <h3>@HostListener()</h3>
+    <p>Écoute des événements sur l'élément hôte du composant/directive :</p>
+    <pre><code><span class="kw">export class</span> <span class="cl">MonComposant</span> {
+  <span class="dc">@HostListener</span>(<span class="st">'click'</span>, [<span class="st">'$event'</span>])
+  <span class="fn">onClick</span>(event: <span class="cl">MouseEvent</span>) {
+    console.log(<span class="st">'Cliqué !'</span>, event);
+  }
+
+  <span class="dc">@HostListener</span>(<span class="st">'window:resize'</span>, [<span class="st">'$event'</span>])
+  <span class="fn">onResize</span>(event: <span class="cl">Event</span>) {
+    console.log(<span class="st">'Fenêtre redimensionnée'</span>);
+  }
+
+  <span class="dc">@HostListener</span>(<span class="st">'document:keydown.escape'</span>)
+  <span class="fn">onEscape</span>() {
+    <span class="kw">this</span>.fermerModal();
+  }
+}</code></pre>
+  </section>
+
+  <!-- ══════════════════════════════════
+       15. CHANGE DETECTION
+  ══════════════════════════════════ -->
+  <section id="change-detection">
+    <h2><span class="num">15</span> Change Detection</h2>
+
+    <p>Angular surveille les changements d'état pour mettre à jour la vue. Il existe deux stratégies.</p>
+
+    <h3>Default (par défaut)</h3>
+    <p>Angular vérifie tout l'arbre de composants à chaque événement (clic, timer, requête HTTP...). Simple mais potentiellement lent sur les grosses apps.</p>
+
+    <h3>OnPush — optimisation</h3>
+    <p>Angular ne vérifie le composant que si :</p>
+    <ul>
+      <li>Un <code>@Input()</code> reçoit une nouvelle <em>référence</em> (pas juste une mutation)</li>
+      <li>Un événement dans ce composant est déclenché</li>
+      <li>Un Observable lié avec <code>async</code> pipe émet une valeur</li>
+      <li>On appelle manuellement <code>markForCheck()</code></li>
+    </ul>
+    <pre><code><span class="dc">@Component</span>({
+  <span class="pr">changeDetection</span>: ChangeDetectionStrategy.OnPush
+})
+<span class="kw">export class</span> <span class="cl">ListeComponent</span> {
+  <span class="dc">@Input</span>() items: <span class="cl">Item</span>[] = [];
+
+  <span class="cm">// ⚠️ Ceci ne déclenchera PAS la détection (mutation du tableau) :</span>
+  <span class="cm">// this.items.push(newItem);</span>
+
+  <span class="cm">// ✅ Ceci déclenchera la détection (nouvelle référence) :</span>
+  <span class="cm">// this.items = [...this.items, newItem];</span>
+}</code></pre>
+
+    <h3>ChangeDetectorRef — contrôle manuel</h3>
+    <pre><code><span class="kw">import</span> { ChangeDetectorRef } <span class="kw">from</span> <span class="st">'@angular/core'</span>;
+
+<span class="kw">export class</span> <span class="cl">MonComposant</span> {
+  <span class="kw">constructor</span>(<span class="kw">private</span> cdr: <span class="cl">ChangeDetectorRef</span>) {}
+
+  <span class="fn">chargerDonnees</span>() {
+    <span class="kw">this</span>.data = [...];
+    <span class="kw">this</span>.cdr.markForCheck();   <span class="cm">// marque pour vérification lors du prochain cycle</span>
+    <span class="cm">// ou</span>
+    <span class="kw">this</span>.cdr.detectChanges();  <span class="cm">// force une vérification immédiate</span>
+  }
+}</code></pre>
+  </section>
+
+  <!-- ══════════════════════════════════
+       16. ACCÈS AU DOM
+  ══════════════════════════════════ -->
+  <section id="dom">
+    <h2><span class="num">16</span> Accès au DOM</h2>
+
+    <p>Angular encourage à éviter la manipulation directe du DOM (pour garder la compatibilité SSR, les tests, etc.). Voici les approches recommandées.</p>
+
+    <h3>@ViewChild + ElementRef</h3>
+    <p>La façon Angular d'accéder à un élément du template :</p>
+    <pre><code><span class="kw">export class</span> <span class="cl">MonComposant</span> <span class="kw">implements</span> <span class="cl">AfterViewInit</span> {
+  <span class="dc">@ViewChild</span>(<span class="st">'maDiv'</span>) <span class="pr">maDiv</span>!: <span class="cl">ElementRef</span>&lt;<span class="cl">HTMLDivElement</span>&gt;;
+
+  <span class="fn">ngAfterViewInit</span>() {
+    <span class="cm">// Lecture</span>
+    console.log(<span class="kw">this</span>.maDiv.nativeElement.offsetHeight);
+
+    <span class="cm">// Modification (préférer Renderer2 pour la sécurité)</span>
+    <span class="kw">this</span>.maDiv.nativeElement.style.color = <span class="st">'red'</span>;
+  }
+}
+
+<span class="cm">&lt;!-- Template --&gt;</span>
+&lt;div #maDiv&gt;Contenu&lt;/div&gt;</code></pre>
+
+    <h3>Renderer2 — manipulation sécurisée</h3>
+    <p><code>Renderer2</code> est l'API Angular recommandée pour modifier le DOM. Elle fonctionne avec le rendu côté serveur (SSR) et est protégée contre les injections XSS :</p>
+    <pre><code><span class="kw">import</span> { Renderer2, ElementRef } <span class="kw">from</span> <span class="st">'@angular/core'</span>;
+
+<span class="kw">export class</span> <span class="cl">MonComposant</span> {
+  <span class="kw">constructor</span>(
+    <span class="kw">private</span> renderer: <span class="cl">Renderer2</span>,
+    <span class="kw">private</span> el: <span class="cl">ElementRef</span>
+  ) {}
+
+  <span class="fn">styler</span>() {
+    <span class="kw">const</span> div = <span class="kw">this</span>.el.nativeElement.querySelector(<span class="st">'div'</span>);
+
+    <span class="cm">// Styles</span>
+    <span class="kw">this</span>.renderer.setStyle(div, <span class="st">'color'</span>, <span class="st">'blue'</span>);
+    <span class="kw">this</span>.renderer.removeStyle(div, <span class="st">'color'</span>);
+
+    <span class="cm">// Classes</span>
+    <span class="kw">this</span>.renderer.addClass(div, <span class="st">'actif'</span>);
+    <span class="kw">this</span>.renderer.removeClass(div, <span class="st">'actif'</span>);
+
+    <span class="cm">// Attributs</span>
+    <span class="kw">this</span>.renderer.setAttribute(div, <span class="st">'aria-label'</span>, <span class="st">'description'</span>);
+
+    <span class="cm">// Créer / ajouter des éléments</span>
+    <span class="kw">const</span> span = <span class="kw">this</span>.renderer.createElement(<span class="st">'span'</span>);
+    <span class="kw">const</span> texte = <span class="kw">this</span>.renderer.createText(<span class="st">'Bonjour'</span>);
+    <span class="kw">this</span>.renderer.appendChild(span, texte);
+    <span class="kw">this</span>.renderer.appendChild(div, span);
+
+    <span class="cm">// Écouter un événement</span>
+    <span class="kw">this</span>.renderer.listen(div, <span class="st">'click'</span>, () => console.log(<span class="st">'cliqué'</span>));
+  }
+}</code></pre>
+
+    <h3>document natif</h3>
+    <p>Quand les APIs Angular ne suffisent pas, on peut injecter <code>DOCUMENT</code> plutôt que d'utiliser le global <code>document</code> directement (meilleure compatibilité SSR) :</p>
+    <pre><code><span class="kw">import</span> { DOCUMENT } <span class="kw">from</span> <span class="st">'@angular/common'</span>;
+<span class="kw">import</span> { inject } <span class="kw">from</span> <span class="st">'@angular/core'</span>;
+
+<span class="kw">export class</span> <span class="cl">MonService</span> {
+  <span class="kw">private</span> document = <span class="fn">inject</span>(<span class="cl">DOCUMENT</span>);
+
+  <span class="fn">scrollToTop</span>() {
+    <span class="kw">this</span>.document.body.scrollTop = <span class="nb">0</span>;
+    <span class="kw">this</span>.document.documentElement.scrollTop = <span class="nb">0</span>;
+  }
+
+  <span class="fn">getElement</span>(id: <span class="cl">string</span>) {
+    <span class="kw">return</span> <span class="kw">this</span>.document.getElementById(id);
+  }
+}</code></pre>
+
+    <div class="callout warn">
+      <strong>Attention — nativeElement direct</strong>
+      Accéder à <code>el.nativeElement</code> directement pour modifier le DOM (innerHTML, style...) expose à des risques XSS et casse le rendu SSR. Préférer <code>Renderer2</code> sauf pour de la lecture.
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════
+       17. ANIMATIONS
+  ══════════════════════════════════ -->
+  <section id="animations">
+    <h2><span class="num">17</span> Animations</h2>
+
+    <p>Angular propose un système d'animations déclaratif via <code>@angular/animations</code>.</p>
+
+    <h3>Configuration</h3>
+    <pre><code><span class="cm">// app.module.ts</span>
+<span class="kw">import</span> { BrowserAnimationsModule } <span class="kw">from</span> <span class="st">'@angular/platform-browser/animations'</span>;
+
+<span class="dc">@NgModule</span>({
+  <span class="pr">imports</span>: [BrowserAnimationsModule]
+})</code></pre>
+
+    <h3>Concepts clés</h3>
+    <pre><code><span class="kw">import</span> {
+  trigger, state, style, animate, transition, keyframes
+} <span class="kw">from</span> <span class="st">'@angular/animations'</span>;
+
+<span class="dc">@Component</span>({
+  <span class="pr">animations</span>: [
+    <span class="fn">trigger</span>(<span class="st">'ouverture'</span>, [          <span class="cm">// nom de l'animation</span>
+
+      <span class="fn">state</span>(<span class="st">'ouvert'</span>, <span class="fn">style</span>({       <span class="cm">// état nommé avec ses styles</span>
+        <span class="pr">height</span>: <span class="st">'*'</span>,
+        <span class="pr">opacity</span>: <span class="nb">1</span>,
+      })),
+      <span class="fn">state</span>(<span class="st">'ferme'</span>, <span class="fn">style</span>({
+        <span class="pr">height</span>: <span class="st">'0px'</span>,
+        <span class="pr">opacity</span>: <span class="nb">0</span>,
+      })),
+
+      <span class="cm">// Transition entre états</span>
+      <span class="fn">transition</span>(<span class="st">'ferme => ouvert'</span>, <span class="fn">animate</span>(<span class="st">'300ms ease-in'</span>)),
+      <span class="fn">transition</span>(<span class="st">'ouvert => ferme'</span>, <span class="fn">animate</span>(<span class="st">'200ms ease-out'</span>)),
+      <span class="cm">// ou les deux sens en même temps :</span>
+      <span class="fn">transition</span>(<span class="st">'ouvert &lt;=&gt; ferme'</span>, <span class="fn">animate</span>(<span class="st">'250ms'</span>)),
+    ])
+  ]
+})
+<span class="kw">export class</span> <span class="cl">AccordeonComponent</span> {
+  <span class="pr">etat</span> = <span class="st">'ferme'</span>;
+  <span class="fn">toggle</span>() { <span class="kw">this</span>.etat = <span class="kw">this</span>.etat === <span class="st">'ferme'</span> ? <span class="st">'ouvert'</span> : <span class="st">'ferme'</span>; }
+}
+
+<span class="cm">&lt;!-- Template --&gt;</span>
+&lt;div [@ouverture]="etat"&gt;Contenu&lt;/div&gt;
+&lt;button (click)="toggle()"&gt;Toggle&lt;/button&gt;</code></pre>
+
+    <h3>Animations :enter / :leave</h3>
+    <p>Animez les éléments qui apparaissent/disparaissent avec <code>*ngIf</code> :</p>
+    <pre><code><span class="fn">trigger</span>(<span class="st">'fadeInOut'</span>, [
+  <span class="fn">transition</span>(<span class="st">':enter'</span>, [       <span class="cm">// apparition (équivaut à void => *)</span>
+    <span class="fn">style</span>({ <span class="pr">opacity</span>: <span class="nb">0</span>, <span class="pr">transform</span>: <span class="st">'translateY(-10px)'</span> }),
+    <span class="fn">animate</span>(<span class="st">'300ms ease-out'</span>, <span class="fn">style</span>({ <span class="pr">opacity</span>: <span class="nb">1</span>, <span class="pr">transform</span>: <span class="st">'translateY(0)'</span> }))
+  ]),
+  <span class="fn">transition</span>(<span class="st">':leave'</span>, [       <span class="cm">// disparition (équivaut à * => void)</span>
+    <span class="fn">animate</span>(<span class="st">'200ms ease-in'</span>, <span class="fn">style</span>({ <span class="pr">opacity</span>: <span class="nb">0</span>, <span class="pr">transform</span>: <span class="st">'translateY(-10px)'</span> }))
+  ]),
+])
+
+<span class="cm">&lt;!-- Template --&gt;</span>
+&lt;div *ngIf="visible" [@fadeInOut]&gt;Apparition animée&lt;/div&gt;</code></pre>
+
+    <h3>Keyframes — animation étape par étape</h3>
+    <pre><code><span class="fn">trigger</span>(<span class="st">'rebond'</span>, [
+  <span class="fn">transition</span>(<span class="st">'* => actif'</span>, [
+    <span class="fn">animate</span>(<span class="st">'600ms'</span>, <span class="fn">keyframes</span>([
+      <span class="fn">style</span>({ <span class="pr">transform</span>: <span class="st">'scale(1)'</span>,   <span class="pr">offset</span>: <span class="nb">0</span>    }),
+      <span class="fn">style</span>({ <span class="pr">transform</span>: <span class="st">'scale(1.3)'</span>, <span class="pr">offset</span>: <span class="nb">0.4</span>  }),
+      <span class="fn">style</span>({ <span class="pr">transform</span>: <span class="st">'scale(0.9)'</span>, <span class="pr">offset</span>: <span class="nb">0.7</span>  }),
+      <span class="fn">style</span>({ <span class="pr">transform</span>: <span class="st">'scale(1)'</span>,   <span class="pr">offset</span>: <span class="nb">1</span>    }),
+    ]))
+  ])
+])</code></pre>
+
+    <h3>AnimationBuilder — animations programmatiques</h3>
+    <p>Pour animer des éléments sans passer par le template :</p>
+    <pre><code><span class="kw">import</span> { AnimationBuilder, AnimationPlayer, animate, style } <span class="kw">from</span> <span class="st">'@angular/animations'</span>;
+
+<span class="kw">export class</span> <span class="cl">MonComposant</span> {
+  <span class="kw">private</span> player!: <span class="cl">AnimationPlayer</span>;
+
+  <span class="kw">constructor</span>(
+    <span class="kw">private</span> builder: <span class="cl">AnimationBuilder</span>,
+    <span class="kw">private</span> el: <span class="cl">ElementRef</span>
+  ) {}
+
+  <span class="fn">animer</span>() {
+    <span class="kw">const</span> factory = <span class="kw">this</span>.builder.build([
+      <span class="fn">style</span>({ <span class="pr">opacity</span>: <span class="nb">0</span> }),
+      <span class="fn">animate</span>(<span class="st">'500ms ease-in'</span>, <span class="fn">style</span>({ <span class="pr">opacity</span>: <span class="nb">1</span> }))
+    ]);
+
+    <span class="kw">this</span>.player = factory.create(<span class="kw">this</span>.el.nativeElement);
+    <span class="kw">this</span>.player.play();
+
+    <span class="kw">this</span>.player.onDone(() => console.log(<span class="st">'Animation terminée'</span>));
+  }
+}</code></pre>
+
+    <div class="callout tip">
+      <strong>Conseil</strong>
+      Pour des animations simples (fade, slide), les transitions CSS pures via <code>[style]</code> ou <code>[class]</code> sont souvent suffisantes et plus performantes. Utiliser <code>@angular/animations</code> pour des séquences complexes ou les animations :enter/:leave.
+    </div>
+  </section>
+
+</main>
+
+<script>
+  // Highlight active nav link on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const links = document.querySelectorAll('nav a');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector(`nav a[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>

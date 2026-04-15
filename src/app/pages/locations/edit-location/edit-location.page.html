@@ -1,16 +1,131 @@
 <ion-header [translucent]="true">
-  <ion-toolbar class="travel-header">
-    
+  <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/locations"></ion-back-button>
+      <ion-button class="back-button" (click)="goBack()">
+        <ion-icon name="caret-back"></ion-icon>
+      </ion-button>
     </ion-buttons>
-
-    <ion-title class="travel-title">
-      <span class="title-main">Modifier</span>
-      <span class="title-accent">le Lieu</span>
+    <ion-title>
+      <div class="header-title">
+        <ion-icon name="location-outline"></ion-icon>
+        <span>Editer un lieu</span>
+      </div>
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" class="ion-padding-top">
+  @if(loaded){
+    <form [formGroup]="formGroup" novalidate>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="12">
+            <ion-input
+              label="Nom"
+              formControlName="name"
+              label-placement="stacked"
+              fill="outline">
+            </ion-input>
+            
+            @if(formGroup.controls['name'].invalid && (formGroup.controls['name'].dirty || formGroup.controls['name'].touched)){
+              <ion-text color="danger">Le nom est requis</ion-text>
+            }
+          </ion-col>
+
+          <ion-col size="12">
+            <ion-input
+              label="Altitude"
+              formControlName="altitude"
+              type="number"
+              placeholder="0"
+              label-placement="stacked"
+              fill="outline">
+              <ion-icon slot="start" name="trending-up-outline"></ion-icon>
+            </ion-input>
+
+            @if(formGroup.controls['altitude'].invalid && (formGroup.controls['altitude'].dirty || formGroup.controls['altitude'].touched)){
+              <ion-text color="danger"><p class="ion-no-margin ion-margin-bottom text-xs ion-padding-start">L'altitude est requise</p></ion-text>
+            }    
+          </ion-col>
+
+          <ion-col size="12">
+             <ion-input
+                label="Latitude"
+                formControlName="latitude"
+                type="number"
+                label-placement="stacked"
+                fill="outline">
+                <ion-icon slot="start" name="navigate-outline"></ion-icon>
+              </ion-input>
+
+              @if(formGroup.controls['latitude'].invalid && (formGroup.controls['latitude'].dirty || formGroup.controls['latitude'].touched)){
+                <ion-text color="danger"><p class="ion-no-margin ion-margin-bottom text-xs ion-padding-start">La latitude est requise</p></ion-text>
+              }  
+          </ion-col>
+
+          <ion-col size="12">
+             <ion-input
+                label="Longitude"
+                formControlName="longitude"
+                type="number"
+                label-placement="stacked"
+                fill="outline">
+                <ion-icon slot="start" name="navigate-outline"></ion-icon>
+              </ion-input>
+
+              @if(formGroup.controls['longitude'].invalid && (formGroup.controls['longitude'].dirty || formGroup.controls['longitude'].touched)){
+                <ion-text color="danger"><p class="ion-no-margin ion-margin-bottom text-xs ion-padding-start">La longitude est requise</p></ion-text>
+              }
+          </ion-col>
+
+          <ion-col size="6">
+            <ion-select
+              class="ion-margin-bottom"
+              label="Type"
+              formControlName="type"
+              interface="popover"
+              placeholder="-"
+              fill="outline">
+
+              @for(item of locationsType(); track item.name){
+                <ion-select-option [value]="item.id">
+                  {{item.name}}
+                </ion-select-option>
+              }
+            </ion-select>
+          </ion-col>
+
+          <ion-col size="6">
+            <ion-select
+                class="ion-margin-bottom"
+                label="Pays"
+                formControlName="country"
+                interface="popover"
+                placeholder="-"
+                fill="outline">
+
+                @for(item of countries(); track item.name){
+                  <ion-select-option [value]="item.id">
+                    {{item.name}}
+                  </ion-select-option>
+                }
+              </ion-select>
+          </ion-col>
+        </ion-row>
+
+      </ion-grid>
+
+      <div class="ion-margin">
+        @if(location.id > 0){
+          <ion-button color="danger" [strong]="true">Supprimer</ion-button>
+        }
+        <ion-button color="primary" [strong]="true" [disabled]="formGroup.invalid">Enregistrer</ion-button>
+      </div>
+    </form>
+  }
+  @else{
+    <div class="loader-center">
+      <ion-spinner name="dots"></ion-spinner>
+    </div>
+  }
 </ion-content>

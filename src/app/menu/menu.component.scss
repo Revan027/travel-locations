@@ -28,22 +28,3 @@ ion-tab-button{
       color: var(--app-tab-active);
     }
 }
-
-.menu-btn-add {
-  position: fixed;
-  bottom: 60px;
-  max-width: 56px;
-  max-height: 56px;
-  border-radius: 50%;
-  background: linear-gradient(145deg, var(--app-amber), var(--app-amber-deep));
-  color: #ffffff !important;
-  box-shadow: 0 4px 20px var(--app-amber-glow), inset 0 1px 1px rgba(255, 255, 255, 0.25);
-  padding: 0;
-  left: 50%;
-  transform: translate(-50%);
-  z-index: 1000;
-
-  ion-icon {
-    font-size: 30px;
-  }
-}
