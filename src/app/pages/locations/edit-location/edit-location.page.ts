@@ -7,7 +7,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Location } from 'src/app/models/Location';
 import { LocationType } from 'src/app/models/LocationType';
 import { Country } from 'src/app/models/Country';
-import { FirestoreService } from 'src/app/services/firestore.service';
+import { LocationService } from 'src/app/services/location.service';
 
 @Component({
   selector: 'app-edit-location',
@@ -20,8 +20,8 @@ export class EditLocationPage implements AfterViewInit {
 
   formGroup!: FormGroup;
   location: Location = new Location();
-  locationsType: WritableSignal<LocationType[]> = this.firestoreService.locationTypes;
-  countries: WritableSignal<Country[]> = this.firestoreService.countries;
+  locationsType: WritableSignal<LocationType[]> = this.locationService.locationTypes;
+  countries: WritableSignal<Country[]> = this.locationService.countries;
   loaded: boolean = false;
 
   constructor(
@@ -30,7 +30,7 @@ export class EditLocationPage implements AfterViewInit {
     private gestureCtrl: GestureController,
     private formBuilder: FormBuilder,
     private el: ElementRef,
-    private firestoreService: FirestoreService
+    private locationService: LocationService
   ) {}
 
   goBack() {
