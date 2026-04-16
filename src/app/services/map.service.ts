@@ -41,17 +41,6 @@ export class MapService {
         this.flyTo(this.position() as Position, 17);
     }
 
-    private createUserMarker(){
-        const monIcon = L.divIcon({
-           html: '<ion-icon name="accessibility-outline" style="color: red;"></ion-icon>',
-           iconAnchor: [16, 32],
-           popupAnchor: [0, -32],
-           className: 'custom-marker'
-        });
-
-        this.userMarker = L.marker([this.position().latitude, this.position().longitude], {icon: monIcon}).addTo(this.map);
-    }
-
     createNewlocationMarker(){
         if (this.newLocationMarker != undefined){
             this.newLocationMarker.remove();
@@ -59,17 +48,22 @@ export class MapService {
 
         let latLng = this.map.getCenter();
 
-        const monIcon = L.divIcon({
-            html: '<ion-icon name="pin-sharp"></ion-icon>',
-            iconAnchor: [17, 35],
-            className: 'custom-marker new-location'
-        });
-
-        this.newLocationMarker = L.marker([latLng.lat, latLng.lng], {icon: monIcon, draggable: true}).addTo(this.map);
+        this.newLocationMarker = L.marker([latLng.lat, latLng.lng], {draggable: true, shadowPane: ""}).addTo(this.map);
 
         this.newLocationMarker.on('click', (e) => {
             this.router.navigateByUrl(`/locations/creation;lat=${e.latlng.lat};lng=${e.latlng.lng};alt=${e.latlng.alt}`)
         });
+    }
+
+    private createUserMarker(){
+        const monIcon = L.divIcon({
+           html: '<ion-icon name="accessibility"></ion-icon>',
+           iconAnchor: [16, 32],
+           popupAnchor: [0, -32],
+           className: 'custom-marker'
+        });
+
+        this.userMarker = L.marker([this.position().latitude, this.position().longitude], {icon: monIcon}).addTo(this.map);
     }
 
     private async getCurentPosition(): Promise<boolean>{
@@ -87,11 +81,11 @@ export class MapService {
     }
 
     private createMap(){
-         // init de la map leaflet depuis le monde.
-        this.map = L.map('map', {doubleClickZoom: false,  minZoom: 3}).fitWorld();
+        // init de la map leaflet depuis le monde.
+        this.map = L.map('map', {doubleClickZoom: false,  minZoom: 4}).fitWorld();
 
-        // On ajoute les infos de la map
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: ''}).addTo(this.map);
+        // On ajoute les infos de la map. updateWhenIdle a false pour accéler la chargement des parties de map
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '',  updateWhenIdle: false}).addTo(this.map);
 
         // On resize direct pour éviter un bug de rendu de la carte
         setTimeout(() => this.map.invalidateSize(), 0);

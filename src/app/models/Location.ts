@@ -19,4 +19,5 @@ export class LocationRequest extends Location {
   }
 
   typeRef!: DocumentReference<DocumentData, DocumentData>;
+  countryRef!: DocumentReference<DocumentData, DocumentData>;
 }

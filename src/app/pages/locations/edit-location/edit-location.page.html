@@ -17,6 +17,8 @@
 <ion-content [fullscreen]="true" class="ion-padding-top">
   @if(loaded){
     <form [formGroup]="formGroup" novalidate>
+     
+
       <ion-grid>
         <ion-row>
           <ion-col size="12">
@@ -32,7 +34,36 @@
             }
           </ion-col>
 
-          <ion-col size="12">
+          <ion-col size="6">
+            <!--en faire un composant -->
+            <div class="custom-datetime">
+              <div class="custom-datetime-label">
+                 <ion-label>Date</ion-label>
+              </div>
+             
+              <ion-datetime-button datetime="datetime"></ion-datetime-button>
+
+              <ion-modal [keepContentsMounted]="true">
+                <ng-template>
+                  <ion-datetime
+                    id="datetime"
+                    presentation="date"
+                    formControlName="date"
+                    [formatOptions]="{
+                      date: {
+                        weekday: 'short',
+                        month: 'long',
+                        day: '2-digit',
+                        year: 'numeric'
+                      },
+                    }"
+                  ></ion-datetime>
+                </ng-template>
+              </ion-modal>
+            </div>       
+          </ion-col>
+
+          <ion-col size="6">
             <ion-input
               label="Altitude"
               formControlName="altitude"
@@ -48,7 +79,7 @@
             }    
           </ion-col>
 
-          <ion-col size="12">
+          <ion-col size="6">
              <ion-input
                 label="Latitude"
                 formControlName="latitude"
@@ -63,7 +94,7 @@
               }  
           </ion-col>
 
-          <ion-col size="12">
+          <ion-col size="6">
              <ion-input
                 label="Longitude"
                 formControlName="longitude"
@@ -115,11 +146,12 @@
 
       </ion-grid>
 
-      <div class="ion-margin">
+
+      <div class="ion-display-flex ion-justify-content-end">
         @if(location.id > 0){
           <ion-button color="danger" [strong]="true">Supprimer</ion-button>
         }
-        <ion-button color="primary" [strong]="true" [disabled]="formGroup.invalid">Enregistrer</ion-button>
+        <ion-button [strong]="true" [disabled]="formGroup.invalid" (click)="onSubmit(formGroup.value)">Enregistrer</ion-button>
       </div>
     </form>
   }

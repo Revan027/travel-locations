@@ -1,6 +1,68 @@
 # TravelLocations
 
-Application mobile Ionic/Angular avec Capacitor.
+Application mobile Ionic/Angular/Capacitor pour gérer et visualiser des lieux sur une carte interactive.
+
+## Fonctionnalités
+
+- **Carte interactive** : Visualisation des lieux enregistrés avec Leaflet
+- **Localisation** : Position GPS en temps réel
+- **Lieux** : Création, modification et suppression de lieux
+- **Synchronisation** : Données stockées sur Firestore
+
+## Stack technique
+
+| Technologie | Version |
+|---|---|
+| Angular | 20 |
+| Ionic | 8 |
+| Capacitor | 8 |
+| TypeScript | 5.9 |
+| Leaflet | — |
+| Firebase / Firestore | — |
+
+## Installation
+
+### 1. Cloner le repo
+
+```bash
+git clone https://github.com/Revan027/TravelLocations.git
+cd TravelLocations
+```
+
+### 2. Installer Ionic CLI (si pas déjà installé)
+
+```bash
+npm install -g @ionic/cli
+```
+
+### 3. Installer les dépendances
+
+```bash
+npm install
+```
+
+### 4. Configurer les environnements
+
+Copier les fichiers d'exemple et renseigner ta config Firebase :
+
+```bash
+cp src/environments/environment.example.ts src/environments/environment.ts
+cp src/environments/environment.prod.example.ts src/environments/environment.prod.ts
+```
+
+### 5. Ajouter les services communs
+
+Cloner le repo des services communs dans le bon dossier :
+
+```bash
+git clone https://github.com/Revan027/services.common.git src/app/services/services.common
+```
+
+## Lancer en développement web
+
+```bash
+ionic serve
+```
 
 ## Lancer sur Android depuis Android Studio
 

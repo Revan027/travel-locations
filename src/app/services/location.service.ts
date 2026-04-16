@@ -4,6 +4,7 @@ import { Country } from '../models/Country';
 
 import { FirebaseCollectionEnum } from '../constants/firebaseCollectionEnum';
 import { FirestoreService } from './firestore.services.common/firestore.service';
+import { Location, LocationRequest } from '../models/Location';
 
 @Injectable({
     providedIn: 'root',
@@ -13,6 +14,16 @@ export class LocationService {
     countries = signal<Country[]>([]);
 
     constructor(private firestoreService: FirestoreService) {}
+
+    async create(location: Location){     
+        let locationRequest = location as LocationRequest;
+
+        // on recup la ref des collections de doonées
+        locationRequest.typeRef = this.firestoreService.GetDocumentRef(FirebaseCollectionEnum.country, location.type);
+        locationRequest.countryRef = this.firestoreService.GetDocumentRef(FirebaseCollectionEnum.country, location.country);
+
+        return this.firestoreService.createDocument(FirebaseCollectionEnum.locations, locationRequest);
+    }
 
     async getDatas(){
         // on récupère les types de lieux et les pays une fois

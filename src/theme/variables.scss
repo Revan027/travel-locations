@@ -3,6 +3,11 @@
 
 :root {
   --ion-font-family: 'Nunito', sans-serif;
+  
+
+  // Thème
+  --app-bg: #f0f0f0;
+  --ion-color-primary: #f4a261;
 
   // Font sizes (8-point scale)
   --ion-font-size-xs: 0.75rem;      // 12px
@@ -52,4 +57,12 @@
 
   // Page theme (override per page)
   --app-page-theme-color: var(--app-amber);
+
+  // Success color (vert olive)
+  --ion-color-success: #5a7d5a;
+  --ion-color-success-rgb: 90, 125, 90;
+  --ion-color-success-contrast: #ffffff;
+  --ion-color-success-contrast-rgb: 255, 255, 255;
+  --ion-color-success-shade: #4f6e4f;
+  --ion-color-success-tint: #6b8a6b;
 }

@@ -1,13 +1,19 @@
 import { Location as ALocation } from '@angular/common';
 import { Component, AfterViewInit, ElementRef, inject, DestroyRef, WritableSignal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { GestureController } from '@ionic/angular';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Location } from 'src/app/models/Location';
 import { LocationType } from 'src/app/models/LocationType';
 import { Country } from 'src/app/models/Country';
 import { LocationService } from 'src/app/services/location.service';
+import { Firestore } from '@angular/fire/firestore';
+import { FirestoreService } from 'src/app/services/firestore.services.common/firestore.service';
+import moment from 'moment';
+import { ToastService } from 'src/app/services/services.common/toast.service';
+import { MessageEnum } from 'src/app/services/services.common/enum/MessageEnum';
+import { StatusEnum } from 'src/app/services/services.common/enum/status.enum';
 
 @Component({
   selector: 'app-edit-location',
@@ -29,9 +35,13 @@ export class EditLocationPage implements AfterViewInit {
     private route: ActivatedRoute,
     private gestureCtrl: GestureController,
     private formBuilder: FormBuilder,
-    private el: ElementRef,
-    private locationService: LocationService
-  ) {}
+    private router: Router,
+    private locationService: LocationService,
+    private toastService: ToastService,
+  ) 
+  {
+    moment.locale("fr");  
+  }
 
   goBack() {
     this.aLocation.back();
@@ -61,7 +71,7 @@ export class EditLocationPage implements AfterViewInit {
 
   ngAfterViewInit() {
     // on active l'écoute du swipe pour le retour
-    const gesture = this.gestureCtrl.create({
+    /*const gesture = this.gestureCtrl.create({
       el: this.el.nativeElement,
       gestureName: 'swipe-back',
       direction: 'x',
@@ -71,7 +81,7 @@ export class EditLocationPage implements AfterViewInit {
         }
       },
     });
-    gesture.enable();
+    gesture.enable();*/
   }
 
   private createForm() {
@@ -82,7 +92,17 @@ export class EditLocationPage implements AfterViewInit {
       longitude: [this.location.longitude , Validators.required],
       type: [this.location?.type, Validators.required],
       country: [this.location?.country, Validators.required],
-      date: [this.location.date, Validators.required],
+      date: [this.location.date ?? moment().format('YYYY-MM-DD'), Validators.required],
     });
+  }
+
+  async onSubmit(location: Location) {
+    const result = await this.locationService.create(location);
+
+    if (result){
+      this.toastService.get(MessageEnum.AppSuccess, StatusEnum.Success);
+
+      this.router.navigate(['/map']);
+    }  
   }
 }

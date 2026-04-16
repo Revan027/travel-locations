@@ -1,4 +1,4 @@
-import { Component, signal, WritableSignal } from '@angular/core';
+import { Component, WritableSignal } from '@angular/core';
 import { MapService } from 'src/app/services/map.service';
 import { Position } from 'src/app/models/Position';
 
@@ -28,9 +28,5 @@ export class MapPage  {
 
   onActiveCreationLocation(){
     this.mapService.createNewlocationMarker();
-    // on ajoute un point au mileu de la carte
-    //ce point sera un point temporaire
-    // on bascule ensite l'icone du boutton d'ajout en valider, pour valider le point.
-    //On peut déplacer le point en drag an drop   <ion-icon name="pin-outline"></ion-icon>
   }
 }
