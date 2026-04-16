@@ -1,15 +1,20 @@
 // Global Ionic component overrides TravelLocations design system
 
-// Content
+// CONTENT
 :host ion-content {
   --keyboard-offset: 0px !important;
 }
 
 ion-content {
-  --background: transparent;
+  --background: var(--app-bg);
 }
 
-//  Header
+ion-content::part(scroll) {
+  scroll-behavior: smooth;
+}
+
+
+// HEADER
 ion-header::after {
   display: none;
 }
@@ -43,99 +48,6 @@ ion-header ion-back-button {
   color: var(--app-text-light);
 }
 
-// Footer
-ion-footer {
-  background: transparent;
-  border: none;
-  box-shadow: none;
-
-  &::before {
-    display: none;
-  }
-}
-
-// Cards
-ion-card {
-  --background: var(--app-card-bg);
-  --color: var(--app-text-light);
-  border-radius: var(--app-card-radius);
-  border: 1px solid var(--app-card-border);
-  box-shadow: var(--app-card-shadow);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-}
-
-// Inputs
-ion-input,
-ion-select,
-ion-searchbar {
-  --background: var(--app-input-bg) !important;
-  --color: var(--app-text-light);
-  --placeholder-color: var(--app-text-muted);
-  --border-color: var(--app-input-border);
-}
-
-ion-input .label-text {
-  color: var(--app-text-muted);
-}
-
-ion-select::part(label) {
-  color: var(--app-text-muted);
-}
-
-// Buttons
-ion-button {
-  --background: var(--app-amber);
-  --color: #ffffff;
-  --border-radius: 12px;
-  font-weight: 600;
-}
-
-ion-fab-button{
- --background: linear-gradient(145deg, var(--app-amber), var(--app-amber-deep));
- --box-shadow: 0 4px 20px var(--app-amber-glow), inset 0 1px 1px rgba(255, 255, 255, 0.25);
-
-}
-
-ion-fab-button.fab-button-disabled{
-  opacity: 1;
-}
-
-// Separator
-hr {
-  width: 90%;
-  opacity: 0.2;
-  border: none;
-  height: 1px;
-  background: var(--app-page-theme-color);
-}
-
-// Font utilities
-.bold         { font-weight: 700; }
-.text-xs      { font-size: var(--ion-font-size-xs); }
-.text-sm      { font-size: var(--ion-font-size-sm); }
-.text-base    { font-size: var(--ion-font-size-base); }
-.text-lg      { font-size: var(--ion-font-size-lg); }
-.text-xl      { font-size: var(--ion-font-size-xl); }
-.text-2xl     { font-size: var(--ion-font-size-2xl); }
-.text-3xl     { font-size: var(--ion-font-size-3xl); }
-
-// Utilities
-.d-none { display: none; }
-
-.loader-center {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-
-  ion-spinner {
-    transform: scale(3);
-    --color: var(--app-amber);
-  }
-}
-
-// Header title with icon
 .header-title {
   display: inline-flex;
   align-items: center;
@@ -152,7 +64,77 @@ hr {
 }
 
 
-// Map
+// FOOTER
+ion-footer {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+
+  &::before {
+    display: none;
+  }
+}
+
+
+/* INPUTS */
+ion-input,
+ion-select,
+ion-searchbar {
+  --background: var(--app-input-bg) !important;
+  --color: var(--app-text-color);
+  --placeholder-color: var(--app-text-muted);
+}
+
+ion-input .label-text {
+  line-height: 1.2!important;
+}
+
+ion-searchbar{
+--border-radius: 4px!important;;
+}
+
+ion-select::part(label) {
+  color: var(--app-label-color);
+}
+
+ion-input .label-text {
+  color: var(--app-label-color);
+}
+
+ion-datetime-button{
+  padding: px;
+  border: 1px solid gray;
+  border-radius: 4px;  
+  min-height: 56px;
+  border-color: var(--ion-color-step-300, var(--ion-background-color-step-300, #b3b3b3));
+  background: var(--app-input-bg) !important;
+}
+
+
+/* BUTTONS */
+ion-button ion-label {
+  width: 100%;
+}
+
+ion-button {
+  --background: linear-gradient(145deg, var(--app-amber), var(--app-amber-deep));
+  --color: #ffffff;
+  --border-radius: 12px;
+  font-weight: 600;
+}
+
+ion-fab-button{
+ --background: linear-gradient(145deg, var(--app-amber), var(--app-amber-deep));
+ --box-shadow: 0 4px 20px var(--app-amber-glow), inset 0 1px 1px rgba(255, 255, 255, 0.25);
+
+}
+
+ion-fab-button.fab-button-disabled{
+  opacity: 1;
+}
+
+
+// MAP
 #map {
   height: 100%;
   width: 100%;
@@ -160,9 +142,45 @@ hr {
 
 .custom-marker {
   background: none;
+  font-size: 25px;
+
+  &.new-location{
+    color: var(--app-navy);
+    font-size: 35px;
+  }
 }
 
-// Header
+.leaflet-marker-shadow{
+  display: none!important;
+}
+
+
+// FONT
+.bold         { font-weight: 700; }
+.text-xs      { font-size: var(--ion-font-size-xs); }
+.text-sm      { font-size: var(--ion-font-size-sm); }
+.text-base    { font-size: var(--ion-font-size-base); }
+.text-lg      { font-size: var(--ion-font-size-lg); }
+.text-xl      { font-size: var(--ion-font-size-xl); }
+.text-2xl     { font-size: var(--ion-font-size-2xl); }
+.text-3xl     { font-size: var(--ion-font-size-3xl); }
+
+
+// UTILITIES
+.d-none { display: none; }
+
+.loader-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+
+  ion-spinner {
+    transform: scale(3);
+    --color: var(--app-amber);
+  }
+}
+
 .travel-title {
   display: flex;
   align-items: center;
@@ -188,73 +206,4 @@ hr {
   color: var(--app-amber);
   margin-left: 12px;
   filter: drop-shadow(0 0 6px var(--app-amber-glow));
-}
-
-// Footer
-.travel-footer {
-  .footer-nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    background: var(--app-footer-bg);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border-top: 1px solid var(--app-glass-border);
-    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.25);
-    padding: 10px 8px calc(10px + var(--ion-safe-area-bottom, 0px));
-  }
-
-  .footer-btn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 3px;
-    background: none;
-    border: none;
-    color: var(--app-tab-inactive);
-    font-size: var(--ion-font-size-xs);
-    letter-spacing: 0.8px;
-    text-transform: uppercase;
-    font-family: var(--ion-font-family);
-    padding: 6px 14px;
-    cursor: pointer;
-    transition: color 0.2s ease, transform 0.15s ease;
-
-    ion-icon {
-      font-size: 22px;
-    }
-
-    &.active {
-      color: var(--app-tab-active);
-    }
-
-    &:not(.footer-btn-add):hover {
-      color: rgba(255, 255, 255, 0.8);
-    }
-  }
-
-  .footer-btn-add {
-    max-width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    --background: linear-gradient(145deg, var(--app-amber), var(--app-amber-deep));
-     --color: #ffffff !important;
-    box-shadow: 0 4px 20px var(--app-amber-glow), inset 0 1px 1px rgba(255, 255, 255, 0.25);
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    ion-icon {
-      font-size: 30px;
-    }
-
-    &:hover {
-      transform: scale(1.08);
-    }
-
-    &:active {
-      transform: scale(0.96);
-    }
-  }
 }

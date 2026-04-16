@@ -71,3 +71,6 @@ Thumbs.db
 # Environment files (contains sensitive keys)
 src/environments/environment.ts
 src/environments/environment.prod.ts
+
+src/app/services/firestore.services.common
+src/app/services/services.common

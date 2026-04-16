@@ -1,4 +1,3 @@
-
 ion-fab{
     right: 30px;
 }
@@ -12,14 +11,18 @@ ion-fab{
     white-space: nowrap;
     overflow: scroll;
     width: 80%;
-}
 
-.lat, .lng, .alt{
+  .lat, .lng, .alt{
     color: var(--app-amber);
+  }
 }
-
 
 .btn-refresh{
-        position: absolute;
-    transform: translateY(80px);
+  position: absolute;
+  transform: translateY(80px);
+}
+
+.btn-add{
+  position: absolute;
+  transform: translateY(140px);
 }

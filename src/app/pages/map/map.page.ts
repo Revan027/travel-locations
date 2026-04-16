@@ -17,12 +17,16 @@ export class MapPage  {
   }
 
   async ngAfterViewInit(){
-    await this.mapService.init();  
+    await this.mapService.init();
   }
 
   async onRefreshPosition(){
     this.isRefreshing = true;
     await this.mapService.initCurrentPosition();
     this.isRefreshing = false;
+  }
+
+  onActiveCreationLocation(){
+    this.mapService.createNewlocationMarker();
   }
 }

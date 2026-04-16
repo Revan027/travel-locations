@@ -29,11 +29,13 @@
     @else{
       <ion-icon name="locate-outline"></ion-icon>
     }
-  </ion-fab-button>  
+  </ion-fab-button>
+
+   <ion-fab-button class="btn-add" size="small" expand="block" (click)="onActiveCreationLocation()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-
   <div id="map"></div>
-  
 </ion-content>

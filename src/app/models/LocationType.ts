@@ -1,6 +1,6 @@
-export class LocationType {
-    constructor() {}
+export interface LocationType {
 
-    name!: string;
-    icon!: string;
+  id: string;
+  name: string;
+  icon: string;
 }
