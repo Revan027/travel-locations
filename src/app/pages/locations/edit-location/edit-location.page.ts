@@ -1,5 +1,5 @@
 import { Location as ALocation } from '@angular/common';
-import { Component, AfterViewInit, ElementRef, inject, DestroyRef, WritableSignal } from '@angular/core';
+import { Component, AfterViewInit, inject, DestroyRef, WritableSignal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GestureController } from '@ionic/angular';
@@ -8,8 +8,6 @@ import { Location } from 'src/app/models/Location';
 import { LocationType } from 'src/app/models/LocationType';
 import { Country } from 'src/app/models/Country';
 import { LocationService } from 'src/app/services/location.service';
-import { Firestore } from '@angular/fire/firestore';
-import { FirestoreService } from 'src/app/services/firestore.services.common/firestore.service';
 import moment from 'moment';
 import { ToastService } from 'src/app/services/services.common/toast.service';
 import { MessageEnum } from 'src/app/services/services.common/enum/MessageEnum';

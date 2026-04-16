@@ -8,11 +8,6 @@ const routes: Routes = [
         component: MenuComponent,
         children: [
             {
-                path: 'home',
-                loadChildren: () =>
-                    import('../home/home.module').then((m) => m.HomePageModule),
-            },
-            {
                 path: 'map',
                 loadChildren: () =>
                     import('../pages/map/map.module').then((m) => m.MapPageModule),

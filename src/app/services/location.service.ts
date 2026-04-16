@@ -1,7 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { LocationType } from '../models/LocationType';
 import { Country } from '../models/Country';
-
 import { FirebaseCollectionEnum } from '../constants/firebaseCollectionEnum';
 import { FirestoreService } from './firestore.services.common/firestore.service';
 import { Location, LocationRequest } from '../models/Location';
@@ -10,6 +9,7 @@ import { Location, LocationRequest } from '../models/Location';
     providedIn: 'root',
 })
 export class LocationService {   
+    locations = signal<Location[]>([]);
     locationTypes = signal<LocationType[]>([]);
     countries = signal<Country[]>([]);
 
@@ -23,6 +23,10 @@ export class LocationService {
         locationRequest.countryRef = this.firestoreService.GetDocumentRef(FirebaseCollectionEnum.country, location.country);
 
         return this.firestoreService.createDocument(FirebaseCollectionEnum.locations, locationRequest);
+    }
+
+    async getAll(){
+        this.locations.set(await this.firestoreService.getDocuments<Location[]>(FirebaseCollectionEnum.locations));
     }
 
     async getDatas(){
