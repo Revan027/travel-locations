@@ -15,12 +15,11 @@ export class LocationService {
 
     constructor(private firestoreService: FirestoreService) {}
 
-    async create(location: Location){     
-        let locationRequest = location as LocationRequest;
-
+    async create(locationRequest: LocationRequest){     
+ 
         // on recup la ref des collections de doonées
-        locationRequest.typeRef = this.firestoreService.GetDocumentRef(FirebaseCollectionEnum.country, location.type);
-        locationRequest.countryRef = this.firestoreService.GetDocumentRef(FirebaseCollectionEnum.country, location.country);
+        locationRequest.typeRef = this.firestoreService.GetDocumentRef(FirebaseCollectionEnum.country, locationRequest.typeID);
+        locationRequest.countryRef = this.firestoreService.GetDocumentRef(FirebaseCollectionEnum.country, locationRequest.country);
 
         return this.firestoreService.createDocument(FirebaseCollectionEnum.locations, locationRequest);
     }

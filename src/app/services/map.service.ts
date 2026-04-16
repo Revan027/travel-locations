@@ -5,12 +5,17 @@ import { Position } from '../models/Position';
 import { Router } from '@angular/router';
 import { LocationService } from './location.service';
 import { Location } from '../models/Location';
+import { effect } from '@angular/core';
 
 @Injectable({
     providedIn: 'root',
 })
 export class MapService {
-    constructor(private router: Router, private locationService: LocationService) {}
+    constructor(private router: Router, private locationService: LocationService) {
+        effect(() => {
+            console.log(this.locationService.locations()); // appelé à chaque mise à jour du signal appéllé dedans
+        });
+    }
 
     private map!: L.Map;
     private userMarker?: L.Marker<any>;
@@ -133,7 +138,7 @@ export class MapService {
 
     createLocationMarker(location: Location): L.Marker{
         const locationIcon = L.divIcon({
-            html: '<ion-icon name="location"></ion-icon>'+ location.latitude + "-"+ location.longitude,
+            html: `<span class="material-icons">${location.typeIcon}</span>`,
             iconAnchor: [16, 32],
             popupAnchor: [0, -32],
             className: 'custom-marker'
