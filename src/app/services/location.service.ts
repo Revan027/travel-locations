@@ -17,7 +17,7 @@ export class LocationService {
 
     async create(locationRequest: LocationRequest){     
  
-        // on recup la ref des collections de doonées
+        // on recup la ref des collections de données
         locationRequest.typeRef = this.firestoreService.GetDocumentRef(FirebaseCollectionEnum.country, locationRequest.typeID);
         locationRequest.countryRef = this.firestoreService.GetDocumentRef(FirebaseCollectionEnum.country, locationRequest.country);
 
@@ -29,7 +29,6 @@ export class LocationService {
     }
 
     async getDatas(){
-        // on récupère les types de lieux et les pays une fois
         this.locationTypes.set(await this.firestoreService.getDocuments<LocationType[]>(FirebaseCollectionEnum.locationTypes));
         this.countries.set(await this.firestoreService.getDocuments<Country[]>(FirebaseCollectionEnum.country));
    }

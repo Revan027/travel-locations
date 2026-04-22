@@ -137,24 +137,27 @@ ion-fab-button.fab-button-disabled{
 #map {
   height: 100%;
   width: 100%;
-}
 
-.custom-marker {
-  background: none;
-  font-size: 25px;
+  .custom-marker {
+    background: none;
+    font-size: 25px;
 
-  &.new-location{
-    color: var(--app-navy);
-    font-size: 35px;
+    &.new-location{
+      color: var(--app-navy);
+      font-size: 35px;
+    }
+
+    &.location{
+      color: var(--app-amber);
+      font-size: 35px;
+    }
   }
 
-   &.location{
-    color: var(--app-amber);
-    font-size: 35px;
-  }
- 
-  ion-icon {
-    color: var(  --app-amber-deep);
+  .leaflet-tooltip {
+    background-color: transparent!important;
+    border: none!important;
+    font-size: var(--ion-font-size-lg)!important;
+    box-shadow: none!important;
   }
 }
 

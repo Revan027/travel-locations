@@ -17,11 +17,14 @@ export class MapService {
         });
     }
 
+    private degreeTolerance: number = 2;
     private map!: L.Map;
     private userMarker?: L.Marker<any>;
     private newLocationMarker?: L.Marker<any>;
     private locations: Location[] = [];
     private clusters: any[] = [];
+
+    private clustersLayer: L.LayerGroup<any>[] = [];
 
     position = signal<Position>(new Position);
 
@@ -32,41 +35,59 @@ export class MapService {
 
         this.initZoom();
 
-        //init des moveend
-
-        // init des lieux. on charge les donnée filtré
         this.locations =  this.locationService.locations();
- console.log(this.locations);
-        this.locations.map((item: Location)=> {
+
+       /* this.locations.map((item: Location)=> {
             let marker = this.createLocationMarker(item);  //console.log(item.latitude, item.longitude);
-            item.latitude = Math.round((item.latitude) * 100) / 100; 
-             item.longitude = Math.round((item.longitude) * 100) / 100; 
            
-        });
-        this.clusters = [];
+        });*/
 
-        this.getCluster();
-        // on parcours les différent marker
+        this.getClusters();
 
-        this.map.on('moveend', () => {
-            const center = this.map.getCenter();
-            const zoom = this.map.getZoom();
-             const bounds = this.map.getBounds();
-                //console.log(bounds, zoom);
+        this.drawClusters();
 
-            // On charge les icones visible
-        });
+        this.initMoveMap();
     }
 
-    private getCluster(){  
-        // on prend la permière entrée et on regarde si on a une concordance. Ensuite on l'injecte dans le cluster
-        let locationCompare = this.locations[0];
-        let maxLat = locationCompare.latitude + 2;
-        let minLat = locationCompare.latitude - 2;
-        let maxLng = locationCompare.longitude + 2;
-        let minLng = locationCompare.longitude - 2;
+    private drawClusters(){
+        // on parcours les clusteurs pour dessiner la zone
+        this.clusters.map((item: [Location])=> {
+           const bounds = L.latLngBounds(item.map(x => [x.latitude, x.longitude])),
+                center = bounds.getCenter(),
+                radius = center.distanceTo(bounds.getNorthEast());
 
-        console.log(locationCompare);
+            // on prépare la zone
+            const circle = L.circle(center, {
+                color: 'var(--app-amber)',
+                fillColor: 'var(--app-amber)',
+                fillOpacity: 0.5,
+                radius: radius < 50000 ? 50000 : radius // en mètre
+            });
+
+            // on prépare le tooltip
+            const tooltip = L.tooltip({permanent: true, direction: "center"})
+                .setLatLng(center)
+                .setContent(item.length.toString())
+                .openOn(this.map);
+
+            // on ajoute le layer au group
+            const layerGroup = L.layerGroup([circle])
+                .addLayer(tooltip)
+                .addTo(this.map)
+
+            this.clustersLayer.push(layerGroup);
+        })
+    }
+    
+    private getClusters(){  
+        // on prend la permière entrée et on regarde si on a une concordance. Ensuite on l'injecte dans le cluster.
+        let locationCompare = this.locations[0],
+            maxLat = locationCompare.latitude + this.degreeTolerance,
+            minLat = locationCompare.latitude - this.degreeTolerance,
+            maxLng = locationCompare.longitude + this.degreeTolerance,
+            minLng = locationCompare.longitude - this.degreeTolerance;
+
+        // on filtre par rapport au lieu recup ceux qui sont près de lui. Avec une tolérance de 2°.
         let result = this.locations.filter((item: Location)=> {
             return (item.latitude <= maxLat && item.latitude >= minLat) && (item.longitude <= maxLng && item.longitude >= minLng);
         });
@@ -78,24 +99,15 @@ export class MapService {
           this.clusters.push([locationCompare])
         }
 
-      console.log(this.clusters);
-
+        // on retire les lieux mis dans le cluster
         this.locations = this.locations.filter((item: Location)=> {
-           return  item.id != locationCompare.id && !result.some(x => x.id == item.id) 
+           return item.id != locationCompare.id && !result.some(x => x.id == item.id) 
         })
- console.log(this.locations);
+
+        // récursif si on a encore des lieux a traiter
         if(this.locations.length > 0){
-            this.getCluster();
-        }
-       
-    }
-
-    private getRound(){
-        
-    }
-
-    private getOffset(){
-        
+            this.getClusters();
+        }  
     }
 
     async initCurrentPosition(){
@@ -111,8 +123,6 @@ export class MapService {
         }
 
         this.createUserMarker();
-
-        this.flyTo(this.position() as Position, 17);
     }
 
     createNewlocationMarker(){
@@ -149,6 +159,10 @@ export class MapService {
         /*this.newLocationMarker.on('click', (e) => {
             this.router.navigateByUrl(`/locations/creation;lat=${e.latlng.lat};lng=${e.latlng.lng};alt=${e.latlng.alt}`)
         });*/
+    }
+
+    flyTo(position: Position, lvlZoom: number){
+        this.map.flyTo([position.latitude, position.longitude], lvlZoom, {animate: true, duration: 1 });
     }
 
     private createUserMarker(){
@@ -195,8 +209,16 @@ export class MapService {
         });
     }
 
-    private flyTo(position: Position, lvlZoom: number){
-        this.map.flyTo([position.latitude, position.longitude], lvlZoom, {animate: true, duration: 1 });
+    private initMoveMap(){      
+        this.map.on('moveend', () => {
+            // En fonction du niveau de zoom, on affiche les clusters ou les lieux
+            const center = this.map.getCenter();
+            const zoom = this.map.getZoom();
+             const bounds = this.map.getBounds();
+                //console.log(bounds, zoom);
+
+            // On charge les icones visible
+        });
     }
 
     private async checkAuthorisation(): Promise<boolean>{

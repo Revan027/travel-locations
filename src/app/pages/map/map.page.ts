@@ -26,7 +26,11 @@ export class MapPage  {
 
   async onRefreshPosition(){
     this.isRefreshing = true;
+
     await this.mapService.initCurrentPosition();
+  
+    await this.mapService.flyTo(this.position() as Position, 17);
+    
     this.isRefreshing = false;
   }
 
