@@ -22,6 +22,7 @@ export class MapPage  {
   async ngAfterViewInit(){
     await this.locationService.getAll()
     await this.mapService.init();
+    await this.mapService.initClusters();
   }
 
   async onRefreshPosition(){
