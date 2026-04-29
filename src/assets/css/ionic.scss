@@ -126,7 +126,6 @@ ion-button {
 ion-fab-button{
  --background: linear-gradient(145deg, var(--app-amber), var(--app-amber-deep));
  --box-shadow: 0 4px 20px var(--app-amber-glow), inset 0 1px 1px rgba(255, 255, 255, 0.25);
-
 }
 
 ion-fab-button.fab-button-disabled{
@@ -138,20 +137,88 @@ ion-fab-button.fab-button-disabled{
 #map {
   height: 100%;
   width: 100%;
-}
 
-.custom-marker {
-  background: none;
-  font-size: 25px;
-
-  &.new-location{
-    color: var(--app-navy);
-    font-size: 35px;
+  .leaflet-tile {
+    border: 0px solid transparent;
   }
-}
 
-.leaflet-marker-shadow{
-  display: none!important;
+  .custom-marker {   
+    &.user{
+      font-size: var(--ion-font-size-2xl)!important;
+      z-index: 9999!important;;
+    }
+
+    .material-icons{
+      background-color: white;
+      border: 1px solid gray;
+      border-radius: 50%;
+      padding: 4px;
+      font-size: var(--ion-font-size-base)!important;
+    }
+
+    &.new-location{
+      color: var(--app-amber-deep);
+      font-size: 35px;
+    }
+  }
+
+  .leaflet-popup-close-button{
+    color: white;
+  }
+    .leaflet-popup-tip{
+      background: linear-gradient(145deg, var(--app-amber), var(--app-amber-deep));
+    }
+
+  .leaflet-popup-content-wrapper{
+    background: linear-gradient(145deg, var(--app-amber), var(--app-amber-deep));
+    color: white;
+
+    .section{
+      font-size: var(--ion-font-size-xs);
+      margin: 5px;
+    }
+
+    .title{
+      text-align: center;
+      font-size: var(--ion-font-size-xl);
+      margin: 5px;
+    }
+
+    .material-icons{
+      vertical-align: text-bottom;
+      font-size: var(--ion-font-size-base)!important;
+      margin-right: 5px;
+    }
+  }
+
+  .leaflet-tooltip {
+    background-color: transparent!important;
+    border: none!important;
+    font-size: var(--ion-font-size-lg)!important;
+    box-shadow: none!important;
+  }
+
+  .leaflet-pane.removed{
+    .leaflet-interactive{ 
+      animation: fadeOut 0.7s ease-in-out;
+      animation-fill-mode: forwards;
+    }
+  }
+
+  .leaflet-interactive{ 
+    animation: fadeIn 0.7s ease-in-out;
+
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  @keyframes fadeOut {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+  }
 }
 
 

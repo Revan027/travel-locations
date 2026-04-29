@@ -1,15 +1,13 @@
 import { Location as ALocation } from '@angular/common';
-import { Component, AfterViewInit, ElementRef, inject, DestroyRef, WritableSignal } from '@angular/core';
+import { Component, AfterViewInit, inject, DestroyRef, WritableSignal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GestureController } from '@ionic/angular';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Location } from 'src/app/models/Location';
+import { Location, LocationRequest } from 'src/app/models/Location';
 import { LocationType } from 'src/app/models/LocationType';
 import { Country } from 'src/app/models/Country';
 import { LocationService } from 'src/app/services/location.service';
-import { Firestore } from '@angular/fire/firestore';
-import { FirestoreService } from 'src/app/services/firestore.services.common/firestore.service';
 import moment from 'moment';
 import { ToastService } from 'src/app/services/services.common/toast.service';
 import { MessageEnum } from 'src/app/services/services.common/enum/MessageEnum';
@@ -90,17 +88,21 @@ export class EditLocationPage implements AfterViewInit {
       altitude: [this.location.altitude, Validators.required],
       latitude: [this.location.latitude, Validators.required],
       longitude: [this.location.longitude , Validators.required],
-      type: [this.location?.type, Validators.required],
+      typeID: [this.location?.typeID, Validators.required],
       country: [this.location?.country, Validators.required],
       date: [this.location.date ?? moment().format('YYYY-MM-DD'), Validators.required],
     });
   }
 
-  async onSubmit(location: Location) {
-    const result = await this.locationService.create(location);
+  async onSubmit(locationRequest: LocationRequest) {
+    const result = await this.locationService.create(locationRequest);
+
+    locationRequest.typeIcon = this.locationsType().find(item => item.id == locationRequest.typeID)?.icon ?? "";
 
     if (result){
       this.toastService.get(MessageEnum.AppSuccess, StatusEnum.Success);
+
+      this.locationService.getAll();
 
       this.router.navigate(['/map']);
     }  
