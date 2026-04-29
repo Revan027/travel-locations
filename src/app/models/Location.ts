@@ -4,7 +4,7 @@ import { LocationType } from "./LocationType";
 export class Location {
   constructor() {}
 
-  id: number = 0;
+  id: string = "";
   name!: string;
   altitude!: number; 
   latitude!: number;

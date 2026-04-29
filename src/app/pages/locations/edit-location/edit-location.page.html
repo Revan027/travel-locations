@@ -17,8 +17,6 @@
 <ion-content [fullscreen]="true" class="ion-padding-top">
   @if(loaded){
     <form [formGroup]="formGroup" novalidate>
-     
-
       <ion-grid>
         <ion-row>
           <ion-col size="12">
@@ -147,9 +145,9 @@
       </ion-grid>
 
 
-      <div class="ion-display-flex ion-justify-content-end">
-        @if(location.id > 0){
-          <ion-button color="danger" [strong]="true">Supprimer</ion-button>
+      <div class="ion-display-flex ion-justify-content-between">
+        @if(location.id != ""){
+          <ion-button color="danger" [strong]="true" (click)="onDelete()">Supprimer</ion-button>
         }
         <ion-button [strong]="true" [disabled]="formGroup.invalid" (click)="onSubmit(formGroup.value)">Enregistrer</ion-button>
       </div>

@@ -13,12 +13,9 @@ import { Cluster } from '../models/Cluster';
     providedIn: 'root',
 })
 export class MapService {
-    constructor(private router: Router, private locationService: LocationService) {
-        effect(() => {
-            //console.log(this.locationService.locations()); // appelé à chaque mise à jour du signal appéllé dedans
-        });
-    }
 
+    position = signal<Position>(new Position);
+    
     private degreeTolerance: number = 2;
     private map!: L.Map;
 
@@ -26,33 +23,58 @@ export class MapService {
     private newLocationMarker?: L.Marker<any>;
 
     private locations: Location[] = [];
-
     private clusters: Cluster[] = [];
+
     private clustersLayer: L.LayerGroup<any>[] = [];
 
-    position = signal<Position>(new Position);
+    constructor(private router: Router, private locationService: LocationService) {
+        effect(async () => { 
+            
+            // appelé à chaque mise à jour du signal de locations
+            if (this.locationService.locations().length > 0){   
+                this.clearAllLocationMarkers(this.clusters);
+
+                this.removeClustersLayer();
+
+                this.resetClusters();
+
+                this.locations = this.locationService.locations();
+
+                this.buildClusters();
+
+                this.updateMapDisplay();
+            }
+        });
+    }
 
     async init(){
         this.createMap();
 
         await this.initCurrentPosition();
 
-        this.initZoom(); 
+        this.initDblClickHandler(); 
 
         this.initPopup();
+
+        this.initMoveEndListener();
     }
 
-    initClusters(){
-        this.locations = this.locationService.locations();
+    async initCurrentPosition(){
+        await this.getCurrentPosition();
 
-        this.getClusters();
+        if (this.position() == null){
+            return;
+        }
 
-        this.drawClusters();
+        // On supprime l'ancienne position
+        if (this.userMarker != undefined){
+            this.userMarker.remove();
+        }
 
-        this.initMoveMap();
+        this.createUserMarker();
     }
 
-    private initZoom(){
+    private initDblClickHandler(){
         this.map.on('dblclick', (e: L.LeafletMouseEvent) => {
             const position: Position = {latitude: e.latlng.lat, longitude: e.latlng.lng};
 
@@ -67,8 +89,8 @@ export class MapService {
         this.map.on('popupopen', (e) => {
             const id = e.popup.getElement()?.querySelector("span[data-id]")?.getAttribute("data-id");
 
-            callback = function (event: any){           
-                me.router.navigateByUrl(`/locations/${id}`)
+            callback = function (event: any){        
+                me.router.navigateByUrl(`/locations/${id}`);
             }
             e.popup.getElement()?.addEventListener("click", callback);      
         });
@@ -78,21 +100,25 @@ export class MapService {
         });
     }
 
-    private initMoveMap(){      
+    private initMoveEndListener(){ 
         this.map.on('moveend', () => {
-            const zoom = this.map.getZoom();
-
-            if (zoom >= 8){
-                this.removeClusters();
-
-                this.getLocations(this.map.getBounds());
-            }
-            else if(this.clustersLayer.length == 0){
-                this.removeClustersLocation(this.clusters);
-
-                this.drawClusters();
-            }
+            this.updateMapDisplay();
         });
+    }
+
+    private updateMapDisplay(){
+        const zoom = this.map.getZoom();
+
+        if (zoom >= 8){
+            this.removeClustersLayer();
+
+            this.drawLocationsInBounds(this.map.getBounds());
+        }
+        else if(this.clustersLayer.length == 0){
+            this.clearAllLocationMarkers(this.clusters);
+
+            this.drawClusters();
+        }
     }
 
     private drawClusters(){
@@ -129,13 +155,17 @@ export class MapService {
         this.map.flyTo([position.latitude, position.longitude], lvlZoom, {animate: true, duration: 1 });
     }
 
-     private removeClustersLocation(clusters: Cluster[]){
+    private resetClusters(){
+       this.clusters = [];
+    }
+
+    private clearAllLocationMarkers(clusters: Cluster[]){
         clusters.forEach((cluster: Cluster) => {
-           this.removeClusterLocations(cluster);
+           this.clearClusterMarkers(cluster);
         })
     }
 
-    private removeClusterLocations(cluster: Cluster){
+    private clearClusterMarkers(cluster: Cluster){
         cluster.locationsMarker.forEach((marker: L.Marker<any>) => {
             marker.remove();
         })
@@ -143,7 +173,7 @@ export class MapService {
         cluster.locationsMarker = [];
     }
 
-    private removeClusters(){
+    private removeClustersLayer(){
         this.clustersLayer.map((x) => {
             x.getLayers().map(y => {
                 L.DomUtil.get(y.getPane() ?? '')?.classList.add("removed")
@@ -162,23 +192,26 @@ export class MapService {
         this.clustersLayer = [];
     }
 
-    private getLocations(bound: L.LatLngBounds){
+    private drawLocationsInBounds(bound: L.LatLngBounds){
         this.clusters.map((cluster: Cluster)=> 
         { 
             // Si la frontière visible est compris
             if (bound.intersects(cluster.bounds))
             {
                 cluster.locations.forEach((location: Location) => {
-                    this.createLocationMarker(location, cluster);  
+                    // on ajoute un marker s'il est pas déja présent
+                    if (!cluster.locationsMarker.some((item: L.Marker<any>) => item.getLatLng().lat == location.latitude && item.getLatLng().lng == location.longitude)){
+                        this.createLocationMarker(location, cluster); 
+                    }                  
                 })
             }
             else{
-               this.removeClusterLocations(cluster);
+               this.clearClusterMarkers(cluster);
             }
         });
     }
     
-    private getClusters(){  
+    private buildClusters(){  
         // on prend la permière entrée et on regarde si on a une concordance. Ensuite on l'injecte dans le cluster.
         let locationCompare = this.locations[0],
             maxLat = locationCompare.latitude + this.degreeTolerance,
@@ -209,11 +242,11 @@ export class MapService {
 
         // récursif si on a encore des lieux a traiter
         if(this.locations.length > 0){
-            this.getClusters();
+            this.buildClusters();
         }  
     }
 
-    private async getCurentPosition(): Promise<boolean>{
+    private async getCurrentPosition(): Promise<boolean>{
         let authorisation = await this.checkAuthorisation();
 
         if (!authorisation){
@@ -227,7 +260,7 @@ export class MapService {
         return true;
     }
 
-    createNewlocationMarker(){
+    createNewLocationMarker(){
         if (this.newLocationMarker != undefined){
             this.newLocationMarker.remove();
         }
@@ -244,7 +277,7 @@ export class MapService {
         this.newLocationMarker = L.marker([latLng.lat, latLng.lng], {draggable: true, icon: newLocationIcon}).addTo(this.map);
 
         this.newLocationMarker.on('click', (e) => {
-            this.router.navigateByUrl(`/locations/creation;lat=${e.latlng.lat};lng=${e.latlng.lng};alt=${e.latlng.alt}`)
+            this.router.navigateByUrl(`/locations/create;lat=${e.latlng.lat};lng=${e.latlng.lng};alt=${e.latlng.alt}`)
         });
     }
 
@@ -266,7 +299,7 @@ export class MapService {
                 <p class="section"><span class="material-icons">terrain</span>${location.altitude}</p> 
             </span>`, { maxWidth: 220 })
         .addTo(this.map);
-
+  
         cluster.locationsMarker.push(marker);
     }
 
@@ -296,21 +329,6 @@ export class MapService {
 
         // On resize direct pour éviter un bug de rendu de la carte
         setTimeout(() => this.map.invalidateSize(), 0);
-    }
-
-    async initCurrentPosition(){
-        await this.getCurentPosition();
-
-        if (this.position() == null){
-            return;
-        }
-
-        // On supprime l'ancienne position
-        if (this.userMarker != undefined){
-            this.userMarker.remove();
-        }
-
-        this.createUserMarker();
     }
 
     private async checkAuthorisation(): Promise<boolean>{

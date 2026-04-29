@@ -12,6 +12,7 @@ import moment from 'moment';
 import { ToastService } from 'src/app/services/services.common/toast.service';
 import { MessageEnum } from 'src/app/services/services.common/enum/MessageEnum';
 import { StatusEnum } from 'src/app/services/services.common/enum/status.enum';
+import { ConfirmationService } from 'src/app/services/services.common/confirmation.service';
 
 @Component({
   selector: 'app-edit-location',
@@ -22,15 +23,17 @@ import { StatusEnum } from 'src/app/services/services.common/enum/status.enum';
 export class EditLocationPage implements AfterViewInit {
   private destroyRef = inject(DestroyRef);
 
+  loaded: boolean = false;
   formGroup!: FormGroup;
   location: Location = new Location();
+
   locationsType: WritableSignal<LocationType[]> = this.locationService.locationTypes;
   countries: WritableSignal<Country[]> = this.locationService.countries;
-  loaded: boolean = false;
-
+  
   constructor(
     private aLocation: ALocation,
     private route: ActivatedRoute,
+    private confirmationService: ConfirmationService,
     private gestureCtrl: GestureController,
     private formBuilder: FormBuilder,
     private router: Router,
@@ -50,10 +53,10 @@ export class EditLocationPage implements AfterViewInit {
     this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(async (params) => {
       this.loaded = false;
 
-      const id = Number(params.get('id'));
+      const id = params.get('id');
 
       if (id) {
-        // on charge le lieu
+        this.location = this.locationService.locations().find((location) => location.id == id) || new Location();
       } 
       else {
         this.location.latitude = Number(params.get('lat'));
@@ -86,25 +89,50 @@ export class EditLocationPage implements AfterViewInit {
     this.formGroup = this.formBuilder.group({
       name: [this.location.name, Validators.compose([Validators.required])],
       altitude: [this.location.altitude, Validators.required],
-      latitude: [this.location.latitude, Validators.required],
-      longitude: [this.location.longitude , Validators.required],
-      typeID: [this.location?.typeID, Validators.required],
-      country: [this.location?.country, Validators.required],
+      latitude: [{ value: this.location.latitude, disabled: true }, Validators.required],
+      longitude: [{ value: this.location.longitude, disabled: true }, Validators.required],
+      typeID: [this.location.typeID, Validators.required],
+      country: [this.location.country, Validators.required],
       date: [this.location.date ?? moment().format('YYYY-MM-DD'), Validators.required],
     });
   }
 
   async onSubmit(locationRequest: LocationRequest) {
-    const result = await this.locationService.create(locationRequest);
+    let isSuccess = true;
 
     locationRequest.typeIcon = this.locationsType().find(item => item.id == locationRequest.typeID)?.icon ?? "";
 
-    if (result){
+    if (this.location.id){
+      await this.locationService.update(this.location.id, locationRequest).catch(() => isSuccess = false);
+    }
+    else{
+      isSuccess = await this.locationService.create(locationRequest).then(() => isSuccess = true).catch(() => isSuccess = false);
+    }
+
+    if (isSuccess){
       this.toastService.get(MessageEnum.AppSuccess, StatusEnum.Success);
 
       this.locationService.getAll();
 
       this.router.navigate(['/map']);
     }  
+  }
+
+  async onDelete() {
+    var me = this;
+
+    let callback = async function(){
+      let isSuccess = true;
+
+      await me.locationService.delete(me.location.id).catch(() => isSuccess = false),
+
+      await me.toastService.get(isSuccess ? MessageEnum.AppSuccess : MessageEnum.AppError, isSuccess ? StatusEnum.Success : StatusEnum.Danger);
+      
+      me.router.navigate(['/map']);
+    }
+
+    await this.confirmationService.getModalDelete(callback);
+    
+    this.createForm();    
   }
 }
