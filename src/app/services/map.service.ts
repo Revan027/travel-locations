@@ -13,12 +13,9 @@ import { Cluster } from '../models/Cluster';
     providedIn: 'root',
 })
 export class MapService {
-    constructor(private router: Router, private locationService: LocationService) {
-        effect(() => {
-            //console.log(this.locationService.locations()); // appelé à chaque mise à jour du signal appéllé dedans
-        });
-    }
 
+    position = signal<Position>(new Position);
+    
     private degreeTolerance: number = 2;
     private map!: L.Map;
 
@@ -26,11 +23,29 @@ export class MapService {
     private newLocationMarker?: L.Marker<any>;
 
     private locations: Location[] = [];
-
     private clusters: Cluster[] = [];
+
     private clustersLayer: L.LayerGroup<any>[] = [];
 
-    position = signal<Position>(new Position);
+    constructor(private router: Router, private locationService: LocationService) {
+        effect(async () => { 
+            
+            // appelé à chaque mise à jour du signal de locations
+            if (this.locationService.locations().length > 0){   
+                this.removeClustersLocation(this.clusters);
+
+                this.removeClustersLayer();
+
+                this.removeClusters();
+
+                this.locations = this.locationService.locations();
+
+                this.getClusters();
+
+                this.updateMapDisplay();
+            }
+        });
+    }
 
     async init(){
         this.createMap();
@@ -40,16 +55,23 @@ export class MapService {
         this.initZoom(); 
 
         this.initPopup();
-    }
-
-    initClusters(){
-        this.locations = this.locationService.locations();
-
-        this.getClusters();
-
-        this.drawClusters();
 
         this.initMoveMap();
+    }
+
+    async initCurrentPosition(){
+        await this.getCurentPosition();
+
+        if (this.position() == null){
+            return;
+        }
+
+        // On supprime l'ancienne position
+        if (this.userMarker != undefined){
+            this.userMarker.remove();
+        }
+
+        this.createUserMarker();
     }
 
     private initZoom(){
@@ -67,8 +89,9 @@ export class MapService {
         this.map.on('popupopen', (e) => {
             const id = e.popup.getElement()?.querySelector("span[data-id]")?.getAttribute("data-id");
 
-            callback = function (event: any){           
-                me.router.navigateByUrl(`/locations/${id}`)
+            callback = function (event: any){        
+                 console.log(me.clusters)   
+                me.router.navigateByUrl(`/locations/${id}`);
             }
             e.popup.getElement()?.addEventListener("click", callback);      
         });
@@ -78,21 +101,25 @@ export class MapService {
         });
     }
 
-    private initMoveMap(){      
+    private initMoveMap(){ 
         this.map.on('moveend', () => {
-            const zoom = this.map.getZoom();
-
-            if (zoom >= 8){
-                this.removeClusters();
-
-                this.getLocations(this.map.getBounds());
-            }
-            else if(this.clustersLayer.length == 0){
-                this.removeClustersLocation(this.clusters);
-
-                this.drawClusters();
-            }
+            this.updateMapDisplay();
         });
+    }
+
+    private updateMapDisplay(){
+        const zoom = this.map.getZoom();
+
+        if (zoom >= 8){
+            this.removeClustersLayer();
+
+            this.getLocations(this.map.getBounds());
+        }
+        else if(this.clustersLayer.length == 0){
+            this.removeClustersLocation(this.clusters);
+
+            this.drawClusters();
+        }
     }
 
     private drawClusters(){
@@ -129,7 +156,11 @@ export class MapService {
         this.map.flyTo([position.latitude, position.longitude], lvlZoom, {animate: true, duration: 1 });
     }
 
-     private removeClustersLocation(clusters: Cluster[]){
+    private removeClusters(){
+       this.clusters = [];
+    }
+
+    private removeClustersLocation(clusters: Cluster[]){
         clusters.forEach((cluster: Cluster) => {
            this.removeClusterLocations(cluster);
         })
@@ -143,7 +174,7 @@ export class MapService {
         cluster.locationsMarker = [];
     }
 
-    private removeClusters(){
+    private removeClustersLayer(){
         this.clustersLayer.map((x) => {
             x.getLayers().map(y => {
                 L.DomUtil.get(y.getPane() ?? '')?.classList.add("removed")
@@ -169,7 +200,10 @@ export class MapService {
             if (bound.intersects(cluster.bounds))
             {
                 cluster.locations.forEach((location: Location) => {
-                    this.createLocationMarker(location, cluster);  
+                    // on ajoute un marker s'il est pas déja présent
+                    if (!cluster.locationsMarker.some((item: L.Marker<any>) => item.getLatLng().lat == location.latitude && item.getLatLng().lng == location.longitude)){
+                        this.createLocationMarker(location, cluster); 
+                    }                  
                 })
             }
             else{
@@ -244,7 +278,7 @@ export class MapService {
         this.newLocationMarker = L.marker([latLng.lat, latLng.lng], {draggable: true, icon: newLocationIcon}).addTo(this.map);
 
         this.newLocationMarker.on('click', (e) => {
-            this.router.navigateByUrl(`/locations/creation;lat=${e.latlng.lat};lng=${e.latlng.lng};alt=${e.latlng.alt}`)
+            this.router.navigateByUrl(`/locations/create;lat=${e.latlng.lat};lng=${e.latlng.lng};alt=${e.latlng.alt}`)
         });
     }
 
@@ -266,7 +300,7 @@ export class MapService {
                 <p class="section"><span class="material-icons">terrain</span>${location.altitude}</p> 
             </span>`, { maxWidth: 220 })
         .addTo(this.map);
-
+  
         cluster.locationsMarker.push(marker);
     }
 
@@ -296,21 +330,6 @@ export class MapService {
 
         // On resize direct pour éviter un bug de rendu de la carte
         setTimeout(() => this.map.invalidateSize(), 0);
-    }
-
-    async initCurrentPosition(){
-        await this.getCurentPosition();
-
-        if (this.position() == null){
-            return;
-        }
-
-        // On supprime l'ancienne position
-        if (this.userMarker != undefined){
-            this.userMarker.remove();
-        }
-
-        this.createUserMarker();
     }
 
     private async checkAuthorisation(): Promise<boolean>{

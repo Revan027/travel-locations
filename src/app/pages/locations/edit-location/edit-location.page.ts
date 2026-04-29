@@ -12,6 +12,7 @@ import moment from 'moment';
 import { ToastService } from 'src/app/services/services.common/toast.service';
 import { MessageEnum } from 'src/app/services/services.common/enum/MessageEnum';
 import { StatusEnum } from 'src/app/services/services.common/enum/status.enum';
+import { ConfirmationService } from 'src/app/services/services.common/confirmation.service';
 
 @Component({
   selector: 'app-edit-location',
@@ -22,15 +23,17 @@ import { StatusEnum } from 'src/app/services/services.common/enum/status.enum';
 export class EditLocationPage implements AfterViewInit {
   private destroyRef = inject(DestroyRef);
 
+  loaded: boolean = false;
   formGroup!: FormGroup;
   location: Location = new Location();
+
   locationsType: WritableSignal<LocationType[]> = this.locationService.locationTypes;
   countries: WritableSignal<Country[]> = this.locationService.countries;
-  loaded: boolean = false;
-
+  
   constructor(
     private aLocation: ALocation,
     private route: ActivatedRoute,
+    private confirmationService: ConfirmationService,
     private gestureCtrl: GestureController,
     private formBuilder: FormBuilder,
     private router: Router,
@@ -50,10 +53,10 @@ export class EditLocationPage implements AfterViewInit {
     this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(async (params) => {
       this.loaded = false;
 
-      const id = Number(params.get('id'));
+      const id = params.get('id');
 
       if (id) {
-        // on charge le lieu
+        this.location = this.locationService.locations().find((location) => location.id == id) || new Location();
       } 
       else {
         this.location.latitude = Number(params.get('lat'));
@@ -95,9 +98,9 @@ export class EditLocationPage implements AfterViewInit {
   }
 
   async onSubmit(locationRequest: LocationRequest) {
-    const result = await this.locationService.create(locationRequest);
+   locationRequest.typeIcon = this.locationsType().find(item => item.id == locationRequest.typeID)?.icon ?? "";
 
-    locationRequest.typeIcon = this.locationsType().find(item => item.id == locationRequest.typeID)?.icon ?? "";
+    const result = await this.locationService.create(locationRequest);
 
     if (result){
       this.toastService.get(MessageEnum.AppSuccess, StatusEnum.Success);
@@ -106,5 +109,24 @@ export class EditLocationPage implements AfterViewInit {
 
       this.router.navigate(['/map']);
     }  
+  }
+
+  async onDelete() {
+    var me = this;
+
+    let callback = async function(){
+      let isSuccess = true;
+
+      const ref = me.locationService.getRef(me.location.id)
+      await me.locationService.delete(ref).catch(() => isSuccess = false),
+
+      await me.toastService.get(isSuccess ? MessageEnum.AppSuccess : MessageEnum.AppError, isSuccess ? StatusEnum.Success : StatusEnum.Danger);
+      
+      me.router.navigate(['/map']);
+    }
+
+    await this.confirmationService.getModalDelete(callback);
+    
+    this.createForm();    
   }
 }
