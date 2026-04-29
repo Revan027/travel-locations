@@ -29,14 +29,14 @@ export class MapService {
 
     constructor(private router: Router, private locationService: LocationService) {
         effect(async () => { 
+            this.clearAllLocationMarkers(this.clusters);
+
+            this.removeClustersLayer();
+
+            this.resetClusters();
             
             // appelé à chaque mise à jour du signal de locations
-            if (this.locationService.locations().length > 0){   
-                this.clearAllLocationMarkers(this.clusters);
-
-                this.removeClustersLayer();
-
-                this.resetClusters();
+            if (this.locationService.locations().length > 0){ 
 
                 this.locations = this.locationService.locations();
 
@@ -130,7 +130,7 @@ export class MapService {
 
             // on prépare la zone
             const circle = L.circle(center, {
-                color: 'var(--app-amber)',
+                color: 'transparent',
                 fillColor: 'var(--app-amber)',
                 fillOpacity: 0.5,
                 radius: radius < 50000 ? 50000 : radius // en mètre

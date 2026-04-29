@@ -81,12 +81,8 @@ ion-input,
 ion-select,
 ion-searchbar {
   --background: var(--app-input-bg) !important;
-  --color: var(--app-text-color);
+  --color: var(--app-text-dark);
   --placeholder-color: var(--app-text-muted);
-}
-
-ion-input .label-text {
-  line-height: 1.2!important;
 }
 
 ion-searchbar{
@@ -97,7 +93,12 @@ ion-select::part(label) {
   color: var(--app-label-color);
 }
 
+ion-select::part(text) {
+  color: var(--app-text-dark);
+}
+
 ion-input .label-text {
+  line-height: 1.2!important;
   color: var(--app-label-color);
 }
 
@@ -110,6 +111,25 @@ ion-datetime-button{
   background: var(--app-input-bg) !important;
 }
 
+.custom-datetime{
+  position: relative;
+
+  .custom-datetime-label{
+    color: var(--app-label-color);
+    position: absolute;
+    font-size: var(--ion-font-size-xs);
+    left: 5%;
+    height: 100%;
+    border-top: 1px solid white;
+
+    ion-label{
+      transform: translateY(-50px);
+      position: relative;
+      top: -17%;
+      z-index: 100;
+    }
+  }
+}
 
 /* BUTTONS */
 ion-button ion-label {

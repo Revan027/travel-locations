@@ -26,3 +26,48 @@ ion-fab{
   position: absolute;
   transform: translateY(140px);
 }
+
+.btn-filters{
+  position: absolute;
+  transform: translateY(200px);
+}
+
+ion-modal.modal-filters ion-content{
+  --color: white;
+  --background: var(--app-footer-bg);
+}
+
+ion-input,
+ion-select,
+ion-searchbar {
+  --background: var(--app-input-bg) !important;
+  --color: black;
+  --placeholder-color: var(--app-text-muted);
+}
+
+ion-select .label-text,
+ion-select::part(label) {
+  color: black !important;;
+}
+
+.custom-datetime{
+  position: relative;
+
+  .custom-datetime-label{
+    color: black;
+    position: absolute;
+    left: 0;
+    height: 100%;
+    bottom: 0;
+    font-size: medium;
+    color: black;
+    display: flex;
+    align-items: center;
+    border: none;
+
+     ion-label{
+      transform: none;
+        top:auto;
+    }
+  }
+}

@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MapPage } from './map.page';
 import { MapPageRoutingModule } from './map-routing.module';
 
@@ -10,6 +10,7 @@ import { MapPageRoutingModule } from './map-routing.module';
     CommonModule,
     FormsModule,
     IonicModule,
+    ReactiveFormsModule,
     MapPageRoutingModule,
   ],
   declarations: [MapPage],

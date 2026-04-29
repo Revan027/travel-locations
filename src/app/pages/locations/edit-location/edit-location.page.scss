@@ -9,26 +9,6 @@ ion-content {
   
   ion-col {
     padding-top: 10px;
-  --ion-padding-top: 10px;
-  }
-}
-
-.custom-datetime{
-  position: relative;
-
-  .custom-datetime-label{
-    color: var(--app-label-color);
-    position: absolute;
-    font-size: var(--ion-font-size-xs);
-    left: 5%;
-    height: 100%;
-    border-top: 1px solid white;
-
-    ion-label{
-      transform: translateY(-50px);
-      position: relative;
-      top: -17%;
-      z-index: 100;
-    }
+    --ion-padding-top: 10px;
   }
 }
