@@ -35,6 +35,6 @@ export class MapPage  {
   }
 
   onActiveCreationLocation(){
-    this.mapService.createNewlocationMarker();
+    this.mapService.createNewLocationMarker();
   }
 }

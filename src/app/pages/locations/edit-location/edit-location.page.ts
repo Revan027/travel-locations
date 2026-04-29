@@ -89,20 +89,27 @@ export class EditLocationPage implements AfterViewInit {
     this.formGroup = this.formBuilder.group({
       name: [this.location.name, Validators.compose([Validators.required])],
       altitude: [this.location.altitude, Validators.required],
-      latitude: [this.location.latitude, Validators.required],
-      longitude: [this.location.longitude , Validators.required],
-      typeID: [this.location?.typeID, Validators.required],
-      country: [this.location?.country, Validators.required],
+      latitude: [{ value: this.location.latitude, disabled: true }, Validators.required],
+      longitude: [{ value: this.location.longitude, disabled: true }, Validators.required],
+      typeID: [this.location.typeID, Validators.required],
+      country: [this.location.country, Validators.required],
       date: [this.location.date ?? moment().format('YYYY-MM-DD'), Validators.required],
     });
   }
 
   async onSubmit(locationRequest: LocationRequest) {
-   locationRequest.typeIcon = this.locationsType().find(item => item.id == locationRequest.typeID)?.icon ?? "";
+    let isSuccess = true;
 
-    const result = await this.locationService.create(locationRequest);
+    locationRequest.typeIcon = this.locationsType().find(item => item.id == locationRequest.typeID)?.icon ?? "";
 
-    if (result){
+    if (this.location.id){
+      await this.locationService.update(this.location.id, locationRequest).catch(() => isSuccess = false);
+    }
+    else{
+      isSuccess = await this.locationService.create(locationRequest).then(() => isSuccess = true).catch(() => isSuccess = false);
+    }
+
+    if (isSuccess){
       this.toastService.get(MessageEnum.AppSuccess, StatusEnum.Success);
 
       this.locationService.getAll();
@@ -117,8 +124,7 @@ export class EditLocationPage implements AfterViewInit {
     let callback = async function(){
       let isSuccess = true;
 
-      const ref = me.locationService.getRef(me.location.id)
-      await me.locationService.delete(ref).catch(() => isSuccess = false),
+      await me.locationService.delete(me.location.id).catch(() => isSuccess = false),
 
       await me.toastService.get(isSuccess ? MessageEnum.AppSuccess : MessageEnum.AppError, isSuccess ? StatusEnum.Success : StatusEnum.Danger);
       

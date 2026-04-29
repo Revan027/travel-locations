@@ -32,15 +32,15 @@ export class MapService {
             
             // appelé à chaque mise à jour du signal de locations
             if (this.locationService.locations().length > 0){   
-                this.removeClustersLocation(this.clusters);
+                this.clearAllLocationMarkers(this.clusters);
 
                 this.removeClustersLayer();
 
-                this.removeClusters();
+                this.resetClusters();
 
                 this.locations = this.locationService.locations();
 
-                this.getClusters();
+                this.buildClusters();
 
                 this.updateMapDisplay();
             }
@@ -52,15 +52,15 @@ export class MapService {
 
         await this.initCurrentPosition();
 
-        this.initZoom(); 
+        this.initDblClickHandler(); 
 
         this.initPopup();
 
-        this.initMoveMap();
+        this.initMoveEndListener();
     }
 
     async initCurrentPosition(){
-        await this.getCurentPosition();
+        await this.getCurrentPosition();
 
         if (this.position() == null){
             return;
@@ -74,7 +74,7 @@ export class MapService {
         this.createUserMarker();
     }
 
-    private initZoom(){
+    private initDblClickHandler(){
         this.map.on('dblclick', (e: L.LeafletMouseEvent) => {
             const position: Position = {latitude: e.latlng.lat, longitude: e.latlng.lng};
 
@@ -90,7 +90,6 @@ export class MapService {
             const id = e.popup.getElement()?.querySelector("span[data-id]")?.getAttribute("data-id");
 
             callback = function (event: any){        
-                 console.log(me.clusters)   
                 me.router.navigateByUrl(`/locations/${id}`);
             }
             e.popup.getElement()?.addEventListener("click", callback);      
@@ -101,7 +100,7 @@ export class MapService {
         });
     }
 
-    private initMoveMap(){ 
+    private initMoveEndListener(){ 
         this.map.on('moveend', () => {
             this.updateMapDisplay();
         });
@@ -113,10 +112,10 @@ export class MapService {
         if (zoom >= 8){
             this.removeClustersLayer();
 
-            this.getLocations(this.map.getBounds());
+            this.drawLocationsInBounds(this.map.getBounds());
         }
         else if(this.clustersLayer.length == 0){
-            this.removeClustersLocation(this.clusters);
+            this.clearAllLocationMarkers(this.clusters);
 
             this.drawClusters();
         }
@@ -156,17 +155,17 @@ export class MapService {
         this.map.flyTo([position.latitude, position.longitude], lvlZoom, {animate: true, duration: 1 });
     }
 
-    private removeClusters(){
+    private resetClusters(){
        this.clusters = [];
     }
 
-    private removeClustersLocation(clusters: Cluster[]){
+    private clearAllLocationMarkers(clusters: Cluster[]){
         clusters.forEach((cluster: Cluster) => {
-           this.removeClusterLocations(cluster);
+           this.clearClusterMarkers(cluster);
         })
     }
 
-    private removeClusterLocations(cluster: Cluster){
+    private clearClusterMarkers(cluster: Cluster){
         cluster.locationsMarker.forEach((marker: L.Marker<any>) => {
             marker.remove();
         })
@@ -193,7 +192,7 @@ export class MapService {
         this.clustersLayer = [];
     }
 
-    private getLocations(bound: L.LatLngBounds){
+    private drawLocationsInBounds(bound: L.LatLngBounds){
         this.clusters.map((cluster: Cluster)=> 
         { 
             // Si la frontière visible est compris
@@ -207,12 +206,12 @@ export class MapService {
                 })
             }
             else{
-               this.removeClusterLocations(cluster);
+               this.clearClusterMarkers(cluster);
             }
         });
     }
     
-    private getClusters(){  
+    private buildClusters(){  
         // on prend la permière entrée et on regarde si on a une concordance. Ensuite on l'injecte dans le cluster.
         let locationCompare = this.locations[0],
             maxLat = locationCompare.latitude + this.degreeTolerance,
@@ -243,11 +242,11 @@ export class MapService {
 
         // récursif si on a encore des lieux a traiter
         if(this.locations.length > 0){
-            this.getClusters();
+            this.buildClusters();
         }  
     }
 
-    private async getCurentPosition(): Promise<boolean>{
+    private async getCurrentPosition(): Promise<boolean>{
         let authorisation = await this.checkAuthorisation();
 
         if (!authorisation){
@@ -261,7 +260,7 @@ export class MapService {
         return true;
     }
 
-    createNewlocationMarker(){
+    createNewLocationMarker(){
         if (this.newLocationMarker != undefined){
             this.newLocationMarker.remove();
         }

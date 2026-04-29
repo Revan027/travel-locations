@@ -19,14 +19,24 @@ export class LocationService {
     async create(locationRequest: LocationRequest): Promise<DocumentReference<DocumentData, DocumentData>>{     
  
         // on recup la ref des collections de données
-        locationRequest.typeRef = this.firestoreService.GetDocumentRef(FirebaseCollectionEnum.country, locationRequest.typeID);
-        locationRequest.countryRef = this.firestoreService.GetDocumentRef(FirebaseCollectionEnum.country, locationRequest.country);
+        locationRequest.typeRef = this.firestoreService.getDocumentRef(FirebaseCollectionEnum.country, locationRequest.typeID);
+        locationRequest.countryRef = this.firestoreService.getDocumentRef(FirebaseCollectionEnum.country, locationRequest.country);
 
         return this.firestoreService.createDocument(FirebaseCollectionEnum.locations, locationRequest);
     }
 
-    async delete(documentReference: DocumentReference): Promise<void>{
-        await this.firestoreService.deleteDocument(documentReference);
+    async update(id: string, locationRequest: LocationRequest): Promise<void>{
+        const ref = this.getRef(id);
+
+        await this.firestoreService.updateDocument(ref, locationRequest);
+
+        await this.getAll();
+    }
+
+    async delete(id: string): Promise<void>{
+        const ref = this.getRef(id);
+
+        await this.firestoreService.deleteDocument(ref);
 
         await this.getAll();
     }
@@ -40,7 +50,7 @@ export class LocationService {
     }
 
     getRef(id: string): DocumentReference<DocumentData, DocumentData>{
-        return this.firestoreService.GetDocumentRef(FirebaseCollectionEnum.locations, id);
+        return this.firestoreService.getDocumentRef(FirebaseCollectionEnum.locations, id);
     }
 
     async getDatas(): Promise<void>{
