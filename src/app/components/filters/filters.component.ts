@@ -38,6 +38,12 @@ export class FiltersComponent {
     await this.locationService.search(locationSearchRequest);
   }
 
+  async onReset() {
+    this.locationService.locationSearchRequest.set(new LocationSearchRequest());
+    this.createForm();
+    await this.locationService.search(this.locationService.locationSearchRequest());
+  }
+
   private createForm() {
     this.formGroup = this.formBuilder.group({
       typeIDs: [this.locationService.locationSearchRequest()?.typeIDs],

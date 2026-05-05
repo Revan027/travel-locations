@@ -143,9 +143,9 @@
         </ion-row>
       </ion-grid>
 
-      <div class="ion-display-flex ion-justify-content-between">
+      <div class="ion-display-flex ion-justify-content-end ion-margin">
         @if(location.id != ""){
-          <ion-button color="danger" [strong]="true" (click)="onDelete()">Supprimer</ion-button>
+          <ion-button class="ion-margin-end" color="danger" [strong]="true" (click)="onDelete()">Supprimer</ion-button>
         }
         <ion-button [strong]="true" [disabled]="formGroup.invalid" (click)="onSubmit(formGroup.value)">Enregistrer</ion-button>
       </div>

@@ -298,7 +298,7 @@ export class MapService {
         const marker = L.marker([location.latitude, location.longitude], {icon: locationIcon})
         .bindPopup(`
             <span data-id="${location.id}">
-                 <p class="title">${location.name}</p>
+                <p class="title">${location.name}</p>
                 <p class="section"><span class="material-icons">calendar_month</span>${moment(location.date).format("DD/MM/YYYY")}</p>
                 <p class="section"><span class="material-icons">location_on</span>${location.latitude.toFixed(4)}, ${location.longitude.toFixed(4)}</p>
                 <p class="section"><span class="material-icons">terrain</span>${location.altitude}</p> 
