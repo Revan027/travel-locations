@@ -15,6 +15,7 @@ import { Cluster } from '../models/Cluster';
 export class MapService {
 
     position = signal<Position>(new Position);
+    isInit = signal<boolean>(false);
     
     private degreeTolerance: number = 2;
     private map!: L.Map;
@@ -28,7 +29,7 @@ export class MapService {
     private clustersLayer: L.LayerGroup<any>[] = [];
 
     constructor(private router: Router, private locationService: LocationService) {
-        effect(async () => { 
+        effect(async () => {
             this.clearAllLocationMarkers(this.clusters);
 
             this.removeClustersLayer();
@@ -192,6 +193,12 @@ export class MapService {
         this.clustersLayer = [];
     }
 
+    removeNewLocationMarker(){
+        if (this.newLocationMarker != undefined){
+            this.newLocationMarker.remove();
+        }
+    }
+
     private drawLocationsInBounds(bound: L.LatLngBounds){
         this.clusters.map((cluster: Cluster)=> 
         { 
@@ -261,9 +268,7 @@ export class MapService {
     }
 
     createNewLocationMarker(){
-        if (this.newLocationMarker != undefined){
-            this.newLocationMarker.remove();
-        }
+        this.removeNewLocationMarker();
 
         let latLng = this.map.getCenter();
 
@@ -322,13 +327,17 @@ export class MapService {
             doubleClickZoom: false,  
             minZoom: 4, 
             renderer: L.svg({padding: 5})}
-        ).setView([45.706179285330855, 2.9882812500000004], 4);
+        )
+        .on("load", (e) => {
+          this.isInit.set(true);
+        })
+        .setView([45.706179285330855, 2.9882812500000004], 4);
    
         // On ajoute les infos de la map. updateWhenIdle a false pour accéler la chargement des parties de map
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '',  updateWhenIdle: false}).addTo(this.map);
 
         // On resize direct pour éviter un bug de rendu de la carte
-        setTimeout(() => this.map.invalidateSize(), 0);
+        setTimeout(() => this.resizeMap(), 0);
     }
 
     private async checkAuthorisation(): Promise<boolean>{
@@ -341,5 +350,9 @@ export class MapService {
         }
 
         return permission.location == "granted";
+    }
+
+    resizeMap(){
+        this.map?.invalidateSize();
     }
 }

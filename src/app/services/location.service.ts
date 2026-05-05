@@ -15,8 +15,8 @@ export class LocationService {
     locations = signal<Location[]>([]);
     locationTypes = signal<LocationType[]>([]);
     countries = signal<Country[]>([]);
-    locationSearchRequest = signal<LocationSearchRequest | null>(null);
-
+    locationSearchRequest = signal<LocationSearchRequest>(new LocationSearchRequest);
+    
     constructor(private firestoreService: FirestoreService) {}
 
     async create(locationRequest: LocationRequest): Promise<DocumentReference<DocumentData, DocumentData>>{     
@@ -40,8 +40,6 @@ export class LocationService {
         const ref = this.getRef(id);
 
         await this.firestoreService.deleteDocument(ref);
-
-        await this.getAll();
     }
 
     async getAll(): Promise<void>{
@@ -69,15 +67,14 @@ export class LocationService {
             queryParts.push(where("date", "<=", locationSearchRequest.date))
         }
 
-        if (locationSearchRequest.typeIDs?.length > 0){
+        if (locationSearchRequest.typeIDs){
             queryParts.push(where("typeID", 'in', locationSearchRequest.typeIDs))
         }
 
-        if (locationSearchRequest.countryID){
-            queryParts.push(where("date", "==", locationSearchRequest.countryID))
+        if (locationSearchRequest.country){
+            queryParts.push(where("country", "==", locationSearchRequest.country))
         }
 
-        this.locations.set(await this.firestoreService.search<Location[]>(query(ref, ...queryParts)));
-      
+        this.locations.set(await this.firestoreService.search<Location[]>(query(ref, ...queryParts)));    
    }
 }

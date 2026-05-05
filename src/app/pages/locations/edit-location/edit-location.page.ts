@@ -13,6 +13,7 @@ import { ToastService } from 'src/app/services/services.common/toast.service';
 import { MessageEnum } from 'src/app/services/services.common/enum/MessageEnum';
 import { StatusEnum } from 'src/app/services/services.common/enum/status.enum';
 import { ConfirmationService } from 'src/app/services/services.common/confirmation.service';
+import { MapService } from 'src/app/services/map.service';
 
 @Component({
   selector: 'app-edit-location',
@@ -38,6 +39,7 @@ export class EditLocationPage implements AfterViewInit {
     private formBuilder: FormBuilder,
     private router: Router,
     private locationService: LocationService,
+    private mapService: MapService,
     private toastService: ToastService,
   ) 
   {
@@ -89,8 +91,8 @@ export class EditLocationPage implements AfterViewInit {
     this.formGroup = this.formBuilder.group({
       name: [this.location.name, Validators.compose([Validators.required])],
       altitude: [this.location.altitude, Validators.required],
-      latitude: [{ value: this.location.latitude, disabled: true }, Validators.required],
-      longitude: [{ value: this.location.longitude, disabled: true }, Validators.required],
+      latitude: [{ value: this.location.latitude, disabled: this.location.id != "" }, Validators.required],
+      longitude: [{ value: this.location.longitude, disabled: this.location.id != "" }, Validators.required],
       typeID: [this.location.typeID, Validators.required],
       country: [this.location.country, Validators.required],
       date: [this.location.date ?? moment().format('YYYY-MM-DD'), Validators.required],
@@ -107,12 +109,14 @@ export class EditLocationPage implements AfterViewInit {
     }
     else{
       isSuccess = await this.locationService.create(locationRequest).then(() => isSuccess = true).catch(() => isSuccess = false);
+
+      this.mapService.removeNewLocationMarker();
     }
 
     if (isSuccess){
       this.toastService.get(MessageEnum.AppSuccess, StatusEnum.Success);
 
-      this.locationService.getAll();
+      await this.locationService.search(this.locationService.locationSearchRequest());
 
       this.router.navigate(['/map']);
     }  
@@ -128,6 +132,8 @@ export class EditLocationPage implements AfterViewInit {
 
       await me.toastService.get(isSuccess ? MessageEnum.AppSuccess : MessageEnum.AppError, isSuccess ? StatusEnum.Success : StatusEnum.Danger);
       
+      await me.locationService.search(me.locationService.locationSearchRequest());
+
       me.router.navigate(['/map']);
     }
 

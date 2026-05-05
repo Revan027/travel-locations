@@ -1,6 +1,7 @@
-export interface LocationSearchRequest {
+export class LocationSearchRequest {
+  constructor() {}
 
-  date: Date;
-  typeIDs: number[];
-  countryID: number;
+  date?: Date;
+  typeIDs?: number[];
+  country?: string;
 }

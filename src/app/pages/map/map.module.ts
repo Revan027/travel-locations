@@ -4,14 +4,17 @@ import { IonicModule } from '@ionic/angular';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MapPage } from './map.page';
 import { MapPageRoutingModule } from './map-routing.module';
+import { LoaderComponent } from 'src/app/components/loader.component';
+import { FiltersComponent } from 'src/app/components/filters/filters.component';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    ReactiveFormsModule,
     MapPageRoutingModule,
+    LoaderComponent,
+    FiltersComponent
   ],
   declarations: [MapPage],
 })
