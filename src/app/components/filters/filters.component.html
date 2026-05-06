@@ -39,7 +39,7 @@
                     fill="outline"
                     [multiple]="true">
 
-                    @for(item of locationsType(); track item.name){
+                    @for(item of sortedLocationsType(); track item.name){
                       <ion-select-option [value]="item.id">
                         {{item.name}}
                       </ion-select-option>
@@ -55,7 +55,7 @@
                       placeholder="-"
                       fill="outline">
 
-                      @for(item of countries(); track item.name){
+                      @for(item of sortedCountries(); track item.name){
                         <ion-select-option [value]="item.id">
                           {{item.name}}
                         </ion-select-option>

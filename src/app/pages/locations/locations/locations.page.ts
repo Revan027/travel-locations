@@ -1,6 +1,5 @@
-import { Component, effect, WritableSignal } from '@angular/core';
+import { Component, effect } from '@angular/core';
 import { Location } from 'src/app/models/Location';
-import { LocationType } from 'src/app/models/LocationType';
 import { LocationService } from 'src/app/services/location.service';
 
 @Component({
@@ -11,7 +10,6 @@ import { LocationService } from 'src/app/services/location.service';
 })
 export class LocationsPage {
  
-  locationsType: WritableSignal<LocationType[]> = this.locationService.locationTypes;
   groupLocation: { [key: string]: Location[] } = {};  
   
   objectEntries = Object.entries; // convertie en objet en pair clé itérable
@@ -20,9 +18,5 @@ export class LocationsPage {
     effect(() => {
       this.groupLocation = this.locationService.goupByType()
     });
-  }
-
-  getLocationType(typeID: string){
-    return this.locationsType().find((type) => type.id ==  typeID)?.name
   }
 }

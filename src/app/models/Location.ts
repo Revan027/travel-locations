@@ -8,8 +8,9 @@ export class Location {
   altitude?: number; 
   latitude!: number;
   longitude!: number;
-  country!: any;
+  countryID!: any;
   typeID!: string;
+  typeName!: string;
   typeIcon!: string;
   date!: Date;
 }

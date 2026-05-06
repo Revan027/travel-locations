@@ -21,11 +21,12 @@
   @if(objectEntries(groupLocation).length == 0){
     <p class="ion-margin">Aucun lieux</p>
   }
+  
   <ion-accordion-group>
     @for(item of objectEntries(groupLocation); track item[0]){
       <ion-accordion value="{{item[0]}}">
         <ion-item slot="header" color="light">
-          <ion-label><span class="material-icons ion-margin-end">{{item[1][0].typeIcon}}</span> <span>{{ this.getLocationType(item[0]) }}</span></ion-label>
+          <ion-label><span class="material-icons ion-margin-end">{{item[1][0].typeIcon}}</span> <span>{{ item[1][0].typeName }}</span></ion-label>
         </ion-item>
 
         <div slot="content">

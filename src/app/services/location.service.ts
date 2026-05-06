@@ -22,8 +22,8 @@ export class LocationService {
     async create(locationRequest: LocationRequest): Promise<DocumentReference<DocumentData, DocumentData>>{     
  
         // on recup la ref des collections de données
-        locationRequest.typeRef = this.firestoreService.getDocumentRef(FirebaseCollectionEnum.country, locationRequest.typeID);
-        locationRequest.countryRef = this.firestoreService.getDocumentRef(FirebaseCollectionEnum.country, locationRequest.country);
+        locationRequest.typeRef = this.firestoreService.getDocumentRef(FirebaseCollectionEnum.locationTypes, locationRequest.typeID);
+        locationRequest.countryRef = this.firestoreService.getDocumentRef(FirebaseCollectionEnum.country, locationRequest.countryID);
 
         return this.firestoreService.createDocument(FirebaseCollectionEnum.locations, locationRequest);
     }
@@ -31,9 +31,11 @@ export class LocationService {
     async update(id: string, locationRequest: LocationRequest): Promise<void>{
         const ref = this.getRef(id);
 
-        await this.firestoreService.updateDocument(ref, locationRequest);
+        // on recup la ref des collections de données
+        locationRequest.typeRef = this.firestoreService.getDocumentRef(FirebaseCollectionEnum.locationTypes, locationRequest.typeID);
+        locationRequest.countryRef = this.firestoreService.getDocumentRef(FirebaseCollectionEnum.country, locationRequest.countryID);
 
-        await this.getAll();
+        await this.firestoreService.updateDocument(ref, locationRequest);
     }
 
     async delete(id: string): Promise<void>{
@@ -81,15 +83,17 @@ export class LocationService {
    goupByType(): { [key: string]: Location[] }{
         let groupLocation: { [key: string]: Location[] } = {};
 
-        this.locations().map((item: Location) => {
+        let sort = this.locations().sort((a, b) => a.typeName > b.typeName ? 1 : -1);
+        
+        sort.map((item: Location) => {
             // si la clé existe pas on la crée à partir du type
-            if (groupLocation[item.typeID] == undefined){
-                groupLocation[item.typeID] = []
+            if (groupLocation[item.typeName] == undefined){
+                groupLocation[item.typeName] = []
             }
 
-            groupLocation[item.typeID].push(item);
+            groupLocation[item.typeName].push(item);
         }); 
 
-        return groupLocation; 
+        return groupLocation;
    }
 }

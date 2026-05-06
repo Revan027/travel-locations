@@ -1,5 +1,5 @@
 import { Location as ALocation } from '@angular/common';
-import { Component, AfterViewInit, inject, DestroyRef, WritableSignal } from '@angular/core';
+import { Component, AfterViewInit, inject, DestroyRef, WritableSignal, computed } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GestureController } from '@ionic/angular';
@@ -28,9 +28,9 @@ export class EditLocationPage implements AfterViewInit {
   formGroup!: FormGroup;
   location: Location = new Location();
 
-  locationsType: WritableSignal<LocationType[]> = this.locationService.locationTypes;
-  countries: WritableSignal<Country[]> = this.locationService.countries;
-  
+  sortedLocationsType = computed(() => this.locationService.locationTypes().sort((a, b) => a.name.trim().localeCompare(b.name.trim(), "fr", { sensitivity: "base" })));
+  sortedCountries = computed(() => this.locationService.countries().sort((a, b) => a.name.trim().localeCompare(b.name.trim(), "fr", { sensitivity: "base" })));
+
   constructor(
     private aLocation: ALocation,
     private route: ActivatedRoute,
@@ -94,15 +94,17 @@ export class EditLocationPage implements AfterViewInit {
       latitude: [{ value: this.location.latitude, disabled: this.location.id != "" }, Validators.required],
       longitude: [{ value: this.location.longitude, disabled: this.location.id != "" }, Validators.required],
       typeID: [this.location.typeID, Validators.required],
-      country: [this.location.country, Validators.required],
+      countryID: [this.location.countryID, Validators.required],
       date: [this.location.date ?? moment().format('YYYY-MM-DD'), Validators.required],
     });
   }
 
   async onSubmit(locationRequest: LocationRequest) {
-    let isSuccess = true;
+    let isSuccess = true,
+    locationsType = this.locationService.locationTypes().find(item => item.id == locationRequest.typeID);
 
-    locationRequest.typeIcon = this.locationsType().find(item => item.id == locationRequest.typeID)?.icon ?? "";
+    locationRequest.typeIcon = locationsType?.icon ?? "";
+    locationRequest.typeName = locationsType?.name ?? "";
 
     if (this.location.id){
       await this.locationService.update(this.location.id, locationRequest).catch(() => isSuccess = false);

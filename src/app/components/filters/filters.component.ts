@@ -1,4 +1,4 @@
-import { Component, WritableSignal } from '@angular/core';
+import { Component, computed, WritableSignal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { LocationService } from 'src/app/services/location.service';
@@ -18,8 +18,8 @@ export class FiltersComponent {
 
   formGroup!: FormGroup;
 
-  locationsType: WritableSignal<LocationType[]> = this.locationService.locationTypes;
-  countries: WritableSignal<Country[]> = this.locationService.countries;
+  sortedLocationsType = computed(() => this.locationService.locationTypes().sort((a, b) => a.name.trim().localeCompare(b.name.trim(), "fr", { sensitivity: "base" })));
+  sortedCountries = computed(() => this.locationService.countries().sort((a, b) => a.name.trim().localeCompare(b.name.trim(), "fr", { sensitivity: "base" })));
 
   constructor(
     private locationService: LocationService, 
