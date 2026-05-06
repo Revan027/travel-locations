@@ -30,14 +30,15 @@ export class MapService {
 
     constructor(private router: Router, private locationService: LocationService) {
         effect(async () => {
+            
             this.clearAllLocationMarkers(this.clusters);
 
             this.removeClustersLayer();
 
             this.resetClusters();
-            
+
             // appelé à chaque mise à jour du signal de locations
-            if (this.locationService.locations().length > 0){ 
+            if (this.locationService.locations().length > 0){
 
                 this.locations = this.locationService.locations();
 
@@ -61,11 +62,9 @@ export class MapService {
     }
 
     async initCurrentPosition(){
-        await this.getCurrentPosition();
+        const success = await this.getCurrentPosition();
 
-        if (this.position() == null){
-            return;
-        }
+        if (!success) return;
 
         // On supprime l'ancienne position
         if (this.userMarker != undefined){
@@ -260,9 +259,11 @@ export class MapService {
             return false;
         }
 
-        const position = await Geolocation.getCurrentPosition({ timeout: 10000, enableHighAccuracy: true }).catch((e)=>{ alert(e); return null; })
+        const position = await Geolocation.getCurrentPosition({ timeout: 10000, enableHighAccuracy: true }).catch(() => null)
 
-        this.position.set({ latitude: position?.coords.latitude, longitude: position?.coords.longitude, altitude: position?.coords.altitude} as Position);
+        if (!position) return false;
+
+        this.position.set({ latitude: position.coords.latitude, longitude: position.coords.longitude, altitude: position.coords.altitude} as Position);
 
         return true;
     }

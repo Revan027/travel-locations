@@ -18,6 +18,9 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
+  @if(objectEntries(groupLocation).length == 0){
+    <p class="ion-margin">Aucun lieux</p>
+  }
   <ion-accordion-group>
     @for(item of objectEntries(groupLocation); track item[0]){
       <ion-accordion value="{{item[0]}}">

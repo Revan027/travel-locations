@@ -25,8 +25,8 @@ export class MapPage {
     private locationService: LocationService){}
 
   async ngAfterViewInit(){
-    await this.locationService.getAll()
     await this.mapService.init();
+    await this.locationService.getAll()  
   }
 
   async ionViewDidEnter(){
