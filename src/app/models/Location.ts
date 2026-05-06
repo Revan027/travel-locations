@@ -1,12 +1,11 @@
 import { DocumentData, DocumentReference } from "firebase/firestore";
-import { LocationType } from "./LocationType";
 
 export class Location {
   constructor() {}
 
   id: string = "";
   name!: string;
-  altitude!: number; 
+  altitude?: number; 
   latitude!: number;
   longitude!: number;
   country!: any;

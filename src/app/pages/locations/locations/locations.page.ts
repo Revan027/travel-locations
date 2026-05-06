@@ -1,4 +1,4 @@
-import { Component, computed, effect, WritableSignal } from '@angular/core';
+import { Component, effect, WritableSignal } from '@angular/core';
 import { Location } from 'src/app/models/Location';
 import { LocationType } from 'src/app/models/LocationType';
 import { LocationService } from 'src/app/services/location.service';
@@ -10,24 +10,16 @@ import { LocationService } from 'src/app/services/location.service';
   standalone: false,
 })
 export class LocationsPage {
-  groupLocation: { [key: string]: Location[] } = {};
+ 
   locationsType: WritableSignal<LocationType[]> = this.locationService.locationTypes;
-
-  objectEntries = Object.entries;
-  locations = effect(() => {
-    this.locationService.locations().map((item: Location) => {
-      if (this.groupLocation[item.typeID] == undefined){
-        this.groupLocation[item.typeID] = []
-      }
-      this.groupLocation[item.typeID].push(item)
-    }); 
-    console.log(this.objectEntries(  this.groupLocation))
-
-   return this.groupLocation; 
-  });
+  groupLocation: { [key: string]: Location[] } = {};  
+  
+  objectEntries = Object.entries; // convertie en objet en pair clé itérable
 
   constructor(private locationService: LocationService) {
-
+    effect(() => {
+      this.groupLocation = this.locationService.goupByType()
+    });
   }
 
   getLocationType(typeID: string){

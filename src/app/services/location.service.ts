@@ -77,4 +77,19 @@ export class LocationService {
 
         this.locations.set(await this.firestoreService.search<Location[]>(query(ref, ...queryParts)));    
    }
+
+   goupByType(): { [key: string]: Location[] }{
+        let groupLocation: { [key: string]: Location[] } = {};
+
+        this.locations().map((item: Location) => {
+            // si la clé existe pas on la crée à partir du type
+            if (groupLocation[item.typeID] == undefined){
+                groupLocation[item.typeID] = []
+            }
+
+            groupLocation[item.typeID].push(item);
+        }); 
+
+        return groupLocation; 
+   }
 }
