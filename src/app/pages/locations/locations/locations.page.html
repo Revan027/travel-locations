@@ -35,7 +35,18 @@
               {
                 <ion-item>                   
                     <ion-label>                       
-                      <div class="title ion-text-center">{{location.name}}</div>
+                      <div class="title ion-display-flex ion-align-items-center">
+                        <ion-avatar>
+                           @if(location.imgUrl){
+                              <img src="{{location.imgUrl}}" class="location-illustration" alt=""/>
+                            }
+                            @else{
+                              <img src="../../../../assets/placeholder.webp" class="location-illustration" alt=""/>
+                            }
+                        </ion-avatar>
+                        
+                        <span class="ion-margin-start">{{location.name}}</span>
+                      </div>
                       <div class="section"><span class="material-icons ion-margin-end">calendar_month</span><span>{{ location.date | date:'dd/MM/yyyy'}}</span></div>
                       <div class="section"><span class="material-icons ion-margin-end">location_on</span><span>{{location.latitude.toFixed(4)}} {{location.longitude.toFixed(4)}}</span></div>
                       <div class="section"><span class="material-icons ion-margin-end">terrain</span><span>{{location.altitude ?? "-"}}</span></div> 

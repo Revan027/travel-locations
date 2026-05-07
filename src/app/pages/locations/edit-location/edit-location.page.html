@@ -19,6 +19,24 @@
     <form [formGroup]="formGroup" novalidate>
       <ion-grid>
         <ion-row>
+          <ion-col size="12" class="ion-text-center">
+            <input #inputFile type="file" hidden (change)="onFileChanged($event)" />
+
+            @if(uploadLoaded){
+              <app-loader></app-loader>
+            }
+            @else if(location.imgUrl){
+              <ion-img src="{{location.imgUrl}}" class="location-illustration" alt=""></ion-img>
+            }
+            @else{
+              <ion-img src="../../../../assets/placeholder.webp" class="location-illustration" alt=""></ion-img>
+            }
+            
+            <ion-button [strong]="true" (click)="onFileSelector($event)"> 
+              <ion-icon name="document-outline" slot="start"></ion-icon> Choisir une image
+            </ion-button>
+          </ion-col>
+
           <ion-col size="12">
             <ion-input
               label="Nom"

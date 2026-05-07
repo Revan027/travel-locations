@@ -1,12 +1,10 @@
 import { Location as ALocation } from '@angular/common';
-import { Component, AfterViewInit, inject, DestroyRef, WritableSignal, computed } from '@angular/core';
+import { Component, AfterViewInit, inject, DestroyRef, WritableSignal, computed, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GestureController } from '@ionic/angular';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Location, LocationRequest } from 'src/app/models/Location';
-import { LocationType } from 'src/app/models/LocationType';
-import { Country } from 'src/app/models/Country';
 import { LocationService } from 'src/app/services/location.service';
 import moment from 'moment';
 import { ToastService } from 'src/app/services/services.common/toast.service';
@@ -14,6 +12,8 @@ import { MessageEnum } from 'src/app/services/services.common/enum/MessageEnum';
 import { StatusEnum } from 'src/app/services/services.common/enum/status.enum';
 import { ConfirmationService } from 'src/app/services/services.common/confirmation.service';
 import { MapService } from 'src/app/services/map.service';
+import { FileService } from 'src/app/services/file.services.common/file.service';
+import { HttpService } from 'src/app/services/services.common/http-service';
 
 @Component({
   selector: 'app-edit-location',
@@ -22,11 +22,16 @@ import { MapService } from 'src/app/services/map.service';
   standalone: false,
 })
 export class EditLocationPage implements AfterViewInit {
+  @ViewChild('inputFile') inputFile!: ElementRef;
+
   private destroyRef = inject(DestroyRef);
 
   loaded: boolean = false;
+  uploadLoaded: boolean = false;
+
   formGroup!: FormGroup;
   location: Location = new Location();
+  
 
   sortedLocationsType = computed(() => this.locationService.locationTypes().sort((a, b) => a.name.trim().localeCompare(b.name.trim(), "fr", { sensitivity: "base" })));
   sortedCountries = computed(() => this.locationService.countries().sort((a, b) => a.name.trim().localeCompare(b.name.trim(), "fr", { sensitivity: "base" })));
@@ -41,6 +46,8 @@ export class EditLocationPage implements AfterViewInit {
     private locationService: LocationService,
     private mapService: MapService,
     private toastService: ToastService,
+    private fileService: FileService,
+    private httpService: HttpService
   ) 
   {
     moment.locale("fr");  
@@ -106,6 +113,7 @@ export class EditLocationPage implements AfterViewInit {
       typeID: [this.location.typeID, Validators.required],
       countryID: [this.location.countryID, Validators.required],
       date: [this.location.date ?? moment().format('YYYY-MM-DD'), Validators.required],
+      imgUrl: [this.location.imgUrl],
     });
   }
 
@@ -152,5 +160,34 @@ export class EditLocationPage implements AfterViewInit {
     await this.confirmationService.getModalDelete(callback);
     
     this.createForm();    
+  }
+
+  onFileSelector(event: Event) {
+    this.inputFile.nativeElement.click();
+  }
+
+  async onFileChanged(event: any) {
+    this.uploadLoaded = true;
+    const file: File = event.target.files[0];
+    // a mettre dans un service
+    /*const results  = await Camera.chooseFromGallery({
+        mediaType: MediaTypeSelection.Photo, 
+        allowMultipleSelection: false,
+        includeMetadata: true,
+      });*/
+   
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("api_key", "972169299423238");
+    formData.append("upload_preset", "ml_default");
+  
+    
+    this.httpService.post("https://api.cloudinary.com/v1_1/dmxq9d1gs/image/upload", formData).subscribe((result: any) => {
+      this.location.imgUrl = result.secure_url;
+      this.formGroup.get("imgUrl")?.setValue(this.location.imgUrl);
+      this.uploadLoaded = false;
+    })
+
   }
 }

@@ -13,6 +13,7 @@ export class Location {
   typeName!: string;
   typeIcon!: string;
   date!: Date;
+  imgUrl?: string
 }
 
 export class LocationRequest extends Location {
