@@ -77,9 +77,10 @@ export class EditLocationPage implements AfterViewInit {
 
         this.mapService.getAltitude(this.location.latitude, this.location.longitude)
           .subscribe({
-            next: (altitude) => {
-              this.location.altitude = altitude;
-              this.formGroup.get('altitude')?.setValue(altitude.results[0].elevation);
+            next: (result) => {
+              this.location.altitude = result.elevation[0];
+
+              this.formGroup.get('altitude')?.setValue(this.location.altitude);
             },
             error: (err) => {this.location.altitude = undefined }
           });

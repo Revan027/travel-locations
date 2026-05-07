@@ -258,7 +258,7 @@ export class MapService {
     }
 
     getAltitude(lat: number, lng: number) {
-       return  this.httpService.get<any>(environment.apiOpenElevation.replace("{X}", lat.toString()).replace("{Y}", lng.toString()))       
+       return this.httpService.get<any>(environment.apiOpenMeteo.replace("{X}", lat.toString()).replace("{Y}", lng.toString()))       
     }
 
     private async getCurrentPosition(): Promise<boolean>{
