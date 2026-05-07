@@ -13,6 +13,8 @@ Application mobile de gestion et visualisation de lieux géographiques visités 
 | Firebase / Firestore | 11 |
 | Leaflet | 1.9 |
 | Capacitor Geolocation | 8 |
+| Capacitor Camera | 8 |
+| Capacitor Filesystem | 8 |
 | Moment.js | 2.30 |
 | Material Icons | — |
 | Nunito (police) | — |
