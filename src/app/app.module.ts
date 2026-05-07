@@ -8,13 +8,12 @@ import { environment } from 'src/environments/environment';
 import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { provideAuth, getAuth } from '@angular/fire/auth';
-import { LoaderComponent } from './components/loader.component';
 import { LocationService } from './services/location.service';
 import { FirestoreService } from './services/firestore.services.common/firestore.service';
+import { provideHttpClient } from '@angular/common/http';
 
 @NgModule({
-    declarations: [AppComponent, LoaderComponent],
-    exports: [LoaderComponent],
+    declarations: [AppComponent],
     imports: [
         BrowserModule,
         IonicModule.forRoot(),
@@ -25,6 +24,7 @@ import { FirestoreService } from './services/firestore.services.common/firestore
         provideFirebaseApp(() => initializeApp(environment.firebase)),
         provideFirestore(() => getFirestore()),
         provideAuth(() => getAuth()),
+        provideHttpClient(),
         provideAppInitializer(async () => {
             // Il faut d'abord faire les injections et ensuite faire le traitement. Sinon on perd le contexte d'injection.
             const fileService = inject(FirestoreService);

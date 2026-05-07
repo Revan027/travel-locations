@@ -116,7 +116,7 @@
               placeholder="-"
               fill="outline">
 
-              @for(item of locationsType(); track item.name){
+              @for(item of sortedLocationsType(); track item.name){
                 <ion-select-option [value]="item.id">
                   {{item.name}}
                 </ion-select-option>
@@ -128,12 +128,12 @@
             <ion-select
                 class="ion-margin-bottom"
                 label="Pays"
-                formControlName="country"
+                formControlName="countryID"
                 interface="popover"
                 placeholder="-"
                 fill="outline">
 
-                @for(item of countries(); track item.name){
+                @for(item of sortedCountries(); track item.name){
                   <ion-select-option [value]="item.id">
                     {{item.name}}
                   </ion-select-option>
@@ -141,21 +141,17 @@
               </ion-select>
           </ion-col>
         </ion-row>
-
       </ion-grid>
 
-
-      <div class="ion-display-flex ion-justify-content-between">
+      <div class="ion-display-flex ion-justify-content-end ion-margin">
         @if(location.id != ""){
-          <ion-button color="danger" [strong]="true" (click)="onDelete()">Supprimer</ion-button>
+          <ion-button class="ion-margin-end" color="danger" [strong]="true" (click)="onDelete()">Supprimer</ion-button>
         }
         <ion-button [strong]="true" [disabled]="formGroup.invalid" (click)="onSubmit(formGroup.value)">Enregistrer</ion-button>
       </div>
     </form>
   }
   @else{
-    <div class="loader-center">
-      <ion-spinner name="dots"></ion-spinner>
-    </div>
+    <app-loader></app-loader>>
   }
 </ion-content>

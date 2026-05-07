@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { DestroyRef, inject, Injectable, signal } from '@angular/core';
 import { Geolocation, Position as GPosition } from '@capacitor/geolocation';
 import * as L from 'leaflet';
 import { Position } from '../models/Position';
@@ -8,13 +8,19 @@ import { Location } from '../models/Location';
 import { effect } from '@angular/core';
 import moment from 'moment';
 import { Cluster } from '../models/Cluster';
+import { HttpService } from './services.common/http-service';
+import { environment } from 'src/environments/environment';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
 })
 export class MapService {
+    private destroyRef = inject(DestroyRef);
 
     position = signal<Position>(new Position);
+    isInit = signal<boolean>(false);
     
     private degreeTolerance: number = 2;
     private map!: L.Map;
@@ -27,16 +33,17 @@ export class MapService {
 
     private clustersLayer: L.LayerGroup<any>[] = [];
 
-    constructor(private router: Router, private locationService: LocationService) {
-        effect(async () => { 
+    constructor(private router: Router, private locationService: LocationService, private httpService: HttpService) {
+        effect(async () => {
             
+            this.clearAllLocationMarkers(this.clusters);
+
+            this.removeClustersLayer();
+
+            this.resetClusters();
+
             // appelé à chaque mise à jour du signal de locations
-            if (this.locationService.locations().length > 0){   
-                this.clearAllLocationMarkers(this.clusters);
-
-                this.removeClustersLayer();
-
-                this.resetClusters();
+            if (this.locationService.locations().length > 0){
 
                 this.locations = this.locationService.locations();
 
@@ -60,11 +67,9 @@ export class MapService {
     }
 
     async initCurrentPosition(){
-        await this.getCurrentPosition();
+        const success = await this.getCurrentPosition();
 
-        if (this.position() == null){
-            return;
-        }
+        if (!success) return;
 
         // On supprime l'ancienne position
         if (this.userMarker != undefined){
@@ -130,7 +135,7 @@ export class MapService {
 
             // on prépare la zone
             const circle = L.circle(center, {
-                color: 'var(--app-amber)',
+                color: 'transparent',
                 fillColor: 'var(--app-amber)',
                 fillOpacity: 0.5,
                 radius: radius < 50000 ? 50000 : radius // en mètre
@@ -192,6 +197,12 @@ export class MapService {
         this.clustersLayer = [];
     }
 
+    removeNewLocationMarker(){
+        if (this.newLocationMarker != undefined){
+            this.newLocationMarker.remove();
+        }
+    }
+
     private drawLocationsInBounds(bound: L.LatLngBounds){
         this.clusters.map((cluster: Cluster)=> 
         { 
@@ -246,6 +257,10 @@ export class MapService {
         }  
     }
 
+    getAltitude(lat: number, lng: number) {
+       return  this.httpService.get<any>(environment.apiOpenElevation.replace("{X}", lat.toString()).replace("{Y}", lng.toString()))       
+    }
+
     private async getCurrentPosition(): Promise<boolean>{
         let authorisation = await this.checkAuthorisation();
 
@@ -253,17 +268,17 @@ export class MapService {
             return false;
         }
 
-        const position = await Geolocation.getCurrentPosition({ timeout: 10000, enableHighAccuracy: true }).catch((e)=>{ alert(e); return null; })
+        const position = await Geolocation.getCurrentPosition({ timeout: 10000, enableHighAccuracy: true }).catch(() => null)
 
-        this.position.set({ latitude: position?.coords.latitude, longitude: position?.coords.longitude, altitude: position?.coords.altitude} as Position);
+        if (!position) return false;
+
+        this.position.set({ latitude: position.coords.latitude, longitude: position.coords.longitude, altitude: position.coords.altitude} as Position);
 
         return true;
     }
 
     createNewLocationMarker(){
-        if (this.newLocationMarker != undefined){
-            this.newLocationMarker.remove();
-        }
+        this.removeNewLocationMarker();
 
         let latLng = this.map.getCenter();
 
@@ -276,8 +291,8 @@ export class MapService {
 
         this.newLocationMarker = L.marker([latLng.lat, latLng.lng], {draggable: true, icon: newLocationIcon}).addTo(this.map);
 
-        this.newLocationMarker.on('click', (e) => {
-            this.router.navigateByUrl(`/locations/create;lat=${e.latlng.lat};lng=${e.latlng.lng};alt=${e.latlng.alt}`)
+        this.newLocationMarker.on('click', async (e) => {
+            this.router.navigateByUrl(`/locations/create;lat=${e.latlng.lat};lng=${e.latlng.lng}`)
         });
     }
 
@@ -293,10 +308,10 @@ export class MapService {
         const marker = L.marker([location.latitude, location.longitude], {icon: locationIcon})
         .bindPopup(`
             <span data-id="${location.id}">
-                 <p class="title">${location.name}</p>
+                <p class="title">${location.name}</p>
                 <p class="section"><span class="material-icons">calendar_month</span>${moment(location.date).format("DD/MM/YYYY")}</p>
                 <p class="section"><span class="material-icons">location_on</span>${location.latitude.toFixed(4)}, ${location.longitude.toFixed(4)}</p>
-                <p class="section"><span class="material-icons">terrain</span>${location.altitude}</p> 
+                <p class="section"><span class="material-icons">terrain</span>${location.altitude ?? "-"}</p> 
             </span>`, { maxWidth: 220 })
         .addTo(this.map);
   
@@ -322,13 +337,17 @@ export class MapService {
             doubleClickZoom: false,  
             minZoom: 4, 
             renderer: L.svg({padding: 5})}
-        ).setView([45.706179285330855, 2.9882812500000004], 4);
+        )
+        .on("load", (e) => {
+          this.isInit.set(true);
+        })
+        .setView([45.706179285330855, 2.9882812500000004], 4);
    
         // On ajoute les infos de la map. updateWhenIdle a false pour accéler la chargement des parties de map
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '',  updateWhenIdle: false}).addTo(this.map);
 
         // On resize direct pour éviter un bug de rendu de la carte
-        setTimeout(() => this.map.invalidateSize(), 0);
+        setTimeout(() => this.resizeMap(), 0);
     }
 
     private async checkAuthorisation(): Promise<boolean>{
@@ -341,5 +360,9 @@ export class MapService {
         }
 
         return permission.location == "granted";
+    }
+
+    resizeMap(){
+        this.map?.invalidateSize();
     }
 }

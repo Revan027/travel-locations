@@ -18,4 +18,33 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
+  @if(objectEntries(groupLocation).length == 0){
+    <p class="ion-margin">Aucun lieux</p>
+  }
+  
+  <ion-accordion-group>
+    @for(item of objectEntries(groupLocation); track item[0]){
+      <ion-accordion value="{{item[0]}}">
+        <ion-item slot="header" color="light">
+          <ion-label><span class="material-icons ion-margin-end">{{item[1][0].typeIcon}}</span> <span>{{ item[1][0].typeName }}</span></ion-label>
+        </ion-item>
+
+        <div slot="content">
+            <ion-list>
+              @for(location of item[1]; track location.id)
+              {
+                <ion-item>                   
+                    <ion-label>                       
+                      <div class="title ion-text-center">{{location.name}}</div>
+                      <div class="section"><span class="material-icons ion-margin-end">calendar_month</span><span>{{ location.date | date:'dd/MM/yyyy'}}</span></div>
+                      <div class="section"><span class="material-icons ion-margin-end">location_on</span><span>{{location.latitude.toFixed(4)}} {{location.longitude.toFixed(4)}}</span></div>
+                      <div class="section"><span class="material-icons ion-margin-end">terrain</span><span>{{location.altitude ?? "-"}}</span></div> 
+                    </ion-label>
+                </ion-item>
+              }               
+          </ion-list>         
+        </div>
+      </ion-accordion>
+    }
+  </ion-accordion-group>
 </ion-content>

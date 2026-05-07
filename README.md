@@ -1,13 +1,6 @@
 # TravelLocations
 
-Application mobile Ionic/Angular/Capacitor pour gérer et visualiser des lieux sur une carte interactive.
-
-## Fonctionnalités
-
-- **Carte interactive** : Visualisation des lieux enregistrés avec Leaflet
-- **Localisation** : Position GPS en temps réel
-- **Lieux** : Création, modification et suppression de lieux
-- **Synchronisation** : Données stockées sur Firestore
+Application mobile de gestion et visualisation de lieux géographiques visités ou à visiter, développée avec Ionic/Angular et déployée sur Android via Capacitor.
 
 ## Stack technique
 
@@ -17,8 +10,56 @@ Application mobile Ionic/Angular/Capacitor pour gérer et visualiser des lieux s
 | Ionic | 8 |
 | Capacitor | 8 |
 | TypeScript | 5.9 |
-| Leaflet | — |
-| Firebase / Firestore | — |
+| Firebase / Firestore | 11 |
+| Leaflet | 1.9 |
+| Capacitor Geolocation | 8 |
+| Moment.js | 2.30 |
+| Material Icons | — |
+| Nunito (police) | — |
+
+## Fonctionnalités
+
+### Carte (MapPage)
+- Affichage Leaflet centré sur la France au démarrage
+- Géolocalisation de l'utilisateur avec marqueur dédié et rafraîchissement manuel
+- Double-clic pour zoomer sur une zone
+- **Clusters** : regroupement automatique des lieux proches (tolérance 2°), affichés sous forme de cercles avec compteur en dessous du zoom 8
+- Au-delà du zoom 8 : affichage des marqueurs individuels dans les limites visibles uniquement (optimisation)
+- Création d'un nouveau lieu via un marqueur draggable positionné au centre de la carte
+- Popup de prévisualisation au clic sur un marqueur (nom, date, coordonnées, altitude)
+
+### Lieux (LocationsPage)
+- Liste des lieux groupés par type
+- Filtres par type, pays et date via le composant `FiltersComponent`
+- Recherche Firestore avec contraintes dynamiques
+
+### Édition d'un lieu (EditLocationPage)
+- Création à partir des coordonnées du marqueur placé sur la carte
+- Récupération automatique de l'altitude via l'**API Open Elevation**
+- Modification et suppression avec confirmation
+- Formulaire réactif : nom, altitude, coordonnées, type, pays, date
+
+## Architecture
+
+```
+src/app/
+├── pages/
+│   ├── map/                    # Page carte principale
+│   ├── locations/
+│   │   ├── locations/          # Liste des lieux groupés par type
+│   │   └── edit-location/      # Création / édition / suppression
+│   └── profil/
+├── services/
+│   ├── map.service.ts          # Leaflet, clusters, marqueurs, géolocalisation, altitude
+│   ├── location.service.ts     # CRUD Firestore, recherche, groupement par type
+│   └── services.common/        # HTTP, Toast, Confirmation, Error
+├── models/                     # Location, LocationType, Country, Cluster, Position
+├── components/
+│   ├── filters.component.ts    # Filtres de recherche (standalone)
+│   └── loader.component.ts
+└── constants/
+    └── firebaseCollectionEnum.ts
+```
 
 ## Installation
 
