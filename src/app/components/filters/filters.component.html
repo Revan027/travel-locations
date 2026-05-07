@@ -2,7 +2,7 @@
     <ng-template>
       <ion-content>             
         <ion-title class="ion-margin ion-text-center"> Filtrer les lieux </ion-title>
-
+        @if(loaded){
           <form [formGroup]="formGroup" novalidate>
             <ion-grid>
               <ion-row class="ion-align-content-end">
@@ -69,7 +69,11 @@
                 <ion-button class="ion-margin-end" [strong]="true" (click)="onReset()">Annuler</ion-button>
                 <ion-button [strong]="true" [disabled]="formGroup.invalid" (click)="onSubmit(formGroup.value)">Valider</ion-button>
             </div>
-          </form>       
+          </form>
+        }
+        @else{
+          <app-loader></app-loader>>
+        }                
       </ion-content>
     </ng-template>
 </ion-modal>

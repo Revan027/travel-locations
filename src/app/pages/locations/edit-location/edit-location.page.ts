@@ -59,14 +59,24 @@ export class EditLocationPage implements AfterViewInit {
 
       if (id) {
         this.location = this.locationService.locations().find((location) => location.id == id) || new Location();
+
+        this.createForm();
       } 
       else {
         this.location.latitude = Number(params.get('lat'));
-        this.location.altitude = Number(params.get('alt'));
         this.location.longitude = Number(params.get('lng'));
-      }
 
-      this.createForm();
+        this.createForm();
+
+        this.mapService.getAltitude(this.location.latitude, this.location.longitude)
+          .subscribe({
+            next: (altitude) => {
+              this.location.altitude = altitude;
+              this.formGroup.get('altitude')?.setValue(altitude.results[0].elevation);
+            },
+            error: (err) => {this.location.altitude = undefined }
+          });
+      }
 
       this.loaded = true;
     });
@@ -90,7 +100,7 @@ export class EditLocationPage implements AfterViewInit {
   private createForm() {
     this.formGroup = this.formBuilder.group({
       name: [this.location.name, Validators.compose([Validators.required])],
-      altitude: [this.location.altitude, Validators.required],
+      altitude: [this.location.altitude],
       latitude: [{ value: this.location.latitude, disabled: this.location.id != "" }, Validators.required],
       longitude: [{ value: this.location.longitude, disabled: this.location.id != "" }, Validators.required],
       typeID: [this.location.typeID, Validators.required],

@@ -4,6 +4,7 @@ import { IonicModule } from '@ionic/angular';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { EditLocationPage } from './edit-location.page';
 import { EditLocationPageRoutingModule } from './edit-location-routing.module';
+import { LoaderComponent } from 'src/app/components/loader.component';
 
 @NgModule({
   imports: [
@@ -11,6 +12,7 @@ import { EditLocationPageRoutingModule } from './edit-location-routing.module';
     FormsModule,
     ReactiveFormsModule,
     IonicModule,
+    LoaderComponent,
     EditLocationPageRoutingModule,
   ],
   declarations: [EditLocationPage],

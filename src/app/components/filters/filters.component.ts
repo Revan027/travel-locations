@@ -1,21 +1,21 @@
-import { Component, computed, WritableSignal } from '@angular/core';
+import { Component, computed, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { LocationService } from 'src/app/services/location.service';
 import moment from 'moment';
 import { LocationSearchRequest } from 'src/app/models/LocationSearchRequest';
-import { LocationType } from 'src/app/models/LocationType';
-import { Country } from 'src/app/models/Country';
+import { LoaderComponent } from '../loader.component';
 
 @Component({
   standalone: true,
-  imports: [IonicModule, ReactiveFormsModule],
+  imports: [IonicModule, ReactiveFormsModule, LoaderComponent],
   selector: 'app-filters',
   templateUrl: 'filters.component.html',
   styleUrls: ['filters.component.scss']
 })
-export class FiltersComponent {
+export class FiltersComponent{
 
+  loaded: boolean = false; 
   formGroup!: FormGroup;
 
   sortedLocationsType = computed(() => this.locationService.locationTypes().sort((a, b) => a.name.trim().localeCompare(b.name.trim(), "fr", { sensitivity: "base" })));
@@ -28,8 +28,9 @@ export class FiltersComponent {
     moment.locale("fr");  
   }
 
-  async ngAfterViewInit(){
+  ngAfterViewInit() {
     this.createForm();
+    this.loaded = true;
   }
 
   async onSubmit(locationSearchRequest: LocationSearchRequest) {

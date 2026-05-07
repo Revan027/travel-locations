@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { DestroyRef, inject, Injectable, signal } from '@angular/core';
 import { Geolocation, Position as GPosition } from '@capacitor/geolocation';
 import * as L from 'leaflet';
 import { Position } from '../models/Position';
@@ -8,11 +8,16 @@ import { Location } from '../models/Location';
 import { effect } from '@angular/core';
 import moment from 'moment';
 import { Cluster } from '../models/Cluster';
+import { HttpService } from './services.common/http-service';
+import { environment } from 'src/environments/environment';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
 })
 export class MapService {
+    private destroyRef = inject(DestroyRef);
 
     position = signal<Position>(new Position);
     isInit = signal<boolean>(false);
@@ -28,7 +33,7 @@ export class MapService {
 
     private clustersLayer: L.LayerGroup<any>[] = [];
 
-    constructor(private router: Router, private locationService: LocationService) {
+    constructor(private router: Router, private locationService: LocationService, private httpService: HttpService) {
         effect(async () => {
             
             this.clearAllLocationMarkers(this.clusters);
@@ -252,6 +257,10 @@ export class MapService {
         }  
     }
 
+    getAltitude(lat: number, lng: number) {
+       return  this.httpService.get<any>(environment.apiOpenElevation.replace("{X}", lat.toString()).replace("{Y}", lng.toString()))       
+    }
+
     private async getCurrentPosition(): Promise<boolean>{
         let authorisation = await this.checkAuthorisation();
 
@@ -282,8 +291,8 @@ export class MapService {
 
         this.newLocationMarker = L.marker([latLng.lat, latLng.lng], {draggable: true, icon: newLocationIcon}).addTo(this.map);
 
-        this.newLocationMarker.on('click', (e) => {
-            this.router.navigateByUrl(`/locations/create;lat=${e.latlng.lat};lng=${e.latlng.lng};alt=${e.latlng.alt}`)
+        this.newLocationMarker.on('click', async (e) => {
+            this.router.navigateByUrl(`/locations/create;lat=${e.latlng.lat};lng=${e.latlng.lng}`)
         });
     }
 
@@ -302,7 +311,7 @@ export class MapService {
                 <p class="title">${location.name}</p>
                 <p class="section"><span class="material-icons">calendar_month</span>${moment(location.date).format("DD/MM/YYYY")}</p>
                 <p class="section"><span class="material-icons">location_on</span>${location.latitude.toFixed(4)}, ${location.longitude.toFixed(4)}</p>
-                <p class="section"><span class="material-icons">terrain</span>${location.altitude}</p> 
+                <p class="section"><span class="material-icons">terrain</span>${location.altitude ?? "-"}</p> 
             </span>`, { maxWidth: 220 })
         .addTo(this.map);
   
