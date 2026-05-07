@@ -1,5 +1,5 @@
 import { Location as ALocation } from '@angular/common';
-import { Component, AfterViewInit, inject, DestroyRef, WritableSignal } from '@angular/core';
+import { Component, AfterViewInit, inject, DestroyRef, WritableSignal, computed } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GestureController } from '@ionic/angular';
@@ -13,6 +13,7 @@ import { ToastService } from 'src/app/services/services.common/toast.service';
 import { MessageEnum } from 'src/app/services/services.common/enum/MessageEnum';
 import { StatusEnum } from 'src/app/services/services.common/enum/status.enum';
 import { ConfirmationService } from 'src/app/services/services.common/confirmation.service';
+import { MapService } from 'src/app/services/map.service';
 
 @Component({
   selector: 'app-edit-location',
@@ -27,9 +28,9 @@ export class EditLocationPage implements AfterViewInit {
   formGroup!: FormGroup;
   location: Location = new Location();
 
-  locationsType: WritableSignal<LocationType[]> = this.locationService.locationTypes;
-  countries: WritableSignal<Country[]> = this.locationService.countries;
-  
+  sortedLocationsType = computed(() => this.locationService.locationTypes().sort((a, b) => a.name.trim().localeCompare(b.name.trim(), "fr", { sensitivity: "base" })));
+  sortedCountries = computed(() => this.locationService.countries().sort((a, b) => a.name.trim().localeCompare(b.name.trim(), "fr", { sensitivity: "base" })));
+
   constructor(
     private aLocation: ALocation,
     private route: ActivatedRoute,
@@ -38,6 +39,7 @@ export class EditLocationPage implements AfterViewInit {
     private formBuilder: FormBuilder,
     private router: Router,
     private locationService: LocationService,
+    private mapService: MapService,
     private toastService: ToastService,
   ) 
   {
@@ -57,14 +59,24 @@ export class EditLocationPage implements AfterViewInit {
 
       if (id) {
         this.location = this.locationService.locations().find((location) => location.id == id) || new Location();
+
+        this.createForm();
       } 
       else {
         this.location.latitude = Number(params.get('lat'));
-        this.location.altitude = Number(params.get('alt'));
         this.location.longitude = Number(params.get('lng'));
-      }
 
-      this.createForm();
+        this.createForm();
+
+        this.mapService.getAltitude(this.location.latitude, this.location.longitude)
+          .subscribe({
+            next: (altitude) => {
+              this.location.altitude = altitude;
+              this.formGroup.get('altitude')?.setValue(altitude.results[0].elevation);
+            },
+            error: (err) => {this.location.altitude = undefined }
+          });
+      }
 
       this.loaded = true;
     });
@@ -88,31 +100,35 @@ export class EditLocationPage implements AfterViewInit {
   private createForm() {
     this.formGroup = this.formBuilder.group({
       name: [this.location.name, Validators.compose([Validators.required])],
-      altitude: [this.location.altitude, Validators.required],
-      latitude: [{ value: this.location.latitude, disabled: true }, Validators.required],
-      longitude: [{ value: this.location.longitude, disabled: true }, Validators.required],
+      altitude: [this.location.altitude],
+      latitude: [{ value: this.location.latitude, disabled: this.location.id != "" }, Validators.required],
+      longitude: [{ value: this.location.longitude, disabled: this.location.id != "" }, Validators.required],
       typeID: [this.location.typeID, Validators.required],
-      country: [this.location.country, Validators.required],
+      countryID: [this.location.countryID, Validators.required],
       date: [this.location.date ?? moment().format('YYYY-MM-DD'), Validators.required],
     });
   }
 
   async onSubmit(locationRequest: LocationRequest) {
-    let isSuccess = true;
+    let isSuccess = true,
+    locationsType = this.locationService.locationTypes().find(item => item.id == locationRequest.typeID);
 
-    locationRequest.typeIcon = this.locationsType().find(item => item.id == locationRequest.typeID)?.icon ?? "";
+    locationRequest.typeIcon = locationsType?.icon ?? "";
+    locationRequest.typeName = locationsType?.name ?? "";
 
     if (this.location.id){
       await this.locationService.update(this.location.id, locationRequest).catch(() => isSuccess = false);
     }
     else{
       isSuccess = await this.locationService.create(locationRequest).then(() => isSuccess = true).catch(() => isSuccess = false);
+
+      this.mapService.removeNewLocationMarker();
     }
 
     if (isSuccess){
       this.toastService.get(MessageEnum.AppSuccess, StatusEnum.Success);
 
-      this.locationService.getAll();
+      await this.locationService.search(this.locationService.locationSearchRequest());
 
       this.router.navigate(['/map']);
     }  
@@ -128,6 +144,8 @@ export class EditLocationPage implements AfterViewInit {
 
       await me.toastService.get(isSuccess ? MessageEnum.AppSuccess : MessageEnum.AppError, isSuccess ? StatusEnum.Success : StatusEnum.Danger);
       
+      await me.locationService.search(me.locationService.locationSearchRequest());
+
       me.router.navigate(['/map']);
     }
 

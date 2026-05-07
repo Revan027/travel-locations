@@ -8,7 +8,7 @@
       <span class="title-main">Travel</span>
       <span class="title-accent">Locations</span>
     </ion-title>
-
+    
     <ion-buttons slot="end">
       <ion-button>
         <ion-icon slot="icon-only" name="person-circle-outline"></ion-icon>
@@ -34,8 +34,17 @@
    <ion-fab-button class="btn-add" size="small" expand="block" (click)="onActiveCreationLocation()">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
+
+    <ion-fab-button class="btn-filters" size="small" id="modal-filters" expand="block">
+      <ion-icon size="small" name="filter-outline"></ion-icon>
+    </ion-fab-button>   
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <div id="map"></div>
+  @if(!isMapInit()){
+    <app-loader></app-loader>
+  }
+  <div id="map" class=""></div>
+
+  <app-filters></app-filters>
 </ion-content>

@@ -1,9 +1,11 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MapPage } from './map.page';
 import { MapPageRoutingModule } from './map-routing.module';
+import { LoaderComponent } from 'src/app/components/loader.component';
+import { FiltersComponent } from 'src/app/components/filters/filters.component';
 
 @NgModule({
   imports: [
@@ -11,6 +13,8 @@ import { MapPageRoutingModule } from './map-routing.module';
     FormsModule,
     IonicModule,
     MapPageRoutingModule,
+    LoaderComponent,
+    FiltersComponent
   ],
   declarations: [MapPage],
 })

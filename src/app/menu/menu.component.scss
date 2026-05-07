@@ -1,15 +1,13 @@
 ion-tab-bar {
-    --background: var(--app-footer-bg);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    --border: 1px solid var(--app-glass-border);
-    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.25);
-    padding: 10px 8px calc(10px + var(--ion-safe-area-bottom, 0px));
-  }
+  --background: var(--app-footer-bg);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  --border: 1px solid var(--app-glass-border);
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.25);
+  padding: 10px 8px calc(10px + var(--ion-safe-area-bottom, 0px));
 
-
-ion-tab-button{
-     background: none;
+  ion-tab-button{
+    background: none;
     border: none;
     color: var(--app-tab-inactive);
     font-size: var(--ion-font-size-xs);
@@ -27,4 +25,13 @@ ion-tab-button{
     &.tab-selected {
       color: var(--app-tab-active);
     }
+  }
+
+  .app-version{
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    font-size: var(--ion-font-size-xxs);
+    color: white;
+  }
 }
