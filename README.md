@@ -101,6 +101,24 @@ Cloner le repo des services communs dans le bon dossier :
 git clone https://github.com/Revan027/services.common.git src/app/services/services.common
 ```
 
+## Mettre à jour la version
+
+### 1. `package.json`
+```json
+"version": "x.x.x"
+```
+
+### 2. `android/app/build.gradle`
+```gradle
+versionName "x.x.x"
+versionCode X  // entier, à incrémenter à chaque release
+```
+
+### 3. Xcode — `ios/App/App.xcodeproj`
+Ouvrir le projet dans Xcode → sélectionner la target `App` → onglet **General** → champ **Version**.
+
+---
+
 ## Lancer en développement web
 
 ```bash

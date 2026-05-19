@@ -59,7 +59,7 @@ export class LocationService {
     async getDatas(): Promise<void>{
         this.locationTypes.set(await this.firestoreService.getDocuments<LocationType[]>(FirebaseCollectionEnum.locationTypes));
         this.countries.set(await this.firestoreService.getDocuments<Country[]>(FirebaseCollectionEnum.country));
-   }
+    }
 
    async search(locationSearchRequest: LocationSearchRequest){
         let queryParts: QueryConstraint[] = [];
@@ -69,7 +69,7 @@ export class LocationService {
             queryParts.push(where("date", "<=", locationSearchRequest.date))
         }
 
-        if (locationSearchRequest.typeIDs){
+        if (locationSearchRequest.typeIDs.length > 0){
             queryParts.push(where("typeID", 'in', locationSearchRequest.typeIDs))
         }
 
