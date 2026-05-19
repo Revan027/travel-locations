@@ -13,6 +13,12 @@ ion-accordion-group {
   ion-accordion{
     background: transparent;
 
+    .location-illustration{
+      border-radius: 50%;
+      width: 64px;
+      height: 64px;
+    }
+
     ion-item {
       --background: white;
       --border-radius: 12px;
@@ -42,12 +48,18 @@ ion-accordion-group {
           padding-right: 10px;
         }
 
-        ion-label span {
-          font-size: var(--ion-font-size-sm);
-          color: var(--app-text-dark);
+        .title{
+          font-weight: bold;
+           font-size: var(--ion-font-size-base);
+        }
 
-          &.material-icons{
-            vertical-align: middle; 
+        ion-label .section {
+          display: flex;
+          color: var(--app-text-dark);
+          font-size: var(--ion-font-size-xs);
+
+          .material-icons{
+            font-size: var(--ion-font-size-sm);
           }
         }
       }

@@ -14,6 +14,7 @@ import { ConfirmationService } from 'src/app/services/services.common/confirmati
 import { MapService } from 'src/app/services/map.service';
 import { FileService } from 'src/app/services/file.services.common/file.service';
 import { HttpService } from 'src/app/services/services.common/http-service';
+import { CloudinaryService } from 'src/app/services/cloudinary.service';
 
 @Component({
   selector: 'app-edit-location',
@@ -46,8 +47,7 @@ export class EditLocationPage implements AfterViewInit {
     private locationService: LocationService,
     private mapService: MapService,
     private toastService: ToastService,
-    private fileService: FileService,
-    private httpService: HttpService
+    private cloudinaryService: CloudinaryService
   ) 
   {
     moment.locale("fr");  
@@ -169,26 +169,12 @@ export class EditLocationPage implements AfterViewInit {
 
   async onFileChanged(event: any) {
     this.uploadLoaded = true;
-    const file: File = event.target.files[0];
-    // a mettre dans un service
-    /*const results  = await Camera.chooseFromGallery({
-        mediaType: MediaTypeSelection.Photo, 
-        allowMultipleSelection: false,
-        includeMetadata: true,
-      });*/
-   
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("api_key", "972169299423238");
-    formData.append("upload_preset", "ml_default");
+    const result =  await this.cloudinaryService.uploadIamge(event.target.files[0]);
   
+    this.location.imgUrl = result.secure_url;
+    this.formGroup.get("imgUrl")?.setValue(this.location.imgUrl);
     
-    this.httpService.post("https://api.cloudinary.com/v1_1/dmxq9d1gs/image/upload", formData).subscribe((result: any) => {
-      this.location.imgUrl = result.secure_url;
-      this.formGroup.get("imgUrl")?.setValue(this.location.imgUrl);
-      this.uploadLoaded = false;
-    })
-
+    this.uploadLoaded = false;
   }
 }

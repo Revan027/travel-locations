@@ -1,4 +1,4 @@
-<ion-modal class="modal-filters" trigger="modal-filters" [initialBreakpoint]="0.4" [breakpoints]="[0, 0.25, 0.4, 0.5]">
+<ion-modal class="modal-filters" trigger="modal-filters" [initialBreakpoint]="0.6" [breakpoints]="[0, 0.25, 0.5, 0.6]">
     <ng-template>
       <ion-content>             
         <ion-title class="ion-margin ion-text-center"> Filtrer les lieux </ion-title>
@@ -6,7 +6,7 @@
           <form [formGroup]="formGroup" novalidate>
             <ion-grid>
               <ion-row class="ion-align-content-end">
-                <ion-col size="6">
+                <ion-col size="12">
                   <ion-label>Date limite</ion-label>
 
                     <ion-datetime-button datetime="date"></ion-datetime-button>
@@ -66,8 +66,8 @@
             </ion-grid>
            
             <div class="ion-display-flex ion-justify-content-end ion-margin">
-                <ion-button class="ion-margin-end" [strong]="true" (click)="onReset()">Annuler</ion-button>
-                <ion-button [strong]="true" [disabled]="formGroup.invalid" (click)="onSubmit(formGroup.value)">Valider</ion-button>
+                <ion-button class="ion-margin-end" [strong]="true" (click)="onReset()">Reset</ion-button>
+                <ion-button [strong]="true" [disabled]="formGroup.invalid" (click)="onSubmit(formGroup.value)">Filtrer</ion-button>
             </div>
           </form>
         }

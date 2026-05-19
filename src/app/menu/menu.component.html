@@ -1,20 +1,20 @@
 <ion-tabs>
    <ion-tab-bar slot="bottom">
-      <ion-tab-button tab="map">
+      <ion-tab-button routerLink="/map" routerLinkActive="tab-selected">
         <ion-icon name="map-outline"></ion-icon>
          <span>Carte</span>
       </ion-tab-button>
 
-      <ion-tab-button tab="locations">
+      <ion-tab-button routerLink="/locations" routerLinkActive="tab-selected">
         <ion-icon name="list-outline"></ion-icon>
          <span>Lieux</span>
       </ion-tab-button>
 
-      <ion-tab-button tab="profil">
+      <ion-tab-button routerLink="/profil" routerLinkActive="tab-selected">
          <ion-icon name="person-outline"></ion-icon>
          <span>Profil</span>
-      </ion-tab-button>   
+      </ion-tab-button>
 
-      <div class="app-version">V {{numVersion}}</div> 
-   </ion-tab-bar> 
+      <div class="app-version">V {{numVersion}}</div>
+   </ion-tab-bar>
 </ion-tabs>
