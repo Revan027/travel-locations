@@ -22,7 +22,7 @@
     <p class="ion-margin">Aucun lieux</p>
   }
   
-  <ion-accordion-group>
+  <ion-accordion-group [animated]="false">
     @for(item of objectEntries(groupLocation); track item[0]){
       <ion-accordion value="{{item[0]}}">
         <ion-item slot="header" color="light">
