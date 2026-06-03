@@ -19,15 +19,20 @@ ion-fab{
 
 .btn-refresh{
   position: absolute;
-  transform: translateY(70px);
+  transform: translateY(0px);
 }
 
 .btn-add{
   position: absolute;
-  transform: translateY(115px);
+  transform: translateY(45px);
 }
 
 .btn-filters{
   position: absolute;
-  transform: translateY(160px);
+  transform: translateY(90px);
+}
+
+.btn-search{
+  position: absolute;
+  transform: translateY(135px);
 }

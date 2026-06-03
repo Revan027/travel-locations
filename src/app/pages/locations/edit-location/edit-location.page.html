@@ -131,7 +131,9 @@
               label="Type"
               formControlName="typeID"
               interface="popover"
-              side="top" alignment="center"
+              [interfaceOptions]="{ side: 'top' }"
+              side="top" 
+              alignment="center"
               placeholder="-"
               fill="outline">
 
@@ -149,6 +151,7 @@
                 label="Pays"
                 formControlName="countryID"
                 interface="popover"
+                [interfaceOptions]="{ side: 'top' }"
                 placeholder="-"
                 fill="outline">
 

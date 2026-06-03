@@ -22,7 +22,7 @@ export class MapService {
     position = signal<Position>(new Position);
     isInit = signal<boolean>(false);
     
-    private degreeTolerance: number = 2;
+    private degreeTolerance: number = 1;
     private map!: L.Map;
 
     private userMarker?: L.Marker<any>;
@@ -334,6 +334,7 @@ export class MapService {
         this.map = L.map('map', { 
             fadeAnimation: false,    // désactive l'animation de fondu des tuiles
             zoomAnimation: true,
+            zoomControl: false,
             doubleClickZoom: false,  
             minZoom: 4, 
             renderer: L.svg({padding: 5})}
