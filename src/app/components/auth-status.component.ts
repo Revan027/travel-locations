@@ -20,7 +20,7 @@ import { User } from '../models/User';
                     </ion-col>
 
                     <ion-col>
-                        <ion-button class="btn-logout" fill="clear">
+                        <ion-button class="btn-logout" fill="clear" (click)="signOut()">
                             <ion-icon slot="icon-only" color="primary" name="log-out-outline"></ion-icon>
                         </ion-button>
                     </ion-col>
@@ -28,7 +28,7 @@ import { User } from '../models/User';
             </ion-grid>
         }
         @else{
-            <ion-button class="btn-logout" fill="clear">
+            <ion-button class="btn-logout" fill="clear" (click)="signIn()">
                 <ion-icon slot="icon-only" color="primary" name="log-in-outline"></ion-icon>
             </ion-button>
         }
@@ -53,5 +53,13 @@ export class AuthStatusComponent {
 
     constructor(private firestoreService: FirestoreService)
     {
+    }
+
+    signOut(){
+        this.firestoreService.signOut();
+    }
+
+    signIn(){
+        this.firestoreService.signIn();
     }
 }

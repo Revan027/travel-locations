@@ -30,7 +30,7 @@ import { provideHttpClient } from '@angular/common/http';
             const firestoreService = inject(FirestoreService);
             const locationService = inject(LocationService);
 
-            firestoreService.signInAnonymously();
+            await firestoreService.intUser();
             locationService.getDatas();
         }),
     ],
