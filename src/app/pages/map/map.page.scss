@@ -2,20 +2,6 @@ ion-fab{
     right: 30px;
 }
 
-.wrapper-localisation{
-    position: absolute;
-    right: 0;
-    background: var(--app-header-bg);
-    padding: 5px;
-    color: white;
-    white-space: nowrap;
-    overflow: scroll;
-    width: 80%;
-
-  .lat, .lng, .alt{
-    color: var(--app-amber);
-  }
-}
 
 .btn-refresh{
   position: absolute;

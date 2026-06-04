@@ -6,6 +6,7 @@ import { MapPage } from './map.page';
 import { MapPageRoutingModule } from './map-routing.module';
 import { LoaderComponent } from 'src/app/components/loader.component';
 import { FiltersComponent } from 'src/app/components/filters/filters.component';
+import { AuthStatusComponent } from 'src/app/components/auth-status.component';
 
 @NgModule({
   imports: [
@@ -14,7 +15,8 @@ import { FiltersComponent } from 'src/app/components/filters/filters.component';
     IonicModule,
     MapPageRoutingModule,
     LoaderComponent,
-    FiltersComponent
+    FiltersComponent,
+    AuthStatusComponent
   ],
   declarations: [MapPage],
 })

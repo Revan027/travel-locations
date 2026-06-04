@@ -27,10 +27,10 @@ import { provideHttpClient } from '@angular/common/http';
         provideHttpClient(),
         provideAppInitializer(async () => {
             // Il faut d'abord faire les injections et ensuite faire le traitement. Sinon on perd le contexte d'injection.
-            const fileService = inject(FirestoreService);
+            const firestoreService = inject(FirestoreService);
             const locationService = inject(LocationService);
 
-            fileService.signIn();
+            firestoreService.signInAnonymously();
             locationService.getDatas();
         }),
     ],
