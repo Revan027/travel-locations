@@ -1,4 +1,4 @@
-import { DestroyRef, inject, Injectable, signal } from '@angular/core';
+import { DestroyRef, ElementRef, inject, Injectable, signal, ViewChild } from '@angular/core';
 import { Geolocation, Position as GPosition } from '@capacitor/geolocation';
 import * as L from 'leaflet';
 import { Position } from '../models/Position';
@@ -16,7 +16,8 @@ import { firstValueFrom } from 'rxjs';
 @Injectable({
     providedIn: 'root',
 })
-export class MapService {
+export class MapService {  
+    @ViewChild('monInput') inputRef!: ElementRef;
     private destroyRef = inject(DestroyRef);
 
     position = signal<Position>(new Position);

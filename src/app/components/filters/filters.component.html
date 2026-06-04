@@ -6,31 +6,7 @@
           <form [formGroup]="formGroup" novalidate>
             <ion-grid>
               <ion-row class="ion-align-content-end">
-                <ion-col size="12">
-                  <ion-label>Date limite</ion-label>
-
-                    <ion-datetime-button datetime="date"></ion-datetime-button>
-
-                    <ion-modal [keepContentsMounted]="true">
-                      <ng-template>
-                        <ion-datetime
-                          id="date"
-                          presentation="date"
-                          formControlName="date"
-                          [formatOptions]="{
-                            date: {
-                              weekday: 'short',
-                              month: 'long',
-                              day: '2-digit',
-                              year: 'numeric'
-                            },
-                          }"
-                        ></ion-datetime>
-                      </ng-template>
-                    </ion-modal>    
-                </ion-col>
-
-                <ion-col size="6" class="ion-align-content-end">
+                 <ion-col size="6" class="ion-align-content-end">
                   <ion-select
                     label="Type"
                     formControlName="typeIDs"
@@ -63,6 +39,30 @@
                       }
                     </ion-select>
                 </ion-col>
+
+                <ion-col size="6">
+                  <ion-label>Date limite</ion-label>
+
+                    <ion-datetime-button datetime="date"></ion-datetime-button>
+
+                    <ion-modal [keepContentsMounted]="true">
+                      <ng-template>
+                        <ion-datetime
+                          id="date"
+                          presentation="date"
+                          formControlName="date"
+                          [formatOptions]="{
+                            date: {
+                              weekday: 'short',
+                              month: 'long',
+                              day: '2-digit',
+                              year: 'numeric'
+                            },
+                          }"
+                        ></ion-datetime>
+                      </ng-template>
+                    </ion-modal>    
+                </ion-col>        
               </ion-row>
             </ion-grid>
            

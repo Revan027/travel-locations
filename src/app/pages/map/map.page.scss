@@ -32,7 +32,95 @@ ion-fab{
   transform: translateY(90px);
 }
 
-.btn-search{
+.btn-api-search-modal{
   position: absolute;
   transform: translateY(135px);
+}
+
+.api-search-modal {
+  position: absolute;
+  left: 0;
+  top: 70px;
+  z-index: 1000;                 // au-dessus de Leaflet (~700), sous les overlays Ionic
+
+  display: flex;
+  flex-direction: column;
+  width: 80%;
+  max-width: 320px;
+  max-height: 60vh;
+  padding: 10px;
+
+  background: var(--app-glass-bg);
+  backdrop-filter: blur(var(--app-glass-blur));
+  -webkit-backdrop-filter: blur(var(--app-glass-blur));
+  border: 1px solid var(--app-glass-border);
+  border-radius: 0 var(--app-card-radius) var(--app-card-radius) 0;
+  box-shadow: var(--app-glass-shadow);
+  color: var(--app-text-light);
+
+  transform: translateX(-110%);
+  transition: transform 0.4s ease;   // anime ouverture ET fermeture
+
+  &.open { transform: translateX(0); }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  &__title {
+    flex: 1;
+    font-size: var(--ion-font-size-lg);
+    font-weight: 700;
+  }
+  &__title-icon {
+    color: var(--app-amber);
+    font-size: 1.3rem;
+  }
+  &__close {
+    --color: var(--app-text-light);
+    margin: 0;
+  }
+
+  &__field {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+
+    ion-input {
+      flex: 1;
+      --background: var(--app-input-bg);
+      --color: var(--app-text-dark);
+      --placeholder-color: black;
+    }
+  }
+
+  &__results {
+    margin-top: 12px;
+    overflow-y: auto;
+
+    ion-list { background: transparent; }
+
+    ion-item {
+      --background: transparent;
+      --color: var(--app-text-light);
+      --border-radius: 12px;
+      margin-bottom: 4px;
+
+      ion-icon { color: var(--app-amber); }
+      h3 { font-weight: 700; }
+      p {
+        color: var(--app-text-muted);
+        font-size: var(--ion-font-size-xs);
+      }
+    }
+  }
+
+  &__empty {
+    padding: 16px 0;
+    color: var(--app-text-muted);
+    text-align: center;
+    font-size: var(--ion-font-size-sm);
+  }
 }
