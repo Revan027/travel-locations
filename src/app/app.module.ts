@@ -11,6 +11,7 @@ import { provideAuth, getAuth } from '@angular/fire/auth';
 import { LocationService } from './services/location.service';
 import { FirestoreService } from './services/firestore.services.common/firestore.service';
 import { provideHttpClient } from '@angular/common/http';
+import { SplashScreen } from '@capacitor/splash-screen';
 
 @NgModule({
     declarations: [AppComponent],
@@ -30,8 +31,13 @@ import { provideHttpClient } from '@angular/common/http';
             const firestoreService = inject(FirestoreService);
             const locationService = inject(LocationService);
 
-            await firestoreService.intUser();
-            locationService.getDatas();
+            try {
+                await firestoreService.intUser();
+                await locationService.getDatas();
+            } finally {
+                // toujours cacher le splash, même en cas d'erreur, sinon l'app reste bloquée dessus
+                await SplashScreen.hide();
+            }
         }),
     ],
     bootstrap: [AppComponent],
