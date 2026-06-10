@@ -1,8 +1,8 @@
 import { Location as ALocation } from '@angular/common';
 import { Component, AfterViewInit, inject, DestroyRef, WritableSignal, computed, ViewChild, ElementRef } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { GestureController } from '@ionic/angular';
+import { GestureController, IonicModule } from '@ionic/angular';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Location, LocationRequest } from 'src/app/models/Location';
 import { LocationService } from 'src/app/services/location.service';
@@ -15,12 +15,14 @@ import { MapService } from 'src/app/services/map.service';
 import { FileService } from 'src/app/services/file.services.common/file.service';
 import { HttpService } from 'src/app/services/services.common/http-service';
 import { CloudinaryService } from 'src/app/services/cloudinary.service';
+import { LoaderComponent } from 'src/app/components/loader.component';
 
 @Component({
+  standalone: true,
+  imports: [IonicModule, ReactiveFormsModule, LoaderComponent],
   selector: 'app-edit-location',
   templateUrl: 'edit-location.page.html',
   styleUrls: ['edit-location.page.scss'],
-  standalone: false,
 })
 export class EditLocationPage implements AfterViewInit {
   @ViewChild('inputFile') inputFile!: ElementRef;
@@ -33,7 +35,6 @@ export class EditLocationPage implements AfterViewInit {
   formGroup!: FormGroup;
   location: Location = new Location();
   
-
   sortedLocationsType = computed(() => this.locationService.locationTypes().sort((a, b) => a.name.trim().localeCompare(b.name.trim(), "fr", { sensitivity: "base" })));
   sortedCountries = computed(() => this.locationService.countries().sort((a, b) => a.name.trim().localeCompare(b.name.trim(), "fr", { sensitivity: "base" })));
 

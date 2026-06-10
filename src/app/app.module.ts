@@ -11,6 +11,7 @@ import { provideAuth, getAuth } from '@angular/fire/auth';
 import { LocationService } from './services/location.service';
 import { FirestoreService } from './services/firestore.services.common/firestore.service';
 import { provideHttpClient } from '@angular/common/http';
+import { SplashScreen } from '@capacitor/splash-screen';
 
 @NgModule({
     declarations: [AppComponent],
@@ -27,11 +28,16 @@ import { provideHttpClient } from '@angular/common/http';
         provideHttpClient(),
         provideAppInitializer(async () => {
             // Il faut d'abord faire les injections et ensuite faire le traitement. Sinon on perd le contexte d'injection.
-            const fileService = inject(FirestoreService);
+            const firestoreService = inject(FirestoreService);
             const locationService = inject(LocationService);
-
-            fileService.signIn();
-            locationService.getDatas();
+  await SplashScreen.show();
+            try {
+                await firestoreService.intUser();
+                await locationService.getDatas();
+            } finally {
+                // toujours cacher le splash, même en cas d'erreur, sinon l'app reste bloquée dessus
+                await SplashScreen.hide();
+            }
         }),
     ],
     bootstrap: [AppComponent],

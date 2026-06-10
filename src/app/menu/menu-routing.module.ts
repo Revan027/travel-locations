@@ -9,18 +9,23 @@ const routes: Routes = [
         children: [
             {
                 path: 'map',
-                loadChildren: () =>
-                    import('../pages/map/map.module').then((m) => m.MapPageModule),
+                loadComponent: () =>
+                    import('../pages/map/map.page').then((m) => m.MapPage),
             },
             {
                 path: 'locations',
                 loadChildren: () =>
-                    import('../pages/locations/locations/locations.module').then((m) => m.LocationsPageModule),
+                    import('../pages/locations/locations/locations.routes').then((m) => m.routes),
             },
             {
-                path: 'profil',
-                loadChildren: () =>
-                    import('../pages/profil/profil.module').then((m) => m.ProfilPageModule),
+                path: 'signout',
+                loadComponent: () =>
+                    import('../pages/auth/sign-out/sign-out.page').then((m) => m.SignOutPage),
+            },
+            {
+                path: 'signin',
+                loadComponent: () =>
+                    import('../pages/auth/sign-in/sign-in.page').then((m) => m.SignInPage),
             },
             {
                 path: '',

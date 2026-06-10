@@ -1,24 +1,35 @@
-import { Component, HostListener, WritableSignal } from '@angular/core';
+import { Component, HostListener, signal, WritableSignal } from '@angular/core';
 import { MapService } from 'src/app/services/map.service';
 import { Position } from 'src/app/models/Position';
 import { LocationService } from 'src/app/services/location.service';
 import { Location } from 'src/app/models/Location';
-import { FormGroup } from '@angular/forms';
-import { fromEvent, Subscription } from 'rxjs';
+import { FormGroup, FormsModule } from '@angular/forms';
+import { IonicModule } from '@ionic/angular';
 import { PhotonKomootService } from 'src/app/services/photon-komoot.service';
 import { PhotonKomootFeature, PhotonKomootResult } from 'src/app/models/PhotonKomootResult';
+import { LoaderComponent } from 'src/app/components/loader.component';
+import { FiltersComponent } from 'src/app/components/filters/filters.component';
+import { AuthStatusComponent } from 'src/app/components/auth-status.component';
 
 @Component({
+  standalone: true,
+  imports: [IonicModule, FormsModule, LoaderComponent, FiltersComponent, AuthStatusComponent],
   selector: 'app-map',
   templateUrl: 'map.page.html',
   styleUrls: ['map.page.scss'],
-  standalone: false,
 })
 export class MapPage {
-  /*@HostListener('document:click', ['$event'])
-  onDocumentClick(event: any) {
-  }*/
-  private clickSubscription?: Subscription;
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    if (!this.displayApiSearchModal()) return;
+
+    const target = event.target as HTMLElement;
+
+    // on ne ferme pas si le clic est dans le modal ou sur le bouton qui l'ouvre
+    if (!target.closest('.api-search-modal') && !target.closest('.btn-api-search-modal')) {
+      this.displayApiSearchModal.set(false);
+    }
+  }
 
   position: WritableSignal<Position> = this.mapService.position;
   locations: WritableSignal<Location[]> = this.locationService.locations;
@@ -28,12 +39,12 @@ export class MapPage {
   formGroup!: FormGroup;
 
   apiSearchLoading = false;
-  displayApiSearchModal?: boolean = undefined;
+  displayApiSearchModal = signal(false);
   apiSearchResult?: PhotonKomootResult;
   apiSearchText: string = '';
 
   constructor(
-    private mapService: MapService, 
+    private mapService: MapService,
     private locationService: LocationService,
     private photonKomootService: PhotonKomootService){}
 
@@ -45,22 +56,6 @@ export class MapPage {
   async ionViewDidEnter(){
     // problème classique Leaflet sur mobile : quand le clavier s'ouvre sur la page de création, il redimensionne le viewport. En revenant sur la map, Leaflet a gardé en mémoire l'ancienne taille du conteneur → rendu partiel.
     this.mapService.resizeMap();
-  }
-
-  onSearchModalTransitionEnd(){
-    if (this.displayApiSearchModal){
-      this.clickSubscription = fromEvent(document, 'click')
-        .subscribe(event => {
-          let target = event?.target as HTMLElement;
-
-          if (!target.closest(".api-search-modal") && this.displayApiSearchModal){
-            this.displayApiSearchModal = false;
-          }
-        });
-    }
-    else{
-      this.clickSubscription?.unsubscribe();
-    }
   }
 
   async onRefreshPosition(){
@@ -78,7 +73,7 @@ export class MapPage {
   } 
 
   onOpenSearchModal(){
-    this.displayApiSearchModal = !this.displayApiSearchModal;
+    this.displayApiSearchModal.update(v => !v);
   }
 
   async onSubmitPhotonKomootSearch(){
@@ -88,9 +83,9 @@ export class MapPage {
   }
 
   onClickApiFeature(feature: PhotonKomootFeature){
-    this.displayApiSearchModal = false;
-    console.log(feature)
+    this.displayApiSearchModal.set(false);
     const position: Position = {latitude: feature.geometry.coordinates[1], longitude: feature.geometry.coordinates[0]};
+
     this.mapService.flyTo(position, 17);
   }
 }
