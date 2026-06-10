@@ -152,6 +152,10 @@ ion-fab-button.fab-button-disabled{
   opacity: 1;
 }
 
+// POPPOVER
+ion-popover{
+  --max-height: 300px;
+}
 
 // MAP
 #map {
