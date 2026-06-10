@@ -3,16 +3,21 @@ import { MapService } from 'src/app/services/map.service';
 import { Position } from 'src/app/models/Position';
 import { LocationService } from 'src/app/services/location.service';
 import { Location } from 'src/app/models/Location';
-import { FormGroup } from '@angular/forms';
+import { FormGroup, FormsModule } from '@angular/forms';
+import { IonicModule } from '@ionic/angular';
 import { fromEvent, Subscription } from 'rxjs';
 import { PhotonKomootService } from 'src/app/services/photon-komoot.service';
 import { PhotonKomootFeature, PhotonKomootResult } from 'src/app/models/PhotonKomootResult';
+import { LoaderComponent } from 'src/app/components/loader.component';
+import { FiltersComponent } from 'src/app/components/filters/filters.component';
+import { AuthStatusComponent } from 'src/app/components/auth-status.component';
 
 @Component({
+  standalone: true,
+  imports: [IonicModule, FormsModule, LoaderComponent, FiltersComponent, AuthStatusComponent],
   selector: 'app-map',
   templateUrl: 'map.page.html',
   styleUrls: ['map.page.scss'],
-  standalone: false,
 })
 export class MapPage {
   /*@HostListener('document:click', ['$event'])

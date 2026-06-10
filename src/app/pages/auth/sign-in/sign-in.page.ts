@@ -1,15 +1,18 @@
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { IonicModule } from '@ionic/angular';
 import { FirebaseError } from 'firebase/app';
 import { UserCredential } from 'firebase/auth';
 import { FirestoreService } from 'src/app/services/firestore.services.common/firestore.service';
+import { LoaderComponent } from 'src/app/components/loader.component';
 
 @Component({
+  standalone: true,
+  imports: [IonicModule, ReactiveFormsModule, LoaderComponent],
   selector: 'app-sign-in',
   templateUrl: './sign-in.page.html',
   styleUrls: ['./sign-in.page.scss'],
-  standalone: false,
 })
 export class SignInPage implements OnInit {
 
