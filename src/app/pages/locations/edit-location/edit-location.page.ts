@@ -49,7 +49,7 @@ export class EditLocationPage implements AfterViewInit {
     private mapService: MapService,
     private toastService: ToastService,
     private cloudinaryService: CloudinaryService
-  ) 
+  )
   {
     moment.locale("fr");  
   }

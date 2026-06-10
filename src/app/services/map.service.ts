@@ -1,5 +1,5 @@
-import { DestroyRef, ElementRef, inject, Injectable, signal, ViewChild } from '@angular/core';
-import { Geolocation, Position as GPosition } from '@capacitor/geolocation';
+import { Injectable, signal } from '@angular/core';
+
 import * as L from 'leaflet';
 import { Position } from '../models/Position';
 import { Router } from '@angular/router';
@@ -10,34 +10,35 @@ import moment from 'moment';
 import { Cluster } from '../models/Cluster';
 import { HttpService } from './services.common/http-service';
 import { environment } from 'src/environments/environment';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { firstValueFrom } from 'rxjs';
+import { GeolocalisationService } from './geolocalisation.service';
+import { MarkerFactoryService } from './marker.factory.service';
+
 
 @Injectable({
     providedIn: 'root',
 })
-export class MapService {  
-    @ViewChild('monInput') inputRef!: ElementRef;
-    private destroyRef = inject(DestroyRef);
+export class MapService {
 
-    position = signal<Position>(new Position);
     isInit = signal<boolean>(false);
-    
-    private degreeTolerance: number = 1;
-    private map!: L.Map;
 
+    private readonly degreeTolerance: number = 1;
+    private map!: L.Map;
     private userMarker?: L.Marker<any>;
     private newLocationMarker?: L.Marker<any>;
-
     private locations: Location[] = [];
     private clusters: Cluster[] = [];
-
     private clustersLayer: L.LayerGroup<any>[] = [];
 
-    constructor(private router: Router, private locationService: LocationService, private httpService: HttpService) {
+    constructor(
+        private router: Router, 
+        private locationService: LocationService, 
+        private geolocalisationService: GeolocalisationService, 
+        private httpService: HttpService, 
+        private markerFactoryService: MarkerFactoryService) 
+    {
         effect(async () => {
-            
-            this.clearAllLocationMarkers(this.clusters);
+
+            this.removeAllLocationMarkers(this.clusters);
 
             this.removeClustersLayer();
 
@@ -58,29 +59,18 @@ export class MapService {
     async init(){
         this.createMap();
 
-        await this.initCurrentPosition();
+        await this.locateUser();
 
-        this.initDblClickHandler(); 
+        this.initDblClickListener(); 
 
-        this.initPopup();
+        this.initPopupListener();
 
         this.initMoveEndListener();
     }
 
-    async initCurrentPosition(){
-        const success = await this.getCurrentPosition();
+    
 
-        if (!success) return;
-
-        // On supprime l'ancienne position
-        if (this.userMarker != undefined){
-            this.userMarker.remove();
-        }
-
-        this.createUserMarker();
-    }
-
-    private initDblClickHandler(){
+    private initDblClickListener(){
         this.map.on('dblclick', (e: L.LeafletMouseEvent) => {
             const position: Position = {latitude: e.latlng.lat, longitude: e.latlng.lng};
 
@@ -88,7 +78,7 @@ export class MapService {
         });
     }
 
-    private initPopup(){
+    private initPopupListener(){
         var me = this,
             callback: any;
 
@@ -112,6 +102,29 @@ export class MapService {
         });
     }
 
+    async locateUser(){
+        const success = await this.geolocalisationService.getCurrentPosition();
+
+        if (!success) return;
+
+        this.removeUserMarker();
+
+        this.userMarker = this.markerFactoryService.createUserMarker(this.geolocalisationService.position().latitude, this.geolocalisationService.position().longitude);
+        this.userMarker.addTo(this.map);
+    }
+
+    placeNewLocationMarker(){
+        this.removeNewLocationMarker();
+
+        const marker = this.markerFactoryService.buildNewLocationMarker(this.map.getCenter())
+
+        marker.addTo(this.map)
+
+        marker.on('click', async (e) => {
+            this.router.navigateByUrl(`/locations/create;lat=${e.latlng.lat};lng=${e.latlng.lng}`)
+        });
+    }
+
     private updateMapDisplay(){
         const zoom = this.map.getZoom();
 
@@ -121,7 +134,7 @@ export class MapService {
             this.drawLocationsInBounds(this.map.getBounds());
         }
         else if(this.clustersLayer.length == 0){
-            this.clearAllLocationMarkers(this.clusters);
+            this.removeAllLocationMarkers(this.clusters);
 
             this.drawClusters();
         }
@@ -157,6 +170,64 @@ export class MapService {
         })
     }
 
+    private drawLocationsInBounds(bound: L.LatLngBounds){
+        this.clusters.map((cluster: Cluster)=> 
+        { 
+            // Si la frontière visible est compris
+            if(bound.intersects(cluster.bounds))
+            {
+                cluster.locations.forEach((location: Location) => {
+                    // on ajoute un marker s'il est pas déja présent
+                    if(!cluster.locationsMarker.some((item: L.Marker<any>) => item.getLatLng().lat == location.latitude && item.getLatLng().lng == location.longitude)){
+                        const marker = this.markerFactoryService.buildLocationMarker(location); 
+
+                        marker.addTo(this.map);
+
+                        cluster.locationsMarker.push(marker);
+                    }                  
+                })
+            }
+            else{
+               this.removeLocationMarkers(cluster);
+            }
+        });
+    }
+    
+    private buildClusters(){
+        // on prend la permière entrée et on regarde si on a une concordance. Ensuite on l'injecte dans le cluster.
+        let locationCompare = this.locations[0],
+            maxLat = locationCompare.latitude + this.degreeTolerance,
+            minLat = locationCompare.latitude - this.degreeTolerance,
+            maxLng = locationCompare.longitude + this.degreeTolerance,
+            minLng = locationCompare.longitude - this.degreeTolerance;
+
+        // on filtre par rapport au lieu recup ceux qui sont près de lui. Avec une tolérance de 2°.
+        let locations = this.locations.filter((item: Location)=> {
+            return (item.latitude <= maxLat && item.latitude >= minLat) && (item.longitude <= maxLng && item.longitude >= minLng);
+        });
+
+        if (!locations){
+           locations = [locationCompare];
+        }
+
+        // création du cluster
+        this.clusters.push({
+            locationsMarker: [],
+            locations: locations,
+            bounds: L.latLngBounds(locations.map(x => ({ lat: x.latitude, lng: x.longitude })))
+        });
+
+        // on retire les lieux mis dans le cluster
+        this.locations = this.locations.filter((item: Location)=> {
+           return item.id != locationCompare.id && !locations.some(x => x.id == item.id)
+        })
+
+        // récursif si on a encore des lieux a traiter
+        if(this.locations.length > 0){
+            this.buildClusters();
+        }
+    }
+
     flyTo(position: Position, lvlZoom: number){
         this.map.flyTo([position.latitude, position.longitude], lvlZoom, {animate: true, duration: 1 });
     }
@@ -165,13 +236,13 @@ export class MapService {
        this.clusters = [];
     }
 
-    private clearAllLocationMarkers(clusters: Cluster[]){
+    private removeAllLocationMarkers(clusters: Cluster[]){
         clusters.forEach((cluster: Cluster) => {
-           this.clearClusterMarkers(cluster);
+           this.removeLocationMarkers(cluster);
         })
     }
 
-    private clearClusterMarkers(cluster: Cluster){
+    private removeLocationMarkers(cluster: Cluster){
         cluster.locationsMarker.forEach((marker: L.Marker<any>) => {
             marker.remove();
         })
@@ -198,137 +269,25 @@ export class MapService {
         this.clustersLayer = [];
     }
 
+    removeUserMarker(){
+        if (this.userMarker != undefined){
+            this.userMarker.remove();
+        }
+    }
+
     removeNewLocationMarker(){
         if (this.newLocationMarker != undefined){
             this.newLocationMarker.remove();
         }
     }
 
-    private drawLocationsInBounds(bound: L.LatLngBounds){
-        this.clusters.map((cluster: Cluster)=> 
-        { 
-            // Si la frontière visible est compris
-            if (bound.intersects(cluster.bounds))
-            {
-                cluster.locations.forEach((location: Location) => {
-                    // on ajoute un marker s'il est pas déja présent
-                    if (!cluster.locationsMarker.some((item: L.Marker<any>) => item.getLatLng().lat == location.latitude && item.getLatLng().lng == location.longitude)){
-                        this.createLocationMarker(location, cluster); 
-                    }                  
-                })
-            }
-            else{
-               this.clearClusterMarkers(cluster);
-            }
-        });
-    }
-    
-    private buildClusters(){  
-        // on prend la permière entrée et on regarde si on a une concordance. Ensuite on l'injecte dans le cluster.
-        let locationCompare = this.locations[0],
-            maxLat = locationCompare.latitude + this.degreeTolerance,
-            minLat = locationCompare.latitude - this.degreeTolerance,
-            maxLng = locationCompare.longitude + this.degreeTolerance,
-            minLng = locationCompare.longitude - this.degreeTolerance;
 
-        // on filtre par rapport au lieu recup ceux qui sont près de lui. Avec une tolérance de 2°.
-        let locations = this.locations.filter((item: Location)=> {
-            return (item.latitude <= maxLat && item.latitude >= minLat) && (item.longitude <= maxLng && item.longitude >= minLng);
-        });
-
-        if (!locations){
-           locations = [locationCompare];
-        }
-
-        // création du cluster
-        this.clusters.push({
-            locationsMarker: [],
-            locations: locations,
-            bounds: L.latLngBounds(locations.map(x => ({ lat: x.latitude, lng: x.longitude })))
-        });
-
-        // on retire les lieux mis dans le cluster
-        this.locations = this.locations.filter((item: Location)=> {
-           return item.id != locationCompare.id && !locations.some(x => x.id == item.id) 
-        })
-
-        // récursif si on a encore des lieux a traiter
-        if(this.locations.length > 0){
-            this.buildClusters();
-        }  
-    }
 
     getAltitude(lat: number, lng: number) {
-       return this.httpService.get<any>(environment.apiOpenMeteo.replace("{X}", lat.toString()).replace("{Y}", lng.toString()))       
+       return this.httpService.get<any>(environment.apiOpenMeteo.replace("{X}", lat.toString()).replace("{Y}", lng.toString()))
     }
 
-    private async getCurrentPosition(): Promise<boolean>{
-        let authorisation = await this.checkAuthorisation();
-
-        if (!authorisation){
-            return false;
-        }
-
-        const position = await Geolocation.getCurrentPosition({ timeout: 10000, enableHighAccuracy: true }).catch(() => null)
-
-        if (!position) return false;
-
-        this.position.set({ latitude: position.coords.latitude, longitude: position.coords.longitude, altitude: position.coords.altitude} as Position);
-
-        return true;
-    }
-
-    createNewLocationMarker(){
-        this.removeNewLocationMarker();
-
-        let latLng = this.map.getCenter();
-
-        const newLocationIcon = L.divIcon({
-            html: '<ion-icon name="location"></ion-icon>',
-            iconAnchor: [16, 32],
-            popupAnchor: [0, -32],
-            className: 'custom-marker new-location'
-        });
-
-        this.newLocationMarker = L.marker([latLng.lat, latLng.lng], {draggable: true, icon: newLocationIcon}).addTo(this.map);
-
-        this.newLocationMarker.on('click', async (e) => {
-            this.router.navigateByUrl(`/locations/create;lat=${e.latlng.lat};lng=${e.latlng.lng}`)
-        });
-    }
-
-    createLocationMarker(location: Location, cluster: Cluster){
-        const locationIcon = L.divIcon({
-            html: `<span class="material-icons">${location.typeIcon}</span>`,
-            iconAnchor: [16, 32],
-            popupAnchor: [0, -32],
-            
-            className: 'custom-marker'
-        });
-
-        const marker = L.marker([location.latitude, location.longitude], {icon: locationIcon})
-        .bindPopup(`
-            <span data-id="${location.id}">
-                <p class="title">${location.name}</p>
-                <p class="section"><span class="material-icons">calendar_month</span>${moment(location.date).format("DD/MM/YYYY")}</p>
-                <p class="section"><span class="material-icons">location_on</span>${location.latitude.toFixed(4)}, ${location.longitude.toFixed(4)}</p>
-                <p class="section"><span class="material-icons">terrain</span>${location.altitude ?? "-"}</p> 
-            </span>`, { maxWidth: 220 })
-        .addTo(this.map);
-  
-        cluster.locationsMarker.push(marker);
-    }
-
-    private createUserMarker(){
-        const monIcon = L.divIcon({
-           html: '<ion-icon name="accessibility"></ion-icon>',
-           iconAnchor: [16, 32],
-           popupAnchor: [0, -32],
-           className: 'custom-marker user'
-        });
-
-        this.userMarker = L.marker([this.position().latitude, this.position().longitude], {icon: monIcon}).addTo(this.map);
-    }
+   
 
     private createMap(){
         // init de la map leaflet depuis la france. un padding de 10 pour avoir une carte en chargement plus fluide
@@ -350,18 +309,6 @@ export class MapService {
 
         // On resize direct pour éviter un bug de rendu de la carte
         setTimeout(() => this.resizeMap(), 0);
-    }
-
-    private async checkAuthorisation(): Promise<boolean>{
-        let permission = await Geolocation.checkPermissions();
-
-        if (permission.location != "granted"){
-            permission = await Geolocation.requestPermissions({ permissions: ['location', 'coarseLocation']})
-
-            return permission.location == "granted";
-        }
-
-        return permission.location == "granted";
     }
 
     resizeMap(){

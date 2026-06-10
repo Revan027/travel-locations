@@ -236,8 +236,8 @@ ion-popover{
   }
 
   .custom-marker {   
-    &.user{
-      font-size: var(--ion-font-size-2xl)!important;
+    &.user span{
+      font-size: var(--ion-font-size-lg)!important;
       z-index: 9999!important;;
     }
 

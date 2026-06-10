@@ -10,6 +10,7 @@ import { PhotonKomootFeature, PhotonKomootResult } from 'src/app/models/PhotonKo
 import { LoaderComponent } from 'src/app/components/loader.component';
 import { FiltersComponent } from 'src/app/components/filters/filters.component';
 import { AuthStatusComponent } from 'src/app/components/auth-status.component';
+import { GeolocalisationService } from 'src/app/services/geolocalisation.service';
 
 @Component({
   standalone: true,
@@ -31,7 +32,7 @@ export class MapPage {
     }
   }
 
-  position: WritableSignal<Position> = this.mapService.position;
+  position: WritableSignal<Position> = this.geolocalisationService.position;
   locations: WritableSignal<Location[]> = this.locationService.locations;
   isMapInit: WritableSignal<boolean> = this.mapService.isInit;
 
@@ -45,6 +46,7 @@ export class MapPage {
 
   constructor(
     private mapService: MapService,
+    private geolocalisationService: GeolocalisationService,
     private locationService: LocationService,
     private photonKomootService: PhotonKomootService){}
 
@@ -61,7 +63,7 @@ export class MapPage {
   async onRefreshPosition(){
     this.isRefreshing = true;
 
-    await this.mapService.initCurrentPosition();
+    await this.mapService.locateUser();
   
     this.mapService.flyTo(this.position() as Position, 17);
     
@@ -69,7 +71,7 @@ export class MapPage {
   }
 
   onActiveCreationLocation(){
-    this.mapService.createNewLocationMarker();
+    this.mapService.placeNewLocationMarker();
   } 
 
   onOpenSearchModal(){
