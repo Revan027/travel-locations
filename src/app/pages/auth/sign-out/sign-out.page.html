@@ -1,0 +1,44 @@
+<ion-header [translucent]="true">
+  <ion-toolbar class="travel-header">
+    <ion-buttons slot="start">
+      <ion-icon name="compass" class="app-logo"></ion-icon>
+    </ion-buttons>
+
+    <ion-title class="travel-title">
+      <span class="title-main">Déconnexion</span>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="sign-out-wrapper">
+    <div class="card card--glass">
+      <div class="card__icon-badge">
+        <ion-icon name="compass"></ion-icon>
+      </div>
+
+      @if(loading){
+        <h1 class="card__title">Déconnexion...</h1>
+        <app-loader></app-loader>
+      }
+      @else{
+        <h1 class="card__title">À bientôt&nbsp;!</h1>
+
+        <p class="card__subtitle">
+          Voulez-vous vraiment vous déconnecter de votre compte&nbsp;?
+        </p>
+
+        <div class="card__actions">
+          <ion-button expand="block" class="card__btn-confirm" (click)="onSignOut()">
+            <ion-icon name="log-out-outline" slot="start"></ion-icon>
+            Se déconnecter
+          </ion-button>
+
+          <ion-button expand="block"  fill="clear" class="card__btn-cancel" (click)="cancel()">
+            Annuler
+          </ion-button>
+        </div>
+      }
+    </div>
+  </div>
+</ion-content>

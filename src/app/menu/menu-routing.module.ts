@@ -18,9 +18,14 @@ const routes: Routes = [
                     import('../pages/locations/locations/locations.module').then((m) => m.LocationsPageModule),
             },
             {
-                path: 'profil',
+                path: 'signout',
                 loadChildren: () =>
-                    import('../pages/profil/profil.module').then((m) => m.ProfilPageModule),
+                    import('../pages/auth/sign-out/sign-out.module').then((m) => m.SignOutPageModule),
+            },
+            {
+                path: 'signin',
+                loadChildren: () =>
+                    import('../pages/auth/sign-in/sign-in.module').then((m) => m.SignInPageModule),
             },
             {
                 path: '',

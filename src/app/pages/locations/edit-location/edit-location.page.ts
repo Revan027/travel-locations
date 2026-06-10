@@ -33,7 +33,6 @@ export class EditLocationPage implements AfterViewInit {
   formGroup!: FormGroup;
   location: Location = new Location();
   
-
   sortedLocationsType = computed(() => this.locationService.locationTypes().sort((a, b) => a.name.trim().localeCompare(b.name.trim(), "fr", { sensitivity: "base" })));
   sortedCountries = computed(() => this.locationService.countries().sort((a, b) => a.name.trim().localeCompare(b.name.trim(), "fr", { sensitivity: "base" })));
 

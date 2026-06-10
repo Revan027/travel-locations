@@ -1,0 +1,74 @@
+<ion-header [translucent]="true">
+  <ion-toolbar class="travel-header">
+    <ion-buttons slot="start">
+      <ion-icon name="compass" class="app-logo"></ion-icon>
+    </ion-buttons>
+
+    <ion-title class="travel-title">
+      <span class="title-main">Connexion</span>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="sign-in-wrapper">
+    <div class="card card--glass">
+      <div class="card__icon-badge">
+        <ion-icon name="compass"></ion-icon>
+      </div>
+
+      @if(loading){
+        <h1 class="card__title">Connexion en cours...</h1>
+        <app-loader></app-loader>
+      }
+      @else{
+        <h1 class="card__title">Se connecter</h1>
+
+        <p class="card__subtitle">
+          Renseignez votre email et mot de passe.
+        </p>
+
+         <form [formGroup]="formGroup" novalidate>
+          <ion-text color="danger">{{errorMsg}}</ion-text>
+
+            <ion-grid>
+              <ion-row class="ion-align-content-end">
+                <ion-col size="12" class="ion-align-content-end">
+                  <ion-label color="light">Email</ion-label>
+
+                  <ion-input 
+                  formControlName="email" 
+                  type="email"  
+                  fill="outline"
+                  placeholder="email@domain.com">
+                  </ion-input>
+                </ion-col>
+
+                <ion-col size="12" class="ion-align-content-end">
+                  <ion-label color="light">Mot de passe</ion-label>
+
+                  <ion-input 
+                  formControlName="mdp" 
+                  label-placement="stacked"
+                  fill="outline"
+                  type="password">
+                  </ion-input>
+                </ion-col>      
+              </ion-row>
+            </ion-grid>
+           
+            <div class="card__actions ion-margin-top">
+              <ion-button expand="block" class="card__btn-confirm" [strong]="true" [disabled]="formGroup.invalid" (click)="onSignIn(formGroup.value)">
+                <ion-icon name="log-out-outline" slot="start"></ion-icon>
+                Se connecter
+              </ion-button>
+
+              <ion-button expand="block"  fill="clear" class="card__btn-cancel" (click)="cancel()">
+                Annuler
+              </ion-button>
+            </div>
+        </form>
+      }
+    </div>
+  </div>
+</ion-content>

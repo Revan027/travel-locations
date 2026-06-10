@@ -2,6 +2,7 @@ import { Component, WritableSignal } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { FirestoreService } from '../services/firestore.services.common/firestore.service';
 import { User } from '../models/User';
+import { Router } from '@angular/router';
 
 @Component({
     standalone: true,
@@ -51,15 +52,15 @@ import { User } from '../models/User';
 export class AuthStatusComponent {
     user: WritableSignal<User> = this.firestoreService.user;
 
-    constructor(private firestoreService: FirestoreService)
+    constructor(private router: Router, private firestoreService: FirestoreService)
     {
     }
 
     signOut(){
-        this.firestoreService.signOut();
+        this.router.navigateByUrl(`/signout`);
     }
 
     signIn(){
-        this.firestoreService.signIn();
+        this.router.navigateByUrl(`/signin`);
     }
 }

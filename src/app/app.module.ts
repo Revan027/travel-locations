@@ -30,7 +30,7 @@ import { SplashScreen } from '@capacitor/splash-screen';
             // Il faut d'abord faire les injections et ensuite faire le traitement. Sinon on perd le contexte d'injection.
             const firestoreService = inject(FirestoreService);
             const locationService = inject(LocationService);
-
+  await SplashScreen.show();
             try {
                 await firestoreService.intUser();
                 await locationService.getDatas();

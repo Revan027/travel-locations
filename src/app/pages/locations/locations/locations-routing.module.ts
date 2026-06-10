@@ -7,16 +7,16 @@ const routes: Routes = [
     path: '', 
     component: LocationsPage,
   },
-   {
-        path: 'create',
-        loadChildren: () =>
-          import('../../../pages/locations/edit-location/edit-location.module').then((m) => m.EditLocationPageModule),
-      },
-      {
-        path: ':id',
-        loadChildren: () =>
-          import('../../../pages/locations/edit-location/edit-location.module').then((m) => m.EditLocationPageModule),
-      },
+  {
+    path: 'create',
+    loadChildren: () =>
+      import('../../../pages/locations/edit-location/edit-location.module').then((m) => m.EditLocationPageModule),
+  },
+  {
+    path: ':id',
+    loadChildren: () =>
+      import('../../../pages/locations/edit-location/edit-location.module').then((m) => m.EditLocationPageModule),
+  },
 ];
 
 @NgModule({
