@@ -11,7 +11,7 @@ export class MarkerFactoryService {
   
   buildUserMarker(userGeolocalisation: UserGeolocalisation){
     const monIcon = L.divIcon({
-      html: `<span>${userGeolocalisation.email[0].toUpperCase() + userGeolocalisation.email[1]}</span>`,
+      html: `<span>${userGeolocalisation.displayName[0].toUpperCase() + userGeolocalisation.displayName[1]}</span>`,
       iconAnchor: [20, 20],
       iconSize: [40, 40],
       popupAnchor: [0, -20],

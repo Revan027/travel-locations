@@ -9,8 +9,7 @@ import { Cluster } from '../models/Cluster';
 import { GeolocalisationService } from './geolocalisation.service';
 import { MarkerFactoryService } from './marker.factory.service';
 import { UserGeolocalisationService } from './user.geolocalisation.service';
-import { FirestoreService } from './firestore.services.common/firestore.service';
-import moment from 'moment';
+import { AuthentificationService } from './authentification.service';
 
 
 @Injectable({
@@ -18,11 +17,12 @@ import moment from 'moment';
 })
 export class MapService {
 
-    isInit = signal<boolean>(false);
+    isMapInit = signal<boolean>(false);
+    islocatingUsers = signal<boolean>(false);
 
     private readonly degreeTolerance: number = 1;
     private map!: L.Map;
-    private usersMarker?: L.Marker<any>[];
+    private usersMarker: L.Marker<any>[] = [];
     private newLocationMarker?: L.Marker<any>;
     private locations: Location[] = [];
     private clusters: Cluster[] = [];
@@ -32,7 +32,7 @@ export class MapService {
         private router: Router, 
         private locationService: LocationService, 
         private geolocalisationService: GeolocalisationService,
-        private firestoreService: FirestoreService, 
+        private authService: AuthentificationService,
         private markerFactoryService: MarkerFactoryService,
         private userGeolocalisationService: UserGeolocalisationService) 
     {
@@ -111,7 +111,7 @@ export class MapService {
             renderer: L.svg({padding: 5})}
         )
         .on("load", (e) => {
-          this.isInit.set(true);
+          this.isMapInit.set(true);
         })
         .setView([45.706179285330855, 2.9882812500000004], 4);
    
@@ -128,16 +128,17 @@ export class MapService {
 
     async locateUsers(){
         //on ne lance pas la geoloc si on est pas connecté
-        if(!this.firestoreService.user().isAuthenticated){
+        if(!this.authService.user().isAuthenticated){
             return;
-        }
+        } 
+        this.islocatingUsers.set(true);
         const success = await this.geolocalisationService.getCurrentPosition();
 
         if (!success) return;
 
         // on recupère les positions des users
-        const usersGeoloc = this.userGeolocalisationService.usersGeolocalisation();console.log(this.firestoreService.user());
-        const user = this.userGeolocalisationService.get(this.firestoreService.user().email, usersGeoloc);
+        const usersGeoloc = this.userGeolocalisationService.usersGeolocalisation();console.log(this.authService.user());
+        const user = this.userGeolocalisationService.get(this.authService.user().email, usersGeoloc);
         const position = this.geolocalisationService.position();
         console.log(usersGeoloc);
          console.log(user);
@@ -159,6 +160,9 @@ export class MapService {
             marker.addTo(this.map);
             this.usersMarker?.push(marker);
         });
+
+        this.islocatingUsers.set(false);
+        console.log(this.usersMarker);
     }
 
     placeNewLocationMarker(){
@@ -313,8 +317,9 @@ export class MapService {
         this.clustersLayer = [];
     }
 
-    removeUserMarkers(){
+    removeUserMarkers(){  console.log(this.usersMarker);
         if (this.usersMarker){
+          
             this.usersMarker.forEach((marker) => {
                 marker.remove();
             })

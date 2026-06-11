@@ -5,6 +5,7 @@ export class UserGeolocalisation {
   altitude?: number; 
   latitude!: number;
   longitude!: number;
+  readonly displayName: string = "";
   readonly email: string = "";
   lastUpdateGeoloc!: Date;
 }

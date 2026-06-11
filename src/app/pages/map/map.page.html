@@ -14,8 +14,8 @@
     </ion-buttons>
   </ion-toolbar>  
 
-  <ion-fab-button class="btn-refresh" size="small" expand="block" (click)="onRefreshPosition()" [disabled]="isRefreshing">
-    @if(isRefreshing){
+  <ion-fab-button class="btn-refresh" size="small" expand="block" (click)="onRefreshPosition()" [disabled]="islocatingUsers() || !user().isAuthenticated">
+    @if(islocatingUsers()){
       <ion-spinner name="dots"></ion-spinner>
     }
     @else{

@@ -4,8 +4,9 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { IonicModule } from '@ionic/angular';
 import { FirebaseError } from 'firebase/app';
 import { UserCredential } from 'firebase/auth';
-import { FirestoreService } from 'src/app/services/firestore.services.common/firestore.service';
 import { LoaderComponent } from 'src/app/components/loader.component';
+import { MapService } from 'src/app/services/map.service';
+import { AuthentificationService } from 'src/app/services/authentification.service';
 
 @Component({
   standalone: true,
@@ -20,7 +21,7 @@ export class SignInPage implements OnInit {
   errorMsg: string = "";
   formGroup!: FormGroup;
 
-  constructor(private formBuilder: FormBuilder, private location: Location, private firestoreService: FirestoreService) { }
+  constructor(private formBuilder: FormBuilder, private location: Location, private authService: AuthentificationService, private mapService: MapService) { }
 
   ngOnInit() {
     this.createForm();
@@ -39,7 +40,7 @@ export class SignInPage implements OnInit {
     this.errorMsg = "";
 
     try {
-      userCredential = await this.firestoreService.signIn(datas.email, datas.mdp);
+      userCredential = await this.authService.signIn(datas.email, datas.mdp);
     } 
     catch(e: any) {
       let message = e as FirebaseError;
@@ -50,7 +51,11 @@ export class SignInPage implements OnInit {
     } 
     finally{
       if (userCredential != undefined && !userCredential.user?.isAnonymous === true){
-        this.firestoreService.createUser(userCredential.user);
+        // chargement du user dans l'app
+        this.authService.loadUser(userCredential.user);
+
+        // activation du géoloc sur la map
+        this.mapService.locateUsers();
 
         this.cancel();
       }

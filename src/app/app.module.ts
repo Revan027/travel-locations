@@ -9,10 +9,10 @@ import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { provideAuth, getAuth } from '@angular/fire/auth';
 import { LocationService } from './services/location.service';
-import { FirestoreService } from './services/firestore.services.common/firestore.service';
 import { provideHttpClient } from '@angular/common/http';
 import { SplashScreen } from '@capacitor/splash-screen';
 import { UserGeolocalisationService } from './services/user.geolocalisation.service';
+import { AuthentificationService } from './services/authentification.service';
 
 @NgModule({
     declarations: [AppComponent],
@@ -29,12 +29,12 @@ import { UserGeolocalisationService } from './services/user.geolocalisation.serv
         provideHttpClient(),
         provideAppInitializer(async () => {
             // Il faut d'abord faire les injections et ensuite faire le traitement. Sinon on perd le contexte d'injection.
-            const firestoreService = inject(FirestoreService);
+            const authService = inject(AuthentificationService);
             const locationService = inject(LocationService);
             const userGeolocalisationService = inject(UserGeolocalisationService);
   await SplashScreen.show();//todo a corriger avec un image loader
             try {
-                await firestoreService.intUser();
+                await authService.intUser();
                 await locationService.loadDatas();
                 await userGeolocalisationService.loadAll()
             } finally {

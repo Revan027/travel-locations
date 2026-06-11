@@ -1,8 +1,8 @@
 import { Component, WritableSignal } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
-import { FirestoreService } from '../services/firestore.services.common/firestore.service';
 import { User } from '../models/User';
 import { Router } from '@angular/router';
+import { AuthentificationService } from '../services/authentification.service';
 
 @Component({
     standalone: true,
@@ -50,9 +50,9 @@ import { Router } from '@angular/router';
     `]
 })
 export class AuthStatusComponent {
-    user: WritableSignal<User> = this.firestoreService.user;
+    user: WritableSignal<User> = this.authService.user;
 
-    constructor(private router: Router, private firestoreService: FirestoreService)
+    constructor(private router: Router, private authService: AuthentificationService)
     {
     }
 
