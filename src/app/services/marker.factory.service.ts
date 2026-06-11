@@ -18,7 +18,12 @@ export class MarkerFactoryService {
       className: 'custom-marker user'
     });
 
-    return L.marker([userGeolocalisation.latitude, userGeolocalisation.longitude], {icon: monIcon});
+    return L.marker([userGeolocalisation.latitude, userGeolocalisation.longitude], {icon: monIcon})
+      .bindPopup(`
+        <span data-id="${userGeolocalisation.id}">
+          <p class="title">${userGeolocalisation.displayName}</p>
+          <p class="section"><span class="material-icons">calendar_month</span> Dernier relevé le : ${moment(userGeolocalisation.lastUpdateGeoloc).format("DD/MM/YYYY à HH[h]mm")}</p>
+        </span>`, {className: "user-popup"});
   }
 
   buildLocationMarker(location: Location){
@@ -36,7 +41,7 @@ export class MarkerFactoryService {
           <p class="section"><span class="material-icons">calendar_month</span>${moment(location.date).format("DD/MM/YYYY")}</p>
           <p class="section"><span class="material-icons">location_on</span>${location.latitude.toFixed(4)}, ${location.longitude.toFixed(4)}</p>
           <p class="section"><span class="material-icons">terrain</span>${location.altitude ?? "-"}</p> 
-        </span>`, { maxWidth: 220 });
+        </span>`, { maxWidth: 220, minWidth: 180, className: "location-popup" });
   }
 
   buildNewLocationMarker(latLng: L.LatLng){

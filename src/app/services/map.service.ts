@@ -81,12 +81,17 @@ export class MapService {
             callback: any;
 
         this.map.on('popupopen', (e) => {
-            const id = e.popup.getElement()?.querySelector("span[data-id]")?.getAttribute("data-id");
+            const element = e.popup.getElement();
 
-            callback = function (event: any){        
-                me.router.navigateByUrl(`/locations/${id}`);
-            }
-            e.popup.getElement()?.addEventListener("click", callback);      
+            if(element?.className.includes("location-popup")){
+                const id = element?.querySelector("span[data-id]")?.getAttribute("data-id");
+
+                callback = function (event: any){        
+                    me.router.navigateByUrl(`/locations/${id}`);
+                }
+
+               element?.addEventListener("click", callback); 
+            }     
         });
 
         this.map.on('popupclose', (e) => {
@@ -131,29 +136,31 @@ export class MapService {
         if(!this.authService.user().isAuthenticated){
             return;
         } 
+
         this.islocatingUsers.set(true);
+
         const success = await this.geolocalisationService.getCurrentPosition();
 
         if (!success) return;
 
         // on recupère les positions des users
-        const usersGeoloc = this.userGeolocalisationService.usersGeolocalisation();console.log(this.authService.user());
+        const usersGeoloc = this.userGeolocalisationService.usersGeolocalisation();
         const user = this.userGeolocalisationService.get(this.authService.user().email, usersGeoloc);
         const position = this.geolocalisationService.position();
-        console.log(usersGeoloc);
-         console.log(user);
+
         if (user){
             user.latitude = position.latitude || 0;
             user.altitude = position.altitude || 0;
             user.longitude = position.longitude || 0;
             user.lastUpdateGeoloc = new Date();
 
-              // on met à jour les positions sur la carte puis en base pour celle de l'utilisateur
+            // on met à jour les positions sur la carte puis en base pour celle de l'utilisateur
             this.userGeolocalisationService.update(user.id, user)
         }
        
         this.removeUserMarkers();
 
+        // ajout des markers
         usersGeoloc.forEach((userGeoloc) => {
             const marker = this.markerFactoryService.buildUserMarker(userGeoloc);
             
@@ -162,7 +169,6 @@ export class MapService {
         });
 
         this.islocatingUsers.set(false);
-        console.log(this.usersMarker);
     }
 
     placeNewLocationMarker(){
@@ -317,7 +323,7 @@ export class MapService {
         this.clustersLayer = [];
     }
 
-    removeUserMarkers(){  console.log(this.usersMarker);
+    removeUserMarkers(){
         if (this.usersMarker){
           
             this.usersMarker.forEach((marker) => {
