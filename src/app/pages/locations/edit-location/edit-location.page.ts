@@ -12,10 +12,9 @@ import { MessageEnum } from 'src/app/services/services.common/enum/MessageEnum';
 import { StatusEnum } from 'src/app/services/services.common/enum/status.enum';
 import { ConfirmationService } from 'src/app/services/services.common/confirmation.service';
 import { MapService } from 'src/app/services/map.service';
-import { FileService } from 'src/app/services/file.services.common/file.service';
-import { HttpService } from 'src/app/services/services.common/http-service';
 import { CloudinaryService } from 'src/app/services/cloudinary.service';
 import { LoaderComponent } from 'src/app/components/loader.component';
+import { AltitudeService } from 'src/app/services/altitude.service';
 
 @Component({
   standalone: true,
@@ -48,7 +47,8 @@ export class EditLocationPage implements AfterViewInit {
     private locationService: LocationService,
     private mapService: MapService,
     private toastService: ToastService,
-    private cloudinaryService: CloudinaryService
+    private cloudinaryService: CloudinaryService,
+    private altitudeService: AltitudeService,
   )
   {
     moment.locale("fr");  
@@ -76,7 +76,7 @@ export class EditLocationPage implements AfterViewInit {
 
         this.createForm();
 
-        this.mapService.getAltitude(this.location.latitude, this.location.longitude)
+        this.altitudeService.getAltitude(this.location.latitude, this.location.longitude)
           .subscribe({
             next: (result) => {
               this.location.altitude = result.elevation[0];

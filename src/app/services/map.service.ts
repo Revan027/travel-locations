@@ -1,17 +1,16 @@
 import { Injectable, signal } from '@angular/core';
-
 import * as L from 'leaflet';
 import { Position } from '../models/Position';
 import { Router } from '@angular/router';
 import { LocationService } from './location.service';
 import { Location } from '../models/Location';
 import { effect } from '@angular/core';
-import moment from 'moment';
 import { Cluster } from '../models/Cluster';
-import { HttpService } from './services.common/http-service';
-import { environment } from 'src/environments/environment';
 import { GeolocalisationService } from './geolocalisation.service';
 import { MarkerFactoryService } from './marker.factory.service';
+import { UserGeolocalisationService } from './user.geolocalisation.service';
+import { FirestoreService } from './firestore.services.common/firestore.service';
+import moment from 'moment';
 
 
 @Injectable({
@@ -23,7 +22,7 @@ export class MapService {
 
     private readonly degreeTolerance: number = 1;
     private map!: L.Map;
-    private userMarker?: L.Marker<any>;
+    private usersMarker?: L.Marker<any>[];
     private newLocationMarker?: L.Marker<any>;
     private locations: Location[] = [];
     private clusters: Cluster[] = [];
@@ -32,9 +31,10 @@ export class MapService {
     constructor(
         private router: Router, 
         private locationService: LocationService, 
-        private geolocalisationService: GeolocalisationService, 
-        private httpService: HttpService, 
-        private markerFactoryService: MarkerFactoryService) 
+        private geolocalisationService: GeolocalisationService,
+        private firestoreService: FirestoreService, 
+        private markerFactoryService: MarkerFactoryService,
+        private userGeolocalisationService: UserGeolocalisationService) 
     {
         effect(async () => {
 
@@ -59,7 +59,7 @@ export class MapService {
     async init(){
         this.createMap();
 
-        await this.locateUser();
+        await this.locateUsers();
 
         this.initDblClickListener(); 
 
@@ -67,8 +67,6 @@ export class MapService {
 
         this.initMoveEndListener();
     }
-
-    
 
     private initDblClickListener(){
         this.map.on('dblclick', (e: L.LeafletMouseEvent) => {
@@ -101,16 +99,66 @@ export class MapService {
             this.updateMapDisplay();
         });
     }
+  
+    private createMap(){
+        // init de la map leaflet depuis la france. un padding de 10 pour avoir une carte en chargement plus fluide
+        this.map = L.map('map', { 
+            fadeAnimation: false,    // désactive l'animation de fondu des tuiles
+            zoomAnimation: true,
+            zoomControl: false,
+            doubleClickZoom: false,  
+            minZoom: 4, 
+            renderer: L.svg({padding: 5})}
+        )
+        .on("load", (e) => {
+          this.isInit.set(true);
+        })
+        .setView([45.706179285330855, 2.9882812500000004], 4);
+   
+        // On ajoute les infos de la map. updateWhenIdle a false pour accéler la chargement des parties de map
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '',  updateWhenIdle: false}).addTo(this.map);
 
-    async locateUser(){
+        // On resize direct pour éviter un bug de rendu de la carte
+        setTimeout(() => this.resizeMap(), 0);
+    }
+
+    resizeMap(){
+        this.map?.invalidateSize();
+    }
+
+    async locateUsers(){
+        //on ne lance pas la geoloc si on est pas connecté
+        if(!this.firestoreService.user().isAuthenticated){
+            return;
+        }
         const success = await this.geolocalisationService.getCurrentPosition();
 
         if (!success) return;
 
-        this.removeUserMarker();
+        // on recupère les positions des users
+        const usersGeoloc = this.userGeolocalisationService.usersGeolocalisation();console.log(this.firestoreService.user());
+        const user = this.userGeolocalisationService.get(this.firestoreService.user().email, usersGeoloc);
+        const position = this.geolocalisationService.position();
+        console.log(usersGeoloc);
+         console.log(user);
+        if (user){
+            user.latitude = position.latitude || 0;
+            user.altitude = position.altitude || 0;
+            user.longitude = position.longitude || 0;
+            user.lastUpdateGeoloc = new Date();
 
-        this.userMarker = this.markerFactoryService.createUserMarker(this.geolocalisationService.position().latitude, this.geolocalisationService.position().longitude);
-        this.userMarker.addTo(this.map);
+              // on met à jour les positions sur la carte puis en base pour celle de l'utilisateur
+            this.userGeolocalisationService.update(user.id, user)
+        }
+       
+        this.removeUserMarkers();
+
+        usersGeoloc.forEach((userGeoloc) => {
+            const marker = this.markerFactoryService.buildUserMarker(userGeoloc);
+            
+            marker.addTo(this.map);
+            this.usersMarker?.push(marker);
+        });
     }
 
     placeNewLocationMarker(){
@@ -128,7 +176,7 @@ export class MapService {
     private updateMapDisplay(){
         const zoom = this.map.getZoom();
 
-        if (zoom >= 8){
+        if(zoom >= 8){
             this.removeClustersLayer();
 
             this.drawLocationsInBounds(this.map.getBounds());
@@ -232,10 +280,6 @@ export class MapService {
         this.map.flyTo([position.latitude, position.longitude], lvlZoom, {animate: true, duration: 1 });
     }
 
-    private resetClusters(){
-       this.clusters = [];
-    }
-
     private removeAllLocationMarkers(clusters: Cluster[]){
         clusters.forEach((cluster: Cluster) => {
            this.removeLocationMarkers(cluster);
@@ -269,9 +313,13 @@ export class MapService {
         this.clustersLayer = [];
     }
 
-    removeUserMarker(){
-        if (this.userMarker != undefined){
-            this.userMarker.remove();
+    removeUserMarkers(){
+        if (this.usersMarker){
+            this.usersMarker.forEach((marker) => {
+                marker.remove();
+            })
+
+            this.usersMarker = [];
         }
     }
 
@@ -281,37 +329,7 @@ export class MapService {
         }
     }
 
-
-
-    getAltitude(lat: number, lng: number) {
-       return this.httpService.get<any>(environment.apiOpenMeteo.replace("{X}", lat.toString()).replace("{Y}", lng.toString()))
-    }
-
-   
-
-    private createMap(){
-        // init de la map leaflet depuis la france. un padding de 10 pour avoir une carte en chargement plus fluide
-        this.map = L.map('map', { 
-            fadeAnimation: false,    // désactive l'animation de fondu des tuiles
-            zoomAnimation: true,
-            zoomControl: false,
-            doubleClickZoom: false,  
-            minZoom: 4, 
-            renderer: L.svg({padding: 5})}
-        )
-        .on("load", (e) => {
-          this.isInit.set(true);
-        })
-        .setView([45.706179285330855, 2.9882812500000004], 4);
-   
-        // On ajoute les infos de la map. updateWhenIdle a false pour accéler la chargement des parties de map
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '',  updateWhenIdle: false}).addTo(this.map);
-
-        // On resize direct pour éviter un bug de rendu de la carte
-        setTimeout(() => this.resizeMap(), 0);
-    }
-
-    resizeMap(){
-        this.map?.invalidateSize();
+    private resetClusters(){
+       this.clusters = [];
     }
 }

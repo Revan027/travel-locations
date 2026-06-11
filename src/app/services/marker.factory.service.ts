@@ -1,32 +1,32 @@
 import { Injectable } from '@angular/core';
 import * as L from 'leaflet';
-import { Cluster } from '../models/Cluster';
 import { Location } from '../models/Location';
 import moment from 'moment';
+import { UserGeolocalisation } from '../models/UserGeolocalisation';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MarkerFactoryService {
   
-  createUserMarker(latitude: number, longitude: number){
+  buildUserMarker(userGeolocalisation: UserGeolocalisation){
     const monIcon = L.divIcon({
-      html: '<span class="material-icons-outlined">my_location</span>',
-      iconAnchor: [18, 18],
-      popupAnchor: [0, -32],
+      html: `<span>${userGeolocalisation.email[0].toUpperCase() + userGeolocalisation.email[1]}</span>`,
+      iconAnchor: [20, 20],
+      iconSize: [40, 40],
+      popupAnchor: [0, -20],
       className: 'custom-marker user'
     });
 
-    return L.marker([latitude, longitude], {icon: monIcon});
+    return L.marker([userGeolocalisation.latitude, userGeolocalisation.longitude], {icon: monIcon});
   }
 
   buildLocationMarker(location: Location){
     const locationIcon = L.divIcon({
       html: `<span class="material-icons">${location.typeIcon}</span>`,
       iconAnchor: [16, 32],
-      popupAnchor: [0, -32],
-      
-      className: 'custom-marker'
+      popupAnchor: [0, -32],    
+      className: 'custom-marker location'
     });
 
     return L.marker([location.latitude, location.longitude], {icon: locationIcon})

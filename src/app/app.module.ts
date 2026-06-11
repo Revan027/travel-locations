@@ -12,6 +12,7 @@ import { LocationService } from './services/location.service';
 import { FirestoreService } from './services/firestore.services.common/firestore.service';
 import { provideHttpClient } from '@angular/common/http';
 import { SplashScreen } from '@capacitor/splash-screen';
+import { UserGeolocalisationService } from './services/user.geolocalisation.service';
 
 @NgModule({
     declarations: [AppComponent],
@@ -30,10 +31,12 @@ import { SplashScreen } from '@capacitor/splash-screen';
             // Il faut d'abord faire les injections et ensuite faire le traitement. Sinon on perd le contexte d'injection.
             const firestoreService = inject(FirestoreService);
             const locationService = inject(LocationService);
-  await SplashScreen.show();
+            const userGeolocalisationService = inject(UserGeolocalisationService);
+  await SplashScreen.show();//todo a corriger avec un image loader
             try {
                 await firestoreService.intUser();
-                await locationService.getDatas();
+                await locationService.loadDatas();
+                await userGeolocalisationService.loadAll()
             } finally {
                 // toujours cacher le splash, même en cas d'erreur, sinon l'app reste bloquée dessus
                 await SplashScreen.hide();

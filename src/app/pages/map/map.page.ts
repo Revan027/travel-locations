@@ -52,7 +52,7 @@ export class MapPage {
 
   async ngAfterViewInit(){
     await this.mapService.init();
-    await this.locationService.getAll()  
+    await this.locationService.loadAll()  
   }
 
   async ionViewDidEnter(){
@@ -63,7 +63,7 @@ export class MapPage {
   async onRefreshPosition(){
     this.isRefreshing = true;
 
-    await this.mapService.locateUser();
+    await this.mapService.locateUsers();
   
     this.mapService.flyTo(this.position() as Position, 17);
     
