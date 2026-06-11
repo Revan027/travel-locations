@@ -19,6 +19,46 @@ export class LocationService {
     
     constructor(private firestoreService: FirestoreService) {}
 
+    async getAll(): Promise<Location[]>{
+        return this.firestoreService.getDocuments<Location[]>(FirebaseCollectionEnum.locations);
+    }
+
+    get(id: string): Promise<Location>{
+        return this.firestoreService.getDocument<Location>(FirebaseCollectionEnum.locations, id);
+    }
+
+    getRef(id: string): DocumentReference<DocumentData, DocumentData>{
+        return this.firestoreService.getDocumentRef(FirebaseCollectionEnum.locations, id);
+    }
+
+    async loadAll(): Promise<void>{
+        this.locations.set(await this.getAll());
+    }
+
+    async loadDatas(): Promise<void>{
+        this.locationTypes.set(await this.firestoreService.getDocuments<LocationType[]>(FirebaseCollectionEnum.locationTypes));
+        this.countries.set(await this.firestoreService.getDocuments<Country[]>(FirebaseCollectionEnum.country));
+    }
+
+    async search(locationSearchRequest: LocationSearchRequest){
+        let queryParts: QueryConstraint[] = [];
+        const ref = this.firestoreService.getCollectionRef(FirebaseCollectionEnum.locations);
+
+        if (locationSearchRequest.date){
+            queryParts.push(where("date", "<=", locationSearchRequest.date))
+        }
+
+        if (locationSearchRequest.typeIDs.length > 0){
+            queryParts.push(where("typeID", 'in', locationSearchRequest.typeIDs))
+        }
+
+        if (locationSearchRequest.country){
+            queryParts.push(where("country", "==", locationSearchRequest.country))
+        }
+
+        this.locations.set(await this.firestoreService.search<Location[]>(query(ref, ...queryParts)));    
+    }
+    
     async create(locationRequest: LocationRequest): Promise<DocumentReference<DocumentData, DocumentData>>{     
  
         // on recup la ref des collections de données
@@ -44,43 +84,7 @@ export class LocationService {
         await this.firestoreService.deleteDocument(ref);
     }
 
-    async getAll(): Promise<void>{
-        this.locations.set(await this.firestoreService.getDocuments<Location[]>(FirebaseCollectionEnum.locations));
-    }
-
-    get(id: string): Promise<Location>{
-        return this.firestoreService.getDocument<Location>(FirebaseCollectionEnum.locations, id);
-    }
-
-    getRef(id: string): DocumentReference<DocumentData, DocumentData>{
-        return this.firestoreService.getDocumentRef(FirebaseCollectionEnum.locations, id);
-    }
-
-    async getDatas(): Promise<void>{
-        this.locationTypes.set(await this.firestoreService.getDocuments<LocationType[]>(FirebaseCollectionEnum.locationTypes));
-        this.countries.set(await this.firestoreService.getDocuments<Country[]>(FirebaseCollectionEnum.country));
-    }
-
-   async search(locationSearchRequest: LocationSearchRequest){
-        let queryParts: QueryConstraint[] = [];
-        const ref = this.firestoreService.getCollectionRef(FirebaseCollectionEnum.locations);
-
-        if (locationSearchRequest.date){
-            queryParts.push(where("date", "<=", locationSearchRequest.date))
-        }
-
-        if (locationSearchRequest.typeIDs.length > 0){
-            queryParts.push(where("typeID", 'in', locationSearchRequest.typeIDs))
-        }
-
-        if (locationSearchRequest.country){
-            queryParts.push(where("country", "==", locationSearchRequest.country))
-        }
-
-        this.locations.set(await this.firestoreService.search<Location[]>(query(ref, ...queryParts)));    
-   }
-
-   goupByType(): { [key: string]: Location[] }{
+    goupByType(): { [key: string]: Location[] }{
         let groupLocation: { [key: string]: Location[] } = {};
 
         let sort = this.locations().sort((a, b) => a.typeName > b.typeName ? 1 : -1);
@@ -95,5 +99,5 @@ export class LocationService {
         }); 
 
         return groupLocation;
-   }
+    }
 }

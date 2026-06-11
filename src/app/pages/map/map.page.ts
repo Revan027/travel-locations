@@ -10,6 +10,9 @@ import { PhotonKomootFeature, PhotonKomootResult } from 'src/app/models/PhotonKo
 import { LoaderComponent } from 'src/app/components/loader.component';
 import { FiltersComponent } from 'src/app/components/filters/filters.component';
 import { AuthStatusComponent } from 'src/app/components/auth-status.component';
+import { GeolocalisationService } from 'src/app/services/geolocalisation.service';
+import { User } from 'src/app/models/User';
+import { AuthentificationService } from 'src/app/services/authentification.service';
 
 @Component({
   standalone: true,
@@ -31,26 +34,31 @@ export class MapPage {
     }
   }
 
-  position: WritableSignal<Position> = this.mapService.position;
-  locations: WritableSignal<Location[]> = this.locationService.locations;
-  isMapInit: WritableSignal<boolean> = this.mapService.isInit;
-
-  isRefreshing = false;
-  formGroup!: FormGroup;
-
-  apiSearchLoading = false;
   displayApiSearchModal = signal(false);
+
+  position: WritableSignal<Position> = this.geolocalisationService.position;
+  locations: WritableSignal<Location[]> = this.locationService.locations;
+  isMapInit: WritableSignal<boolean> = this.mapService.isMapInit;
+  user: WritableSignal<User> = this.authService.user;
+  islocatingUsers: WritableSignal<boolean> = this.mapService.islocatingUsers;
+
+  formGroup!: FormGroup;
+  apiSearchLoading = false;
   apiSearchResult?: PhotonKomootResult;
   apiSearchText: string = '';
 
   constructor(
     private mapService: MapService,
+    private geolocalisationService: GeolocalisationService,
     private locationService: LocationService,
-    private photonKomootService: PhotonKomootService){}
+    private photonKomootService: PhotonKomootService,
+    private authService: AuthentificationService)
+    {
+    }
 
   async ngAfterViewInit(){
     await this.mapService.init();
-    await this.locationService.getAll()  
+    await this.locationService.loadAll()  
   }
 
   async ionViewDidEnter(){
@@ -59,17 +67,13 @@ export class MapPage {
   }
 
   async onRefreshPosition(){
-    this.isRefreshing = true;
-
-    await this.mapService.initCurrentPosition();
+    await this.mapService.locateUsers();
   
     this.mapService.flyTo(this.position() as Position, 17);
-    
-    this.isRefreshing = false;
   }
 
   onActiveCreationLocation(){
-    this.mapService.createNewLocationMarker();
+    this.mapService.placeNewLocationMarker();
   } 
 
   onOpenSearchModal(){
