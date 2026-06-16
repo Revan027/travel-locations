@@ -10,6 +10,8 @@ import { GeolocalisationService } from './geolocalisation.service';
 import { MarkerFactoryService } from './marker.factory.service';
 import { UserGeolocalisationService } from './user.geolocalisation.service';
 import { AuthentificationService } from './authentification.service';
+import { App } from '@capacitor/app';
+import { PluginListenerHandle } from '@capacitor/core';
 
 
 @Injectable({
@@ -19,6 +21,8 @@ export class MapService {
 
     isMapInit = signal<boolean>(false);
     islocatingUsers = signal<boolean>(false);
+
+    appResumeListener?: PluginListenerHandle;
 
     private readonly degreeTolerance: number = 1;
     private map!: L.Map;
@@ -66,6 +70,18 @@ export class MapService {
         this.initPopupListener();
 
         this.initMoveEndListener();
+
+        this.initAppResumeListener();
+    }
+
+    private async initAppResumeListener(){
+        await this.appResumeListener?.remove();
+
+        this.appResumeListener = await App.addListener('appStateChange', (event: any) => {
+            if (event.isActive && !this.islocatingUsers() && this.map){
+                this.locateUsers();
+            }
+      });
     }
 
     private initDblClickListener(){
@@ -107,12 +123,13 @@ export class MapService {
   
     private createMap(){
         // init de la map leaflet depuis la france. un padding de 10 pour avoir une carte en chargement plus fluide
-        this.map = L.map('map', { 
+        this.map = L.map('map', {
             fadeAnimation: false,    // désactive l'animation de fondu des tuiles
             zoomAnimation: true,
             zoomControl: false,
-            doubleClickZoom: false,  
-            minZoom: 4, 
+            doubleClickZoom: false,
+            minZoom: 4,
+            trackResize: false,      // Leaflet ne réagit plus tout seul au resize de la fenêtre (clavier) → plus de redraw/flash. On garde la main via resizeMap().
             renderer: L.svg({padding: 5})}
         )
         .on("load", (e) => {
@@ -141,7 +158,11 @@ export class MapService {
 
         const success = await this.geolocalisationService.getCurrentPosition();
 
-        if (!success) return;
+        if (!success){
+            this.islocatingUsers.set(false);
+            
+            return;
+        } 
 
         // on recupère les positions des users
         const usersGeoloc = this.userGeolocalisationService.usersGeolocalisation();
@@ -174,11 +195,11 @@ export class MapService {
     placeNewLocationMarker(){
         this.removeNewLocationMarker();
 
-        const marker = this.markerFactoryService.buildNewLocationMarker(this.map.getCenter())
+        this.newLocationMarker = this.markerFactoryService.buildNewLocationMarker(this.map.getCenter())
 
-        marker.addTo(this.map)
+        this.newLocationMarker.addTo(this.map)
 
-        marker.on('click', async (e) => {
+        this.newLocationMarker.on('click', async (e) => {
             this.router.navigateByUrl(`/locations/create;lat=${e.latlng.lat};lng=${e.latlng.lng}`)
         });
     }

@@ -1,4 +1,6 @@
 import { Component, HostListener, signal, WritableSignal } from '@angular/core';
+import { Capacitor } from '@capacitor/core';
+import { Keyboard, KeyboardResize } from '@capacitor/keyboard';
 import { MapService } from 'src/app/services/map.service';
 import { Position } from 'src/app/models/Position';
 import { LocationService } from 'src/app/services/location.service';
@@ -13,6 +15,7 @@ import { AuthStatusComponent } from 'src/app/components/auth-status.component';
 import { GeolocalisationService } from 'src/app/services/geolocalisation.service';
 import { User } from 'src/app/models/User';
 import { AuthentificationService } from 'src/app/services/authentification.service';
+
 
 @Component({
   standalone: true,
@@ -58,7 +61,7 @@ export class MapPage {
 
   async ngAfterViewInit(){
     await this.mapService.init();
-    await this.locationService.loadAll()  
+    await this.locationService.loadAll()
   }
 
   async ionViewDidEnter(){

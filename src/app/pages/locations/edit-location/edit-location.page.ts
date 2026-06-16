@@ -15,10 +15,11 @@ import { MapService } from 'src/app/services/map.service';
 import { CloudinaryService } from 'src/app/services/cloudinary.service';
 import { LoaderComponent } from 'src/app/components/loader.component';
 import { AltitudeService } from 'src/app/services/altitude.service';
+import { CloudinaryUrlPipe } from 'src/app/pipes/cloudinary-url.pipe';
 
 @Component({
   standalone: true,
-  imports: [IonicModule, ReactiveFormsModule, LoaderComponent],
+  imports: [IonicModule, ReactiveFormsModule, LoaderComponent, CloudinaryUrlPipe],
   selector: 'app-edit-location',
   templateUrl: 'edit-location.page.html',
   styleUrls: ['edit-location.page.scss'],
@@ -171,9 +172,9 @@ export class EditLocationPage implements AfterViewInit {
   async onFileChanged(event: any) {
     this.uploadLoaded = true;
 
-    const result =  await this.cloudinaryService.uploadIamge(event.target.files[0]);
-  
-    this.location.imgUrl = result.secure_url;
+    const result =  await this.cloudinaryService.uploadImage(event.target.files[0]);
+
+    this.location.imgUrl = `${result.public_id}.${result.format}`;
     this.formGroup.get("imgUrl")?.setValue(this.location.imgUrl);
     
     this.uploadLoaded = false;

@@ -26,7 +26,7 @@
               <app-loader></app-loader>
             }
             @else if(location.imgUrl){
-              <ion-img src="{{location.imgUrl}}" class="location-illustration" alt=""></ion-img>
+              <ion-img src="{{location.imgUrl | cloudinaryUrl }}" class="location-illustration" alt=""></ion-img>
             }
             @else{
               <ion-img src="../../../../assets/placeholder.webp" class="location-illustration" alt=""></ion-img>
