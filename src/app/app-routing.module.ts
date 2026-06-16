@@ -3,6 +3,11 @@ import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
     {
+        path: 'loading',
+        loadComponent: () =>
+            import('./pages/loading/loading.page').then((m) => m.LoadingPage),
+    },
+    {
         path: '',
         loadChildren: () =>
             import('./menu/menu.module').then((m) => m.MenuModule),

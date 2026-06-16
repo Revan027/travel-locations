@@ -12,6 +12,7 @@ import { UserGeolocalisationService } from './user.geolocalisation.service';
 import { AuthentificationService } from './authentification.service';
 import { App } from '@capacitor/app';
 import { PluginListenerHandle } from '@capacitor/core';
+import { Timestamp } from 'firebase/firestore';
 
 
 @Injectable({
@@ -173,7 +174,7 @@ export class MapService {
             user.latitude = position.latitude || 0;
             user.altitude = position.altitude || 0;
             user.longitude = position.longitude || 0;
-            user.lastUpdateGeoloc = new Date();
+            user.lastUpdateGeoloc = Timestamp.now();
 
             // on met à jour les positions sur la carte puis en base pour celle de l'utilisateur
             this.userGeolocalisationService.update(user.id, user)
@@ -183,6 +184,7 @@ export class MapService {
 
         // ajout des markers
         usersGeoloc.forEach((userGeoloc) => {
+           
             const marker = this.markerFactoryService.buildUserMarker(userGeoloc);
             
             marker.addTo(this.map);

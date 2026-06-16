@@ -16,10 +16,11 @@ import { CloudinaryService } from 'src/app/services/cloudinary.service';
 import { LoaderComponent } from 'src/app/components/loader.component';
 import { AltitudeService } from 'src/app/services/altitude.service';
 import { CloudinaryUrlPipe } from 'src/app/pipes/cloudinary-url.pipe';
+import { AuthStatusComponent } from 'src/app/components/auth-status.component';
 
 @Component({
   standalone: true,
-  imports: [IonicModule, ReactiveFormsModule, LoaderComponent, CloudinaryUrlPipe],
+  imports: [IonicModule, ReactiveFormsModule, LoaderComponent, CloudinaryUrlPipe, AuthStatusComponent],
   selector: 'app-edit-location',
   templateUrl: 'edit-location.page.html',
   styleUrls: ['edit-location.page.scss'],

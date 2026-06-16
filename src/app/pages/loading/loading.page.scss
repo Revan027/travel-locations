@@ -1,0 +1,22 @@
+ion-content{
+--background: var(--app-glass-bg);
+}
+
+.app-logo {
+    font-size: 50px;
+}
+
+.loading-content{
+    margin-top: 40vh;
+    text-align: center;
+} 
+
+.loading-content__title{
+    font-size: 27px;
+}
+
+.loading-content__dots{
+    font-size: 50px;
+    color: var (--app-amber);
+    line-height: 0;
+}   

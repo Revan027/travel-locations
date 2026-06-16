@@ -22,7 +22,7 @@ export class MarkerFactoryService {
       .bindPopup(`
         <span data-id="${userGeolocalisation.id}">
           <p class="title">${userGeolocalisation.displayName}</p>
-          <p class="section"><span class="material-icons">calendar_month</span> Dernier relevé le : ${moment(userGeolocalisation.lastUpdateGeoloc).format("DD/MM/YYYY à HH[h]mm")}</p>
+          <p class="section"><span class="material-icons">calendar_month</span> Dernier relevé le : ${moment(userGeolocalisation.lastUpdateGeoloc.toDate()).format("DD/MM/YYYY à HH[h]mm")}</p>
         </span>`, {className: "user-popup"});
   }
 
