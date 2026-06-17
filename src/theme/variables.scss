@@ -26,7 +26,10 @@
   --app-amber-glow: rgba(244, 162, 97, 0.55);
   --app-teal: #2ec4b6;
 
-  // Glass layers 
+  // Backdrop (overlay sombre derrière modals / éléments en avant-plan)
+  --app-backdrop: rgba(0, 0, 0, 0.2);
+
+  // Glass layers
   --app-glass-bg: rgba(10, 28, 48, 0.85);
   --app-glass-bg-heavy: rgba(10, 28, 48, 0.92);
   --app-glass-border: rgba(255, 255, 255, 0.08);

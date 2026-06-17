@@ -35,7 +35,7 @@
                     <ion-label>                       
                       <div class="title ion-display-flex ion-align-items-center ion-margin-bottom">
                          @if(location.imgUrl){
-                            <img src="{{location.imgUrl}}" class="location-illustration" alt=""/>
+                            <img src="{{location.imgUrl | cloudinaryUrl}}" class="location-illustration" alt=""/>
                           }
                           @else{
                             <img src="../../../../assets/placeholder.webp" class="location-illustration" alt=""/>

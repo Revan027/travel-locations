@@ -40,9 +40,11 @@
   @if(!isMapInit()){
     <app-loader></app-loader>
   }
-
-  <div id="map" class=""></div>
-
+  
+  @if(displayApiSearchModal()){
+    <div class="api-search-modal__backdrop"></div>
+  }
+  
   <div class="api-search-modal" slot="fixed" [class.open]="displayApiSearchModal()" [class.close]="!displayApiSearchModal()">
     <div class="api-search-modal__header">
       <ion-icon name="search-outline" class="api-search-modal__title-icon"></ion-icon>
@@ -57,7 +59,7 @@
             <ion-label>Lieu ou ville</ion-label>
           </ion-col>
 
-           <ion-col size="auto">
+            <ion-col size="auto">
               <ion-input [(ngModel)]="apiSearchText" fill="outline" placeholder="Ex : Saint-Malo"></ion-input>
           </ion-col>
 
@@ -101,5 +103,8 @@
     </div>
   </div>
 
+  <div id="map" class=""></div>
+
   <app-filters></app-filters>
 </ion-content>
+

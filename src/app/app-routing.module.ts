@@ -1,7 +1,14 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { InitAppGuard } from './guards/init-app.guard';
 
 const routes: Routes = [
+    {
+        path: 'loading',
+        canActivate: [InitAppGuard],
+        loadComponent: () =>
+            import('./pages/loading/loading.page').then((m) => m.LoadingPage),
+    },
     {
         path: '',
         loadChildren: () =>

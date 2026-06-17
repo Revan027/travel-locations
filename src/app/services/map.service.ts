@@ -10,6 +10,9 @@ import { GeolocalisationService } from './geolocalisation.service';
 import { MarkerFactoryService } from './marker.factory.service';
 import { UserGeolocalisationService } from './user.geolocalisation.service';
 import { AuthentificationService } from './authentification.service';
+import { App } from '@capacitor/app';
+import { PluginListenerHandle } from '@capacitor/core';
+import { Timestamp } from 'firebase/firestore';
 
 
 @Injectable({
@@ -19,6 +22,8 @@ export class MapService {
 
     isMapInit = signal<boolean>(false);
     islocatingUsers = signal<boolean>(false);
+
+    appResumeListener?: PluginListenerHandle;
 
     private readonly degreeTolerance: number = 1;
     private map!: L.Map;
@@ -66,6 +71,18 @@ export class MapService {
         this.initPopupListener();
 
         this.initMoveEndListener();
+
+        this.initAppResumeListener();
+    }
+
+    private async initAppResumeListener(){
+        await this.appResumeListener?.remove();
+
+        this.appResumeListener = await App.addListener('appStateChange', (event: any) => {
+            if (event.isActive && !this.islocatingUsers() && this.map){
+                this.locateUsers(true);
+            }
+      });
     }
 
     private initDblClickListener(){
@@ -107,18 +124,19 @@ export class MapService {
   
     private createMap(){
         // init de la map leaflet depuis la france. un padding de 10 pour avoir une carte en chargement plus fluide
-        this.map = L.map('map', { 
+        this.map = L.map('map', {
             fadeAnimation: false,    // désactive l'animation de fondu des tuiles
             zoomAnimation: true,
             zoomControl: false,
-            doubleClickZoom: false,  
-            minZoom: 4, 
+            doubleClickZoom: false,
+            minZoom: 4,
+            trackResize: false,      // Leaflet ne réagit plus tout seul au resize de la fenêtre (clavier) → plus de redraw/flash. On garde la main via resizeMap().
             renderer: L.svg({padding: 5})}
         )
         .on("load", (e) => {
           this.isMapInit.set(true);
         })
-        .setView([45.706179285330855, 2.9882812500000004], 4);
+        .setView([45.706179285330855, 2.9882812500000004], 5);
    
         // On ajoute les infos de la map. updateWhenIdle a false pour accéler la chargement des parties de map
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '',  updateWhenIdle: false}).addTo(this.map);
@@ -131,7 +149,7 @@ export class MapService {
         this.map?.invalidateSize();
     }
 
-    async locateUsers(){
+    async locateUsers(loadDatas: boolean = false){
         //on ne lance pas la geoloc si on est pas connecté
         if(!this.authService.user().isAuthenticated){
             return;
@@ -139,9 +157,17 @@ export class MapService {
 
         this.islocatingUsers.set(true);
 
+        if(loadDatas){
+            await this.userGeolocalisationService.loadAll();
+        }
+
         const success = await this.geolocalisationService.getCurrentPosition();
 
-        if (!success) return;
+        if (!success){
+            this.islocatingUsers.set(false);
+            
+            return;
+        } 
 
         // on recupère les positions des users
         const usersGeoloc = this.userGeolocalisationService.usersGeolocalisation();
@@ -152,7 +178,7 @@ export class MapService {
             user.latitude = position.latitude || 0;
             user.altitude = position.altitude || 0;
             user.longitude = position.longitude || 0;
-            user.lastUpdateGeoloc = new Date();
+            user.lastUpdateGeoloc = Timestamp.now();
 
             // on met à jour les positions sur la carte puis en base pour celle de l'utilisateur
             this.userGeolocalisationService.update(user.id, user)
@@ -162,6 +188,7 @@ export class MapService {
 
         // ajout des markers
         usersGeoloc.forEach((userGeoloc) => {
+           
             const marker = this.markerFactoryService.buildUserMarker(userGeoloc);
             
             marker.addTo(this.map);
@@ -174,11 +201,11 @@ export class MapService {
     placeNewLocationMarker(){
         this.removeNewLocationMarker();
 
-        const marker = this.markerFactoryService.buildNewLocationMarker(this.map.getCenter())
+        this.newLocationMarker = this.markerFactoryService.buildNewLocationMarker(this.map.getCenter())
 
-        marker.addTo(this.map)
+        this.newLocationMarker.addTo(this.map)
 
-        marker.on('click', async (e) => {
+        this.newLocationMarker.on('click', async (e) => {
             this.router.navigateByUrl(`/locations/create;lat=${e.latlng.lat};lng=${e.latlng.lng}`)
         });
     }

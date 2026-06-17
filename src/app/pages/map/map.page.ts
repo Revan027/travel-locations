@@ -1,4 +1,6 @@
 import { Component, HostListener, signal, WritableSignal } from '@angular/core';
+import { Capacitor } from '@capacitor/core';
+import { Keyboard, KeyboardResize } from '@capacitor/keyboard';
 import { MapService } from 'src/app/services/map.service';
 import { Position } from 'src/app/models/Position';
 import { LocationService } from 'src/app/services/location.service';
@@ -13,6 +15,8 @@ import { AuthStatusComponent } from 'src/app/components/auth-status.component';
 import { GeolocalisationService } from 'src/app/services/geolocalisation.service';
 import { User } from 'src/app/models/User';
 import { AuthentificationService } from 'src/app/services/authentification.service';
+import { AppInitService } from 'src/app/services/app-init.service';
+
 
 @Component({
   standalone: true,
@@ -51,14 +55,14 @@ export class MapPage {
     private mapService: MapService,
     private geolocalisationService: GeolocalisationService,
     private locationService: LocationService,
-    private photonKomootService: PhotonKomootService,
+    private photonKomootService: PhotonKomootService, private AppInitService: AppInitService,
     private authService: AuthentificationService)
     {
     }
 
   async ngAfterViewInit(){
     await this.mapService.init();
-    await this.locationService.loadAll()  
+    console.log( this.AppInitService.isAppInit.getValue());
   }
 
   async ionViewDidEnter(){
@@ -67,7 +71,7 @@ export class MapPage {
   }
 
   async onRefreshPosition(){
-    await this.mapService.locateUsers();
+    await this.mapService.locateUsers(true);
   
     this.mapService.flyTo(this.position() as Position, 17);
   }
@@ -90,6 +94,6 @@ export class MapPage {
     this.displayApiSearchModal.set(false);
     const position: Position = {latitude: feature.geometry.coordinates[1], longitude: feature.geometry.coordinates[0]};
 
-    this.mapService.flyTo(position, 17);
+    this.mapService.flyTo(position, 14);
   }
 }

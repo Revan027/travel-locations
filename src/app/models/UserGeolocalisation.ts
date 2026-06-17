@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase/firestore";
+
 export class UserGeolocalisation {
   constructor() {}
   
@@ -7,5 +9,5 @@ export class UserGeolocalisation {
   longitude!: number;
   readonly displayName: string = "";
   readonly email: string = "";
-  lastUpdateGeoloc!: Date;
+  lastUpdateGeoloc!: Timestamp;
 }
