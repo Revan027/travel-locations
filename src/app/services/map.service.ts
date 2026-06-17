@@ -80,7 +80,7 @@ export class MapService {
 
         this.appResumeListener = await App.addListener('appStateChange', (event: any) => {
             if (event.isActive && !this.islocatingUsers() && this.map){
-                this.locateUsers();
+                this.locateUsers(true);
             }
       });
     }
@@ -136,7 +136,7 @@ export class MapService {
         .on("load", (e) => {
           this.isMapInit.set(true);
         })
-        .setView([45.706179285330855, 2.9882812500000004], 4);
+        .setView([45.706179285330855, 2.9882812500000004], 5);
    
         // On ajoute les infos de la map. updateWhenIdle a false pour accéler la chargement des parties de map
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '',  updateWhenIdle: false}).addTo(this.map);
@@ -149,13 +149,17 @@ export class MapService {
         this.map?.invalidateSize();
     }
 
-    async locateUsers(){
+    async locateUsers(loadDatas: boolean = false){
         //on ne lance pas la geoloc si on est pas connecté
         if(!this.authService.user().isAuthenticated){
             return;
         } 
 
         this.islocatingUsers.set(true);
+
+        if(loadDatas){
+            await this.userGeolocalisationService.loadAll();
+        }
 
         const success = await this.geolocalisationService.getCurrentPosition();
 
