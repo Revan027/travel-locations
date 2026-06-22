@@ -62,7 +62,6 @@ export class MapPage {
 
   async ngAfterViewInit(){
     await this.mapService.init();
-    console.log( this.AppInitService.isAppInit.getValue());
   }
 
   async ionViewDidEnter(){
@@ -77,7 +76,7 @@ export class MapPage {
   }
 
   onActiveCreationLocation(){
-    this.mapService.placeNewLocationMarker();
+    this.mapService.placeNewLocationMarker({latitude: this.mapService.getCenter().lat, longitude: this.mapService.getCenter().lng});
   } 
 
   onOpenSearchModal(){
@@ -95,5 +94,6 @@ export class MapPage {
     const position: Position = {latitude: feature.geometry.coordinates[1], longitude: feature.geometry.coordinates[0]};
 
     this.mapService.flyTo(position, 14);
+    this.mapService.placeNewLocationMarker(position);
   }
 }

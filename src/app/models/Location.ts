@@ -1,4 +1,4 @@
-import { DocumentData, DocumentReference } from "firebase/firestore";
+import { DocumentData, DocumentReference, Timestamp } from "firebase/firestore";
 
 export class Location {
   constructor() {}
@@ -12,8 +12,8 @@ export class Location {
   typeID!: string;
   typeName!: string;
   typeIcon!: string;
-  date!: Date;
-  imgUrl?: string
+  date!: Timestamp;
+  imgUrl?: string;
 }
 
 export class LocationRequest extends Location {

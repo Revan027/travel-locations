@@ -4,8 +4,9 @@ import { Country } from '../models/Country';
 import { FirebaseCollectionEnum } from '../constants/firebaseCollectionEnum';
 import { FirestoreService } from './firestore.services.common/firestore.service';
 import { Location, LocationRequest } from '../models/Location';
-import { DocumentData, DocumentReference, query, QueryConstraint, where } from 'firebase/firestore';
+import { DocumentData, DocumentReference, query, QueryConstraint, Timestamp, where } from 'firebase/firestore';
 import { LocationSearchRequest } from '../models/LocationSearchRequest';
+import moment from 'moment';
 
 @Injectable({
     providedIn: 'root',
@@ -31,6 +32,10 @@ export class LocationService {
         return this.firestoreService.getDocumentRef(FirebaseCollectionEnum.locations, id);
     }
 
+    getFormatedDate(date: Timestamp, format: string = "DD/MM/YYYY"): string {
+        return moment(date.toDate()).format(format);
+    }
+
     async loadAll(): Promise<void>{
         this.locations.set(await this.getAll());
     }
@@ -44,8 +49,8 @@ export class LocationService {
         let queryParts: QueryConstraint[] = [];
         const ref = this.firestoreService.getCollectionRef(FirebaseCollectionEnum.locations);
 
-        if (locationSearchRequest.date){
-            queryParts.push(where("date", "<=", locationSearchRequest.date))
+        if (locationSearchRequest.limitDate){
+            queryParts.push(where("date", "<=", Timestamp.fromDate(new Date(locationSearchRequest.limitDate))));
         }
 
         if (locationSearchRequest.typeIDs.length > 0){
@@ -87,9 +92,10 @@ export class LocationService {
     goupByType(): { [key: string]: Location[] }{
         let groupLocation: { [key: string]: Location[] } = {};
 
-        let sort = this.locations().sort((a, b) => a.typeName > b.typeName ? 1 : -1);
+        let sort = this.locations().sort((a, b) => a.typeName.replace(/[^a-zA-Z0-9]/g, '').localeCompare(b.typeName.replace(/[^a-zA-Z0-9]/g, ''), "fr", { sensitivity: "base" }) > 0 ? 1 : -1);
         
         sort.map((item: Location) => {
+
             // si la clé existe pas on la crée à partir du type
             if (groupLocation[item.typeName] == undefined){
                 groupLocation[item.typeName] = []

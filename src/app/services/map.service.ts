@@ -7,7 +7,7 @@ import { Location } from '../models/Location';
 import { effect } from '@angular/core';
 import { Cluster } from '../models/Cluster';
 import { GeolocalisationService } from './geolocalisation.service';
-import { MarkerFactoryService } from './marker.factory.service';
+import { MarkerFactoryService } from './marker-factory.service';
 import { UserGeolocalisationService } from './user.geolocalisation.service';
 import { AuthentificationService } from './authentification.service';
 import { App } from '@capacitor/app';
@@ -121,6 +121,10 @@ export class MapService {
             this.updateMapDisplay();
         });
     }
+
+    getCenter(){
+        return this.map.getCenter();
+    }
   
     private createMap(){
         // init de la map leaflet depuis la france. un padding de 10 pour avoir une carte en chargement plus fluide
@@ -198,14 +202,14 @@ export class MapService {
         this.islocatingUsers.set(false);
     }
 
-    placeNewLocationMarker(){
+    placeNewLocationMarker(position: Position){
         this.removeNewLocationMarker();
 
-        this.newLocationMarker = this.markerFactoryService.buildNewLocationMarker(this.map.getCenter())
+        this.newLocationMarker = this.markerFactoryService.buildNewLocationMarker(position)
 
-        this.newLocationMarker.addTo(this.map)
+        this.newLocationMarker?.addTo(this.map)
 
-        this.newLocationMarker.on('click', async (e) => {
+        this.newLocationMarker?.on('click', async (e) => {
             this.router.navigateByUrl(`/locations/create;lat=${e.latlng.lat};lng=${e.latlng.lng}`)
         });
     }
@@ -262,6 +266,7 @@ export class MapService {
             if(bound.intersects(cluster.bounds))
             {
                 cluster.locations.forEach((location: Location) => {
+                  
                     // on ajoute un marker s'il est pas déja présent
                     if(!cluster.locationsMarker.some((item: L.Marker<any>) => item.getLatLng().lat == location.latitude && item.getLatLng().lng == location.longitude)){
                         const marker = this.markerFactoryService.buildLocationMarker(location); 

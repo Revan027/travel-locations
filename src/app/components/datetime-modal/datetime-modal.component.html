@@ -1,0 +1,17 @@
+<div class="datetime-modal">
+    <ion-datetime
+        id="locationDate"
+        presentation="date"
+        [value]="date"
+        (ionChange)="onDateChange($event)"
+        (ionBlur)="onDateBlur($event)"
+        [formatOptions]="{
+            date: {
+            weekday: 'short',
+            month: 'long',
+            day: '2-digit',
+            year: 'numeric'
+            },
+        }">
+    </ion-datetime>
+ </div>

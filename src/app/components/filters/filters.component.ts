@@ -49,7 +49,7 @@ export class FiltersComponent{
     this.formGroup = this.formBuilder.group({
       typeIDs: [this.locationService.locationSearchRequest()?.typeIDs],
       country: [this.locationService.locationSearchRequest()?.country],
-      date: [this.locationService.locationSearchRequest()?.date ?? moment().format('YYYY-MM-DD')],
+      limitDate: [this.locationService.locationSearchRequest()?.limitDate ?? moment().format('YYYY-MM-DD')],
     });
   }
 }

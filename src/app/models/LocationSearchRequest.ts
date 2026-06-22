@@ -1,7 +1,7 @@
 export class LocationSearchRequest {
   constructor() {}
 
-  date?: Date;
+  limitDate?: string;
   typeIDs: number[] = [];
   country: string = "";
 }

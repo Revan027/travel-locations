@@ -1,12 +1,10 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
+  <ion-toolbar class="travel-header">
     <ion-buttons slot="start">
-      <ion-button class="back-button" (click)="goBack()">
-        <ion-icon name="caret-back"></ion-icon>
-      </ion-button>
+      <ion-icon name="compass" class="app-logo"></ion-icon>
     </ion-buttons>
-
-     <ion-title class="travel-title">
+    
+    <ion-title class="travel-title">
       <span class="title-main">Edi</span>
       <span class="title-accent">ter</span>
     </ion-title>
@@ -60,25 +58,11 @@
                  <ion-label>Date</ion-label>
               </div>
              
-              <ion-datetime-button datetime="datetime"></ion-datetime-button>
+              <ion-button  fill="clear" id="open-modal" expand="block" class="datetime" (click)="openDatetimeModal()">
+                {{ location.date | timestampPipe }}
+              </ion-button>
 
-              <ion-modal [keepContentsMounted]="true">
-                <ng-template>
-                  <ion-datetime
-                    id="datetime"
-                    presentation="date"
-                    formControlName="date"
-                    [formatOptions]="{
-                      date: {
-                        weekday: 'short',
-                        month: 'long',
-                        day: '2-digit',
-                        year: 'numeric'
-                      },
-                    }"
-                  ></ion-datetime>
-                </ng-template>
-              </ion-modal>
+              <input type="hidden" formControlName="date"/>
             </div>       
           </ion-col>
 

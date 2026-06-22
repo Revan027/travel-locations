@@ -6,10 +6,11 @@ import { Location } from 'src/app/models/Location';
 import { LocationService } from 'src/app/services/location.service';
 import { AuthStatusComponent } from 'src/app/components/auth-status.component';
 import { CloudinaryUrlPipe } from 'src/app/pipes/cloudinary-url.pipe';
+import { TimestampPipe } from 'src/app/pipes/timestamp.pipe';
 
 @Component({
   standalone: true,
-  imports: [IonicModule, CommonModule, RouterModule, AuthStatusComponent, CloudinaryUrlPipe],
+  imports: [IonicModule, CommonModule, RouterModule, AuthStatusComponent, CloudinaryUrlPipe, TimestampPipe],
   selector: 'app-locations',
   templateUrl: 'locations.page.html',
   styleUrls: ['locations.page.scss'],

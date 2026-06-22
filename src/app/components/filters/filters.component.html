@@ -28,6 +28,7 @@
                   <ion-select
                       label="Pays"
                       formControlName="country"
+                      preferWheel="true"
                       interface="popover"
                       placeholder="-"
                       fill="outline">
@@ -43,14 +44,14 @@
                 <ion-col size="6">
                   <ion-label>Date limite</ion-label>
 
-                    <ion-datetime-button datetime="date"></ion-datetime-button>
+                    <ion-datetime-button datetime="limitDate"></ion-datetime-button>
 
                     <ion-modal [keepContentsMounted]="true">
                       <ng-template>
                         <ion-datetime
-                          id="date"
+                          id="limitDate"
                           presentation="date"
-                          formControlName="date"
+                          formControlName="limitDate"
                           [formatOptions]="{
                             date: {
                               weekday: 'short',

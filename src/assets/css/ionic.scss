@@ -98,13 +98,29 @@ ion-input .label-text {
   color: var(--app-label-color);
 }
 
-ion-datetime-button{
-  padding: px;
+// Datetime custom
+ion-button.datetime{
+  margin: 0px;
+  width: 100%;
+  --color: black;
   border: 1px solid gray;
   border-radius: 4px;  
-  min-height: 56px;
+  min-height: 54px;
   border-color: var(--ion-color-step-300, var(--ion-background-color-step-300, #b3b3b3));
-  background: var(--app-input-bg) !important;
+  --background: var(--app-input-bg) !important;
+}
+
+ion-button.datetime::part(native) {
+  --background-activated: transparent;
+  --background-focused: transparent;
+  --ripple-color: transparent;
+
+  transition: none !important;
+}
+
+ion-modal.datetime-modal{
+  --height: auto;
+  --width: auto;
 }
 
 .custom-datetime{
@@ -121,8 +137,9 @@ ion-datetime-button{
     ion-label{
       transform: translateY(-50px);
       position: relative;
-      top: -17%;
+      top: -14%;
       z-index: 100;
+      background: var(--app-bg);
     }
   }
 }

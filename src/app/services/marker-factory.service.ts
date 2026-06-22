@@ -3,12 +3,15 @@ import * as L from 'leaflet';
 import { Location } from '../models/Location';
 import moment from 'moment';
 import { UserGeolocalisation } from '../models/UserGeolocalisation';
+import { Position } from '../models/Position';
+import { LocationService } from './location.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MarkerFactoryService {
-  
+  constructor(private locationService: LocationService) {}
+
   buildUserMarker(userGeolocalisation: UserGeolocalisation){
     const monIcon = L.divIcon({
       html: `<span>${userGeolocalisation.displayName[0].toUpperCase() + userGeolocalisation.displayName[1]}</span>`,
@@ -27,6 +30,7 @@ export class MarkerFactoryService {
   }
 
   buildLocationMarker(location: Location){
+
     const locationIcon = L.divIcon({
       html: `<span class="material-icons">${location.typeIcon}</span>`,
       iconAnchor: [16, 32],
@@ -38,13 +42,13 @@ export class MarkerFactoryService {
       .bindPopup(`
         <span data-id="${location.id}">
           <p class="title">${location.name}</p>
-          <p class="section"><span class="material-icons">calendar_month</span>${moment(location.date).format("DD/MM/YYYY")}</p>
+          <p class="section"><span class="material-icons">calendar_month</span>${this.locationService.getFormatedDate(location.date)}</p>
           <p class="section"><span class="material-icons">location_on</span>${location.latitude.toFixed(4)}, ${location.longitude.toFixed(4)}</p>
           <p class="section"><span class="material-icons">terrain</span>${location.altitude ?? "-"}</p> 
         </span>`, { maxWidth: 220, minWidth: 180, className: "location-popup" });
   }
 
-  buildNewLocationMarker(latLng: L.LatLng){
+  buildNewLocationMarker(position: Position){
     const newLocationIcon = L.divIcon({
         html: '<ion-icon name="location"></ion-icon>',
         iconAnchor: [16, 32],
@@ -52,6 +56,6 @@ export class MarkerFactoryService {
         className: 'custom-marker new-location'
     });
 
-    return L.marker([latLng.lat, latLng.lng], {draggable: true, icon: newLocationIcon});
+    return L.marker([position.latitude, position.longitude], {draggable: true, icon: newLocationIcon});
   }
 }
