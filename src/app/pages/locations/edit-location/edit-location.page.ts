@@ -125,6 +125,7 @@ export class EditLocationPage implements OnInit {
   }
 
   async onSubmit(locationRequest: LocationRequest) {
+    this.uploadLoaded = true;
 
     let isSuccess = true,
     locationsType = this.locationService.locationTypes().find(item => item.id == locationRequest.typeID);
@@ -144,7 +145,9 @@ export class EditLocationPage implements OnInit {
     if (isSuccess){
       this.toastService.get(MessageEnum.AppSuccess, StatusEnum.Success);
 
-      await this.locationService.search(this.locationService.locationSearchRequest());
+      this.locationService.search(this.locationService.locationSearchRequest());
+
+      this.uploadLoaded = false;
 
       this.router.navigate(['/map']);
     }  
