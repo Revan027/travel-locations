@@ -42,27 +42,7 @@
                 </ion-col>
 
                 <ion-col size="6">
-                  <ion-label>Date limite</ion-label>
-
-                    <ion-datetime-button datetime="limitDate"></ion-datetime-button>
-
-                    <ion-modal [keepContentsMounted]="true">
-                      <ng-template>
-                        <ion-datetime
-                          id="limitDate"
-                          presentation="date"
-                          formControlName="limitDate"
-                          [formatOptions]="{
-                            date: {
-                              weekday: 'short',
-                              month: 'long',
-                              day: '2-digit',
-                              year: 'numeric'
-                            },
-                          }"
-                        ></ion-datetime>
-                      </ng-template>
-                    </ion-modal>    
+                  <app-datetime [formGroup]="formGroup" (dateChanged)="onDateChanged($event)" [date]="locationSearchRequest().limitDate" controlName="limitDate" label="Date limite"></app-datetime>  
                 </ion-col>        
               </ion-row>
             </ion-grid>

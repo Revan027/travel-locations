@@ -52,18 +52,7 @@
           </ion-col>
 
           <ion-col size="6">
-            <!--en faire un composant -->
-            <div class="custom-datetime">
-              <div class="custom-datetime-label">
-                 <ion-label>Date</ion-label>
-              </div>
-             
-              <ion-button  fill="clear" id="open-modal" expand="block" class="datetime" (click)="openDatetimeModal()">
-                {{ location.date | timestampPipe }}
-              </ion-button>
-
-              <input type="hidden" formControlName="date"/>
-            </div>       
+            <app-datetime [formGroup]="formGroup" (dateChanged)="onDateChanged($event)" [date]="location.date" controlName="date" label="Date"></app-datetime>
           </ion-col>
 
           <ion-col size="6">

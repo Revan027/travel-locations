@@ -114,7 +114,7 @@ ion-button.datetime::part(native) {
   --background-activated: transparent;
   --background-focused: transparent;
   --ripple-color: transparent;
-
+  border-radius: 4px;
   transition: none !important;
 }
 
@@ -132,14 +132,12 @@ ion-modal.datetime-modal{
     font-size: var(--ion-font-size-xs);
     left: 5%;
     height: 100%;
-    border-top: 1px solid white;
 
     ion-label{
-      transform: translateY(-50px);
       position: relative;
-      top: -14%;
+      top: 010%;
       z-index: 100;
-      background: var(--app-bg);
+      background: transparent;
     }
   }
 }

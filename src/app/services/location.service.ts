@@ -32,8 +32,8 @@ export class LocationService {
         return this.firestoreService.getDocumentRef(FirebaseCollectionEnum.locations, id);
     }
 
-    getFormatedDate(date: Timestamp, format: string = "DD/MM/YYYY"): string {
-        return moment(date.toDate()).format(format);
+    getFormatedDate(date?: Timestamp, format: string = "DD/MM/YYYY"): string {
+        return date ? moment(date.toDate()).format(format): "";
     }
 
     async loadAll(): Promise<void>{
@@ -49,8 +49,8 @@ export class LocationService {
         let queryParts: QueryConstraint[] = [];
         const ref = this.firestoreService.getCollectionRef(FirebaseCollectionEnum.locations);
 
-        if (locationSearchRequest.limitDate){
-            queryParts.push(where("date", "<=", Timestamp.fromDate(new Date(locationSearchRequest.limitDate))));
+        if (locationSearchRequest.limitDate !== undefined){
+            queryParts.push(where("date", "<=", locationSearchRequest.limitDate));
         }
 
         if (locationSearchRequest.typeIDs.length > 0){

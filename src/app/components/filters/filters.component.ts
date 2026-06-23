@@ -1,20 +1,22 @@
-import { Component, computed, OnInit } from '@angular/core';
+import { Component, computed, OnInit, WritableSignal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { LocationService } from 'src/app/services/location.service';
 import moment from 'moment';
 import { LocationSearchRequest } from 'src/app/models/LocationSearchRequest';
 import { LoaderComponent } from '../loader.component';
+import { DatetimeComponent } from '../datetime/datetime.component';
 
 @Component({
   standalone: true,
-  imports: [IonicModule, ReactiveFormsModule, LoaderComponent],
+  imports: [IonicModule, ReactiveFormsModule, LoaderComponent, DatetimeComponent],
   selector: 'app-filters',
   templateUrl: 'filters.component.html',
   styleUrls: ['filters.component.scss']
 })
 export class FiltersComponent{
 
+  locationSearchRequest: WritableSignal<LocationSearchRequest> = this.locationService.locationSearchRequest;
   loaded: boolean = false; 
   formGroup!: FormGroup;
 
@@ -23,10 +25,9 @@ export class FiltersComponent{
 
   constructor(
     private locationService: LocationService, 
-    private formBuilder: FormBuilder)
-  {
-    moment.locale("fr");  
-  }
+    private formBuilder: FormBuilder){
+      moment.locale("fr");  
+    }
 
   ngAfterViewInit() {
     this.createForm();
@@ -43,6 +44,10 @@ export class FiltersComponent{
     this.locationService.locationSearchRequest.set(new LocationSearchRequest());
     this.createForm();
     await this.locationService.search(this.locationService.locationSearchRequest());
+  }
+
+   onDateChanged(event: any){
+    this.formGroup.get("limitDate")?.setValue(event);
   }
 
   private createForm() {
