@@ -1,8 +1,8 @@
-import { Location as ALocation, DatePipe } from '@angular/common';
-import { Component, AfterViewInit, inject, DestroyRef, WritableSignal, computed, ViewChild, ElementRef, OnInit } from '@angular/core';
+import { Location as ALocation } from '@angular/common';
+import { Component, inject, DestroyRef, computed, ViewChild, ElementRef, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { GestureController, IonicModule, ModalController } from '@ionic/angular';
+import { GestureController, IonicModule } from '@ionic/angular';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Location, LocationRequest } from 'src/app/models/Location';
 import { LocationService } from 'src/app/services/location.service';
@@ -17,13 +17,11 @@ import { LoaderComponent } from 'src/app/components/loader.component';
 import { AltitudeService } from 'src/app/services/altitude.service';
 import { CloudinaryUrlPipe } from 'src/app/pipes/cloudinary-url.pipe';
 import { AuthStatusComponent } from 'src/app/components/auth-status.component';
-import { DatetimeModalComponent } from 'src/app/components/datetime-modal/datetime-modal.component';
-import { TimestampPipe } from 'src/app/pipes/timestamp.pipe';
-import { Timestamp } from 'firebase/firestore';
+import { DatetimeComponent } from 'src/app/components/datetime/datetime.component';
 
 @Component({
   standalone: true,
-  imports: [IonicModule, ReactiveFormsModule, LoaderComponent, CloudinaryUrlPipe, AuthStatusComponent, DatePipe, TimestampPipe],
+  imports: [IonicModule, ReactiveFormsModule, LoaderComponent, CloudinaryUrlPipe, AuthStatusComponent, DatetimeComponent],
   selector: 'app-edit-location',
   templateUrl: 'edit-location.page.html',
   styleUrls: ['edit-location.page.scss'],
@@ -53,10 +51,7 @@ export class EditLocationPage implements OnInit {
     private mapService: MapService,
     private toastService: ToastService,
     private cloudinaryService: CloudinaryService,
-    private altitudeService: AltitudeService,
-    private modalCtrl: ModalController
-  )
-  {
+    private altitudeService: AltitudeService){
     moment.locale("fr");  
   }
 
@@ -125,7 +120,13 @@ export class EditLocationPage implements OnInit {
     });
   }
 
+  onDateChanged(event: any){
+    this.formGroup.get("date")?.setValue(event);
+  }
+
   async onSubmit(locationRequest: LocationRequest) {
+    this.uploadLoaded = true;
+
     let isSuccess = true,
     locationsType = this.locationService.locationTypes().find(item => item.id == locationRequest.typeID);
 
@@ -144,7 +145,9 @@ export class EditLocationPage implements OnInit {
     if (isSuccess){
       this.toastService.get(MessageEnum.AppSuccess, StatusEnum.Success);
 
-      await this.locationService.search(this.locationService.locationSearchRequest());
+      this.locationService.search(this.locationService.locationSearchRequest());
+
+      this.uploadLoaded = false;
 
       this.router.navigate(['/map']);
     }  
@@ -183,22 +186,5 @@ export class EditLocationPage implements OnInit {
     this.formGroup.get("imgUrl")?.setValue(this.location.imgUrl);
     
     this.uploadLoaded = false;
-  }
-
-  async openDatetimeModal() {
-    const modal = await this.modalCtrl.create({
-      component: DatetimeModalComponent,
-      componentProps: { date: this.locationService.getFormatedDate(this.location.date, "YYYY-MM-DD") },
-      cssClass: "datetime-modal"
-    });
-    modal.present();
-
-    const { data, role } = await modal.onWillDismiss();
-
-    if(data){
-      this.location.date = Timestamp.fromDate(new Date(data));
-
-      this.formGroup.get("date")?.setValue(this.location.date);
-    }
   }
 }

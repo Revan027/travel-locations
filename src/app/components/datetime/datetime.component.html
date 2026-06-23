@@ -1,0 +1,13 @@
+ <div class="custom-datetime" >
+    <div class="custom-datetime-label">
+        <ion-label>{{label}}</ion-label>
+    </div>
+
+    <ion-button  fill="clear" id="open-modal" expand="block" class="datetime" (click)="openDatetimeModal()">
+        {{ date | timestampPipe }}
+    </ion-button>
+
+    <div [formGroup]="formGroup">
+        <input type="hidden" [formControlName]="controlName"/>
+    </div>
+</div>

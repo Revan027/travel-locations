@@ -10,7 +10,7 @@ export class TimestampPipe implements PipeTransform {
 
   constructor(private locationService: LocationService) {}
 
-  transform(date: Timestamp): string {
+  transform(date?: Timestamp): string {
     return this.locationService.getFormatedDate(date);
   }
 }

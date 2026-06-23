@@ -133,7 +133,7 @@ export class MapService {
             zoomAnimation: true,
             zoomControl: false,
             doubleClickZoom: false,
-            minZoom: 4,
+            minZoom: 5,
             trackResize: false,      // Leaflet ne réagit plus tout seul au resize de la fenêtre (clavier) → plus de redraw/flash. On garde la main via resizeMap().
             renderer: L.svg({padding: 5})}
         )
