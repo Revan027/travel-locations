@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { HttpService } from './services.common/http-service';
 import { firstValueFrom } from 'rxjs';
 import { apiURL } from '../constants/apiURL';
@@ -8,6 +8,8 @@ import { PhotonKomootResult } from '../models/PhotonKomootResult';
   providedIn: 'root',
 })
 export class PhotonKomootService {
+  
+  displayModal = signal(false);
 
   constructor(private httpService: HttpService) {}
 

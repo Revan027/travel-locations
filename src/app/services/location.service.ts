@@ -92,7 +92,13 @@ export class LocationService {
     goupByType(): { [key: string]: Location[] }{
         let groupLocation: { [key: string]: Location[] } = {};
 
-        let sort = this.locations().sort((a, b) => a.typeName.replace(/[^a-zA-Z0-9]/g, '').localeCompare(b.typeName.replace(/[^a-zA-Z0-9]/g, ''), "fr", { sensitivity: "base" }) > 0 ? 1 : -1);
+        let sort = this.locations()
+            .sort((a, b) => 
+            {
+                return a.typeName
+                    .replace(/[^a-zA-Z0-9]/g, '') // on remplace les caractères qui ne sont pas des lettres puis on compare sans case sensitive
+                    .localeCompare(b.typeName.replace(/[^a-zA-Z0-9]/g, ''), "fr", { sensitivity: "base" }) > 0 ? 1 : -1 
+            });
         
         sort.map((item: Location) => {
 
@@ -105,5 +111,11 @@ export class LocationService {
         }); 
 
         return groupLocation;
+    }
+
+    sortLocation(groups: { [key: string]: Location[] }){
+        Object.entries(groups).forEach((item) => {
+            return item[1].sort((a, b) => a.date.toDate() < b.date.toDate()  ? 1 : -1)
+        });
     }
 }

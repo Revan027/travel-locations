@@ -33,7 +33,7 @@
               {
                 <ion-item routerLink="/locations/{{location.id}}">                   
                     <ion-label>                       
-                      <div class="title ion-display-flex ion-align-items-center ion-margin-bottom">
+                      <div class="location-list__title ion-display-flex ion-align-items-center ion-margin-bottom">
                          @if(location.imgUrl){
                             <img src="{{location.imgUrl | cloudinaryUrl}}" class="location-illustration" alt=""/>
                           }
@@ -41,24 +41,20 @@
                             <img src="../../../../assets/placeholder.webp" class="location-illustration" alt=""/>
                           }        
                         <span class="ion-margin-start ion-font-size-xl">{{location.name}}</span>
+                        <span class="location-list__date">{{ location.date | timestampPipe }}</span>
                       </div>
 
-                      <div class="section">
-                        <span class="material-icons ion-margin-end">calendar_month</span>
-                        <span>{{ location.date | timestampPipe }}</span>
-                      </div>
-
-                      <div class="section">
+                      <div class="location-list__section">
                         <span class="material-icons ion-margin-end ">public</span>
                         <span class="ion-text-capitalize">{{ location.countryID | titlecase }}</span>
                       </div>
 
-                      <div class="section">
+                      <div class="location-list__section">
                         <span class="material-icons ion-margin-end">location_on</span>
                         <span>{{location.latitude.toFixed(4)}} {{location.longitude.toFixed(4)}}</span>
                       </div>
 
-                      <div class="section">
+                      <div class="location-list__section">
                         <span class="material-icons ion-margin-end">terrain</span>
                         <span>{{location.altitude ?? "-"}}</span>
                       </div> 

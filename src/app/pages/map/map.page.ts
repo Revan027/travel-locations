@@ -1,44 +1,28 @@
-import { Component, HostListener, signal, WritableSignal } from '@angular/core';
-import { Capacitor } from '@capacitor/core';
-import { Keyboard, KeyboardResize } from '@capacitor/keyboard';
+import { Component, WritableSignal } from '@angular/core';
 import { MapService } from 'src/app/services/map.service';
 import { Position } from 'src/app/models/Position';
 import { LocationService } from 'src/app/services/location.service';
 import { Location } from 'src/app/models/Location';
 import { FormGroup, FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
-import { PhotonKomootService } from 'src/app/services/photon-komoot.service';
-import { PhotonKomootFeature, PhotonKomootResult } from 'src/app/models/PhotonKomootResult';
 import { LoaderComponent } from 'src/app/components/loader.component';
 import { FiltersComponent } from 'src/app/components/filters/filters.component';
 import { AuthStatusComponent } from 'src/app/components/auth-status.component';
 import { GeolocalisationService } from 'src/app/services/geolocalisation.service';
 import { User } from 'src/app/models/User';
 import { AuthentificationService } from 'src/app/services/authentification.service';
-import { AppInitService } from 'src/app/services/app-init.service';
+import { ApiSearchModalComponent } from 'src/app/components/api-search-modal/api-search-modal.component';
+import { PhotonKomootService } from 'src/app/services/photon-komoot.service';
 
 
 @Component({
   standalone: true,
-  imports: [IonicModule, FormsModule, LoaderComponent, FiltersComponent, AuthStatusComponent],
+  imports: [IonicModule, LoaderComponent, FiltersComponent, AuthStatusComponent, ApiSearchModalComponent],
   selector: 'app-map',
   templateUrl: 'map.page.html',
   styleUrls: ['map.page.scss'],
 })
 export class MapPage {
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent) {
-    if (!this.displayApiSearchModal()) return;
-
-    const target = event.target as HTMLElement;
-
-    // on ne ferme pas si le clic est dans le modal ou sur le bouton qui l'ouvre
-    if (!target.closest('.api-search-modal') && !target.closest('.btn-api-search-modal')) {
-      this.displayApiSearchModal.set(false);
-    }
-  }
-
-  displayApiSearchModal = signal(false);
 
   position: WritableSignal<Position> = this.geolocalisationService.position;
   locations: WritableSignal<Location[]> = this.locationService.locations;
@@ -47,18 +31,14 @@ export class MapPage {
   islocatingUsers: WritableSignal<boolean> = this.mapService.islocatingUsers;
 
   formGroup!: FormGroup;
-  apiSearchLoading = false;
-  apiSearchResult?: PhotonKomootResult;
-  apiSearchText: string = '';
 
   constructor(
     private mapService: MapService,
     private geolocalisationService: GeolocalisationService,
     private locationService: LocationService,
-    private photonKomootService: PhotonKomootService, private AppInitService: AppInitService,
-    private authService: AuthentificationService)
-    {
-    }
+    private authService: AuthentificationService,
+    private photonKomootService: PhotonKomootService){
+  }
 
   async ngAfterViewInit(){
     await this.mapService.init();
@@ -80,20 +60,6 @@ export class MapPage {
   } 
 
   onOpenSearchModal(){
-    this.displayApiSearchModal.update(v => !v);
-  }
-
-  async onSubmitPhotonKomootSearch(){
-    this.apiSearchLoading = true;
-    this.apiSearchResult = await this.photonKomootService.search(this.apiSearchText);
-    this.apiSearchLoading = false;
-  }
-
-  onClickApiFeature(feature: PhotonKomootFeature){
-    this.displayApiSearchModal.set(false);
-    const position: Position = {latitude: feature.geometry.coordinates[1], longitude: feature.geometry.coordinates[0]};
-
-    this.mapService.flyTo(position, 14);
-    this.mapService.placeNewLocationMarker(position);
+    this.photonKomootService.displayModal.update(v => !v);
   }
 }

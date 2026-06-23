@@ -1,5 +1,5 @@
-import { Location as ALocation, DatePipe } from '@angular/common';
-import { Component, AfterViewInit, inject, DestroyRef, WritableSignal, computed, ViewChild, ElementRef, OnInit } from '@angular/core';
+import { Location as ALocation } from '@angular/common';
+import { Component, inject, DestroyRef, WritableSignal, computed, ViewChild, ElementRef, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GestureController, IonicModule, ModalController } from '@ionic/angular';
@@ -23,7 +23,7 @@ import { Timestamp } from 'firebase/firestore';
 
 @Component({
   standalone: true,
-  imports: [IonicModule, ReactiveFormsModule, LoaderComponent, CloudinaryUrlPipe, AuthStatusComponent, DatePipe, TimestampPipe],
+  imports: [IonicModule, ReactiveFormsModule, LoaderComponent, CloudinaryUrlPipe, AuthStatusComponent, TimestampPipe],
   selector: 'app-edit-location',
   templateUrl: 'edit-location.page.html',
   styleUrls: ['edit-location.page.scss'],

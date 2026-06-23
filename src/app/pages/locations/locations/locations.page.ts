@@ -23,7 +23,8 @@ export class LocationsPage {
 
   constructor(private locationService: LocationService) {
     effect(() => {
-      this.groupLocation = this.locationService.goupByType()
+      this.groupLocation = this.locationService.goupByType();
+      this.locationService.sortLocation(this.groupLocation);
     });
   }
 }
