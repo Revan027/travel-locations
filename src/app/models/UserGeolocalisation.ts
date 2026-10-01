@@ -10,4 +10,8 @@ export class UserGeolocalisation {
   readonly displayName: string = "";
   readonly email: string = "";
   lastUpdateGeoloc!: Timestamp;
+
+  static getFirstLetter(userGeolocalisation: UserGeolocalisation): string{
+    return `<span>${userGeolocalisation.displayName[0].toUpperCase() + userGeolocalisation.displayName[1]}</span>`;
+  }
 }

@@ -52,21 +52,21 @@ ion-accordion-group {
 
         .location-list__title{
           font-weight: bold;
-          font-size: var(--ion-font-size-base);
+          font-size: var(--font-size-base);
         }
 
         .location-list__section {
           display: flex;
           color: var(--app-text-dark);
-          font-size: var(--ion-font-size-xs);
+          font-size: var(--font-size-xs);
 
           .material-icons{
-            font-size: var(--ion-font-size-sm);
+            font-size: var(--font-size-sm);
           }
         }
 
         .location-list__date{
-          font-size: var(--ion-font-size-xs);
+          font-size: var(--font-size-xs);
           font-weight: bold;
           text-align: right;
         }

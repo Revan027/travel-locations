@@ -39,7 +39,7 @@
     }
     &__title {
         flex: 1;
-        font-size: var(--ion-font-size-lg);
+        font-size: var(--font-size-lg);
         font-weight: 700;
     }
     &__title-icon {
@@ -91,7 +91,7 @@
         h3 { font-weight: 700; }
         p {
             color: var(--app-text-muted);
-            font-size: var(--ion-font-size-xs);
+            font-size: var(--font-size-xs);
         }
         }
     }
@@ -100,6 +100,6 @@
         padding: 16px 0;
         color: var(--app-text-muted);
         text-align: center;
-        font-size: var(--ion-font-size-sm);
+        font-size: var(--font-size-sm);
     }
 }

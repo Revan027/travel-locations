@@ -41,7 +41,7 @@ import { AuthentificationService } from '../services/authentification.service';
 
         ion-col{
            --ion-grid-column-padding: 2px;
-            font-size: var(--ion-font-size-sm);
+            font-size: var(--font-size-sm);
         }
 
         ion-icon{

@@ -14,7 +14,7 @@ export class MarkerFactoryService {
 
   buildUserMarker(userGeolocalisation: UserGeolocalisation){
     const monIcon = L.divIcon({
-      html: `<span>${userGeolocalisation.displayName[0].toUpperCase() + userGeolocalisation.displayName[1]}</span>`,
+      html: UserGeolocalisation.getFirstLetter(userGeolocalisation),
       iconAnchor: [20, 20],
       iconSize: [40, 40],
       popupAnchor: [0, -20],
@@ -23,10 +23,26 @@ export class MarkerFactoryService {
 
     return L.marker([userGeolocalisation.latitude, userGeolocalisation.longitude], {icon: monIcon})
       .bindPopup(`
-        <span data-id="${userGeolocalisation.id}">
-          <p class="title">${userGeolocalisation.displayName}</p>
-          <p class="section"><span class="material-icons">calendar_month</span> Dernier relevé le : ${moment(userGeolocalisation.lastUpdateGeoloc.toDate()).format("DD/MM/YYYY à HH[h]mm")}</p>
-        </span>`, {className: "user-popup"});
+        <div class="user-card" data-id="${userGeolocalisation.id}">
+          <div class="user-card-header mb-1">
+            <div class="user-card-firstLetter">
+              ${UserGeolocalisation.getFirstLetter(userGeolocalisation)}
+            </div>
+
+            <div class="card-title">
+               ${userGeolocalisation.displayName}
+            </div>
+          </div>
+
+          <div class="user-card-content curren-text">
+            <div class="color-e05e2f material-icons">schedule</div>
+
+            <div>
+              Dernier relevé :  <b>${moment(userGeolocalisation.lastUpdateGeoloc.toDate()).format("DD/MM/YYYY à HH[h]mm")}</b>
+            </div>
+          </div>
+        </div>`
+        , {className: "user-popup"});
   }
 
   buildLocationMarker(location: Location){

@@ -80,7 +80,7 @@ export class MapService {
 
         this.appResumeListener = await App.addListener('appStateChange', (event: any) => {
             if (event.isActive && !this.islocatingUsers() && this.map){
-                this.locateUsers(true);
+                //this.locateUsers(true);
             }
       });
     }
@@ -101,7 +101,7 @@ export class MapService {
             const element = e.popup.getElement();
 
             if(element?.className.includes("location-popup")){
-                const id = element?.querySelector("span[data-id]")?.getAttribute("data-id");
+                const id = element?.querySelector("div[data-id]")?.getAttribute("data-id");
 
                 callback = function (event: any){        
                     me.router.navigateByUrl(`/locations/${id}`);
@@ -237,17 +237,17 @@ export class MapService {
                 radius = center.distanceTo(bounds.getNorthEast());
 
             // on prépare la zone
-            const circle = L.circle(center, {
-                color: 'transparent',
-                fillColor: 'var(--app-amber)',
-                fillOpacity: 0.5,
+            const circle = L.circle(center, {stroke: false, 
+                color: 'white',
+                fillColor: 'var(--color-2b3a4e)', // couleur pleine (pas de rgba, sinon le cercle est transparent)
+                fillOpacity: 0.8,
                 radius: radius < 50000 ? 50000 : radius // en mètre
             });
 
             // on prépare le tooltip
-            const tooltip = L.tooltip({permanent: true, direction: "center"})
+            const tooltip = L.tooltip({permanent: true, direction: "center", opacity: 1})
                 .setLatLng(center)
-                .setContent(item.locations.length.toString())
+                .setContent("<span class='cluster-indicator'>"+item.locations.length.toString()+"</span>")
                 .openOn(this.map);
 
             // on ajoute le layer au group

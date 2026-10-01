@@ -10,7 +10,7 @@ ion-tab-bar {
     background: none;
     border: none;
     color: var(--app-tab-inactive);
-    font-size: var(--ion-font-size-xs);
+    font-size: var(--font-size-xs);
     letter-spacing: 0.8px;
     text-transform: uppercase;
     font-family: var(--ion-font-family);
@@ -31,7 +31,7 @@ ion-tab-bar {
     position: absolute;
     bottom: 5px;
     right: 5px;
-    font-size: var(--ion-font-size-xxs);
+    font-size: var(--font-size-xxs);
     color: white;
   }
 }
