@@ -1,0 +1,120 @@
+name: Release Android APK
+
+# Se déclenche quand tu pousses un tag de version, avec ou sans "v"
+# ex: v2.1.0  OU  2.1.0
+on:
+  push:
+    tags:
+      - 'v*'        # ex: v2.1.0
+      - '[0-9]*'    # ex: 2.1.0 (sans le v)
+
+permissions:
+  contents: write # nécessaire pour créer la Release et y attacher l'APK
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Récupération du code (+ sous-modules : services communs *.services.common)
+      - name: Checkout du dépôt
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      # 2. Node.js (Angular 20 requiert Node 20+)
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      # 3. Java 21 (requis par Capacitor 8 / Gradle 8.14)
+      - name: Setup JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      # 4. SDK Android
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          # packages: '' -> n'installe aucun paquet supplementaire.
+          # Par defaut l'action lance `sdkmanager tools`, or le paquet legacy
+          # `tools` a ete retire du depot SDK de Google => "Failed to find
+          # package 'tools'" et echec du job. Le runner ubuntu-latest fournit
+          # deja platform-tools / platforms / build-tools, et Gradle telecharge
+          # ce qui manque (les licences sont acceptees par l'action).
+          packages: ''
+
+      # 5. Dépendances npm
+      #    npm install (et non npm ci) : complète le lock pour la plateforme
+      #    Linux du runner (binaires natifs) à la volée.
+      - name: Installation des dépendances
+        run: npm install --no-audit --no-fund
+
+      # 6. Restitution des fichiers d'environnement (clés Firebase, Cloudinary...)
+      #    Ils sont ignorés par git (dépôt public). Le secret ENVIRONMENT_PROD
+      #    contient src/environments/environment.prod.ts encodé en base64. Il est
+      #    aussi copié dans environment.ts, le fichier importé dans le code et
+      #    remplacé par fileReplacements au build de production.
+      - name: Restitution des fichiers d'environnement
+        env:
+          ENVIRONMENT_PROD_B64: ${{ secrets.ENVIRONMENT_PROD }}
+        run: |
+          if [ -z "$ENVIRONMENT_PROD_B64" ]; then
+            echo "::error::Secret ENVIRONMENT_PROD absent — le build Angular ne peut pas compiler sans les fichiers d'environnement."
+            exit 1
+          fi
+          echo "$ENVIRONMENT_PROD_B64" | base64 -d > src/environments/environment.prod.ts
+          cp src/environments/environment.prod.ts src/environments/environment.ts
+
+      # 7. Build Angular (sortie dans www/, cf. angular.json + capacitor.config.ts)
+      - name: Build Angular
+        run: npm run build
+
+      # 8. Capacitor sync (copie www/ dans android/ + met à jour les plugins)
+      - name: Capacitor sync
+        run: npx cap sync android
+
+      # NOTE : la version (versionCode / versionName) n'est PAS injectée ici.
+      # Elle est gérée manuellement dans android/app/build.gradle, pour que
+      # les builds CI et Android Studio partagent le MÊME versionCode
+      # (sinon downgrade → mise à jour impossible entre les deux).
+
+      # 9. Restitution du keystore de debug depuis le secret
+      #    Sans lui, Gradle génère une clé aléatoire sur le runner : l'APK aurait
+      #    une signature différente de celle des builds Android Studio et ne
+      #    pourrait PAS s'installer en mise à jour (désinstallation obligatoire).
+      #    Le secret contient le keystore encodé en base64.
+      - name: Restitution du keystore de debug
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_DEBUG_KEYSTORE }}
+        run: |
+          if [ -z "$KEYSTORE_B64" ]; then
+            echo "::error::Secret ANDROID_DEBUG_KEYSTORE absent — l'APK produit ne serait pas installable en mise à jour."
+            exit 1
+          fi
+          mkdir -p android/keystore
+          echo "$KEYSTORE_B64" | base64 -d > android/keystore/debug.keystore
+
+      # 10. Génération de l'APK
+      - name: Build APK
+        working-directory: android
+        run: |
+          chmod +x ./gradlew
+          ./gradlew assembleDebug --no-daemon
+
+      # 11. Renommage de l'APK avec le nom du tag
+      - name: Renommage de l'APK
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk travel-locations-${{ github.ref_name }}.apk
+
+      # 12. Création de la Release GitHub avec l'APK attaché
+      - name: Publication de la Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
+          generate_release_notes: true # génère un changelog auto depuis les commits
+          files: travel-locations-${{ github.ref_name }}.apk

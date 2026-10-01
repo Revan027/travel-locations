@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpService } from './services.common/http-service';
+import { HttpService } from './capacitor.services.common/http-service';
 import { environment } from 'src/environments/environment';
 
 @Injectable({

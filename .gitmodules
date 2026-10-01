@@ -1,0 +1,12 @@
+[submodule "src/app/services/firestore.services.common"]
+	path = src/app/services/firestore.services.common
+	url = https://github.com/Revan027/firestore.services.common.git
+	branch = master
+[submodule "src/app/services/capacitor.services.common"]
+	path = src/app/services/capacitor.services.common
+	url = https://github.com/Revan027/capacitor.services.common.git
+	branch = main
+[submodule "src/app/services/ionic.services.common"]
+	path = src/app/services/ionic.services.common
+	url = https://github.com/Revan027/ionic.services.common.git
+	branch = main

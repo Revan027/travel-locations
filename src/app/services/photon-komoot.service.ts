@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { HttpService } from './services.common/http-service';
+import { HttpService } from './capacitor.services.common/http-service';
 import { firstValueFrom } from 'rxjs';
 import { apiURL } from '../constants/apiURL';
 import { PhotonKomootResult } from '../models/PhotonKomootResult';

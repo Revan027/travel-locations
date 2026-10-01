@@ -16,7 +16,26 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    // Clé de debug figée. En CI, le workflow reconstitue android/keystore/debug.keystore
+    // depuis le secret ANDROID_DEBUG_KEYSTORE : l'APK publié a alors la MÊME signature
+    // que les builds Android Studio, donc il s'installe en mise à jour (sinon Gradle
+    // génère une clé aléatoire sur le runner → signature différente → réinstallation).
+    // En local le fichier est absent → Gradle utilise ~/.android/debug.keystore,
+    // qui est cette même clé. Le keystore n'est jamais versionné (dépôt public).
+    signingConfigs {
+        debugFixed {
+            storeFile file('../keystore/debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+        }
+    }
     buildTypes {
+        debug {
+            if (file('../keystore/debug.keystore').exists()) {
+                signingConfig signingConfigs.debugFixed
+            }
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
