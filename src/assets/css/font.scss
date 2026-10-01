@@ -11,3 +11,19 @@
   font-size: var(--font-size-sm);
   color: var(--color-2b3a4e);
 }
+
+
+.meta-title{
+  font-family: var(--ion-font-family);
+  font-size: var(--font-size-xs);
+  color: var(--color-8A94A3); 
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.meta-data{
+  font-family: var(--ion-font-family);
+  font-size: var(--font-size-sm);
+  color: var(--color-2b3a4e); 
+  font-weight: bold;
+}

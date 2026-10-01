@@ -103,12 +103,12 @@ export class MapService {
             if(element?.className.includes("location-popup")){
                 const id = element?.querySelector("div[data-id]")?.getAttribute("data-id");
 
-                callback = function (event: any){        
+                callback = function (event: any){
                     me.router.navigateByUrl(`/locations/${id}`);
                 }
 
-               element?.addEventListener("click", callback); 
-            }     
+               element?.querySelector(".btn-see-location")?.addEventListener("click", callback);
+            }
         });
 
         this.map.on('popupclose', (e) => {
@@ -266,7 +266,7 @@ export class MapService {
             if(bound.intersects(cluster.bounds))
             {
                 cluster.locations.forEach((location: Location) => {
-                  
+
                     // on ajoute un marker s'il est pas déja présent
                     if(!cluster.locationsMarker.some((item: L.Marker<any>) => item.getLatLng().lat == location.latitude && item.getLatLng().lng == location.longitude)){
                         const marker = this.markerFactoryService.buildLocationMarker(location); 

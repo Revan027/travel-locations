@@ -1,4 +1,11 @@
-// Global Ionic component overrides TravelLocations design system
+.mt-2{
+  margin-top: 20px;
+}
+
+.mt-1{
+  margin-top: 10px;
+}
+
 .mb-2{
   margin-bottom: 20px;
 }
@@ -7,6 +14,17 @@
   margin-bottom: 10px;
 }
 
+
+.img-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: repeating-linear-gradient(135deg, #e7e2d9 0 7px, #f0ece5 7px 14px);
+  color: #8b8478;
+  font: 500 10px ui-monospace, Menlo, monospace;
+  border-radius: 12px;
+  overflow: hidden;
+}
 // CONTENT
 ion-content {
   --background: var(--app-bg);
@@ -154,12 +172,6 @@ ion-button ion-label {
   width: 100%;
 }
 
-ion-button {
-  --background: linear-gradient(145deg, var(--app-amber), var(--app-amber-deep));
-  --color: #ffffff;
-  --border-radius: 12px;
-  font-weight: 600;
-}
 
 ion-fab-button{
  --background: linear-gradient(145deg, var(--app-amber), var(--app-amber-deep));
@@ -248,29 +260,27 @@ ion-popover{
     background: white;
   }
 
-  .leaflet-popup-content-wrapper{
+  .location-popup{
+    .leaflet-popup-content-wrapper{
+      padding: 0px;
+
+      .leaflet-popup-content{
+        margin: 0;
+      }
+    }   
+  }
+  .user-popup .leaflet-popup-content-wrapper{
     background: white;
     padding: 10px;
-
-    .leaflet-popup-content{
-      margin: 10px 5px
-    }
-
-    .section{
-      font-size: var(--font-size-xs);
-      margin: 5px;
-    }
-
-    .title{
-      text-align: center;
-      font-size: var(--font-size-xl);
-      margin: 5px;
-    }
 
     .material-icons{
       vertical-align: text-bottom;
       font-size: var(--font-size-base)!important;
       margin-right: 5px;
+    }
+
+    .leaflet-popup-content{
+      margin: 10px 5px
     }
   }
 

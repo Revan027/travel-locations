@@ -97,3 +97,41 @@
   }
 }
 
+
+
+.location-card{
+  .location-card-header{
+    height: 200px;
+    
+    ion-img{
+      height: 100%;
+    }
+
+    ion-img::part(image){
+      object-fit: cover;
+      object-position: center;
+    }
+  }
+
+  .location-card-content{
+    border-radius: 10px;
+    padding: 10px 10px;
+  }
+
+  .location-card-footer{
+    border-radius: 10px;
+    padding: 10px 10px;
+  }
+
+  .location-card-meta{
+    display: flex;
+    gap: 10px;
+
+    .meta-item{
+      border-radius: 10px;
+      padding: 10px 10px;
+      background: #F5F6F9;
+    }
+  }
+}
+
