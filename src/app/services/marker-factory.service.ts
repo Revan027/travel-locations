@@ -35,7 +35,7 @@ export class MarkerFactoryService {
             </div>
           </div>
 
-          <div class="user-card-content curren-text">
+          <div class="user-card-content current-text">
             <div class="color-e05e2f material-icons">schedule</div>
 
             <div>

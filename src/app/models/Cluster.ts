@@ -1,5 +1,3 @@
-import { Location } from "./Location";
-
 export class Cluster {
   constructor() {}
 
@@ -8,6 +6,20 @@ export class Cluster {
   maxLng!: number;
   minLat!: number;
   minLng!: number;
+  countLocation!: number;
+}
+
+export class ClusterRequest extends Cluster {
+  constructor() {
+    super();
+  }
+}
+
+export class ClusterMap extends Cluster {
+  constructor() {
+    super();
+  }
+
   layer?: L.LayerGroup<any>;
   locationMarkers?:  L.Marker<any>[];
 }

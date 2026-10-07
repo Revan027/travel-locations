@@ -1,6 +1,6 @@
 import { Injectable, Signal, signal } from '@angular/core';
 import { FirestoreService } from './firestore.services.common/firestore.service';
-import { Cluster } from '../models/Cluster';
+import { Cluster, ClusterMap } from '../models/Cluster';
 import { query, QueryConstraint, where } from 'firebase/firestore';
 import { FirebaseCollectionEnum } from '../constants/firebaseCollectionEnum';
 
@@ -8,8 +8,8 @@ import { FirebaseCollectionEnum } from '../constants/firebaseCollectionEnum';
     providedIn: 'root',
 })
 export class ClusterService {   
-    private _clusters = signal<Cluster[]>([]);
-    clusters: Signal<Cluster[]> = this._clusters.asReadonly();
+    private _clusters = signal<ClusterMap[]>([]);
+    clusters: Signal<ClusterMap[]> = this._clusters.asReadonly();
   
     constructor(private firestoreService: FirestoreService) {}
 
@@ -26,10 +26,10 @@ export class ClusterService {
         queryParts.push(where("minLat", "<=", latitude));
         queryParts.push(where("minLng", "<=", longitude));
 
-        const result = await this.firestoreService.search<Cluster[]>(query(ref, ...queryParts));  
+        return this.firestoreService.search<Cluster[]>(query(ref, ...queryParts));  
     }
 
     loadClusters(clusters: Cluster[]){
-        this._clusters.set({...clusters});
+        this._clusters.set({...clusters} as ClusterMap[]);
     }
 }

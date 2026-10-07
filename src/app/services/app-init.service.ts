@@ -26,15 +26,14 @@ export class AppInitService {
     const p1 = this.authentificationService.intUser();
     const p2 = this.locationService.loadDatas();
     const p3 = this.userGeolocalisationService.loadAll();
-    const p4 = this.locationService.loadAll();
-    const p5 = this.clusterService.getAll();
+    const p4 = this.clusterService.getAll();
 
     // on attend la résolution des promises
-    forkJoin([p1, p2, p3, p4, p5])
+    forkJoin([p1, p2, p3, p4,])
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (results) => {
-          this.clusterService.loadClusters(results[4]);
+          this.clusterService.loadClusters(results[3]);
 
           this.isAppInit.next(true);
 

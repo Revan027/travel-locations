@@ -140,7 +140,9 @@ export class EditLocationPage implements OnInit {
     }
     else{
       // On va chercher si un cluster pourrait englober ce lieux
-      await this.clusterService.search(locationRequest.latitude, locationRequest.longitude)
+      const cluster = await this.clusterService.search(locationRequest.latitude, locationRequest.longitude);
+      console.log(cluster);
+      
       // oui alors on le réféérence dans le lieux
 
       // non on crée un nouveau cluster

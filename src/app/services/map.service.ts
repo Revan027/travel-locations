@@ -13,7 +13,7 @@ import { App } from '@capacitor/app';
 import { PluginListenerHandle } from '@capacitor/core';
 import { Timestamp } from 'firebase/firestore';
 import { ClusterService } from './cluster.service';
-import { Cluster } from '../models/Cluster';
+import { Cluster, ClusterMap } from '../models/Cluster';
 
 
 @Injectable({
@@ -28,13 +28,13 @@ export class MapService {
 
     appResumeListener?: PluginListenerHandle;
 
-    private readonly degreeTolerance: number = 1;
+    private readonly degreeTolerance: number = 0.5;
     private map!: L.Map;
     private usersMarker: L.Marker<any>[] = [];
     private newLocationMarker?: L.Marker<any>;
     private locations: Location[] = [];
-    private visibleClusters: Cluster[] = [];
-    private invisibleClusters: Cluster[] = [];
+    private visibleClusters: ClusterMap[] = [];
+    private invisibleClusters: ClusterMap[] = [];
 
     constructor(
         private router: Router, 
@@ -128,7 +128,7 @@ export class MapService {
     }
 
     initBaseBounds(){
-        this.map.fitBounds([[41.3, -5.2], [51.1, 9.6]]); // on définie les contour visuel de la map en coordonnée une fois la map crée et resize pour éviter des incohérences
+        this.map.fitBounds([[42.3, -4.8], [51.1, 8.2]]); // on définie les contour visuel de la map en coordonnée une fois la map crée et resize pour éviter des incohérences
     }
  
     private createMap(){
@@ -138,7 +138,7 @@ export class MapService {
             zoomAnimation: true,
             zoomControl: false,
             doubleClickZoom: false,
-            minZoom: 5,
+            minZoom: 6,
             trackResize: false,      // Leaflet ne réagit plus tout seul au resize de la fenêtre (clavier) → plus de redraw/flash. On garde la main via resizeMap().
             renderer: L.svg({padding: 5})}
         )
@@ -226,8 +226,8 @@ export class MapService {
     private async updateMapDisplay(){
         const zoom = this.map.getZoom();
 
-        this.visibleClusters = Object.values(this.clusters2()).filter((item: Cluster) => this.map.getBounds().intersects(this.getBounds(item)));
-        this.invisibleClusters = Object.values(this.clusters2()).filter((item: Cluster) => !this.map.getBounds().intersects(this.getBounds(item)));
+        this.visibleClusters = Object.values(this.clusters2()).filter((item: ClusterMap) => this.map.getBounds().intersects(this.getBounds(item)));
+        this.invisibleClusters = Object.values(this.clusters2()).filter((item: ClusterMap) => !this.map.getBounds().intersects(this.getBounds(item)));
 
         if(zoom >= 8){
             this.resetClusters();
@@ -253,7 +253,7 @@ export class MapService {
         return this.map.getCenter();
     }
 
-    private getBounds(cluster: Cluster): L.LatLngBounds{
+    private getBounds(cluster: ClusterMap): L.LatLngBounds{
         return new L.LatLngBounds({lat: cluster.minLat , lng: cluster.minLng} as L.LatLngExpression, {lat: cluster.maxLat , lng: cluster.maxLng} as L.LatLngExpression)
     }
 
@@ -265,27 +265,24 @@ export class MapService {
         // on parcours les clusteurs visible et pas deja sur la carte     
          this.visibleClusters
             .filter(x => x.layer == undefined)
-            .map((item: Cluster) => {
+            .map((item: ClusterMap) => {
                 const bound = this.getBounds(item),
                     center = bound.getCenter(),
                     radius = center.distanceTo(bound.getNorthEast());
 
-                // on prépare la zone
-                const circle = L.circle(center, {stroke: false, 
-                    color: 'white',
-                    fillColor: 'var(--color-2b3a4e)', // couleur pleine (pas de rgba, sinon le cercle est transparent)
-                    fillOpacity: 0.8,
-                    radius: 50000 // en mètre
-                });
-
                 // on prépare le tooltip
                 const tooltip = L.tooltip({permanent: true, direction: "center", opacity: 1})
                     .setLatLng(center)
-                    .setContent("<span class='cluster-indicator'>"+1+"</span>")
+                    .setContent(`
+                        <div class="cluster-card">
+                            <div class="cluster-card-counter">
+                                ${item.countLocation}
+                            </div>
+                        </div>`)
                     .openOn(this.map);
 
                 // on ajoute le layer au group
-                const layerGroup = L.layerGroup([circle])
+                const layerGroup = L.layerGroup()
                     .addLayer(tooltip)
                     .addTo(this.map)
 
@@ -295,7 +292,7 @@ export class MapService {
 
     private drawLocations(){
         // on reset les lieux des clusters dans lequel on se trouve pas ou plus
-        this.invisibleClusters.map((cluster: Cluster) => {
+        this.invisibleClusters.map((cluster: ClusterMap) => {
             cluster.locationMarkers?.forEach((marker: L.Marker<any>) => {
                 marker.remove();
             });
@@ -306,7 +303,7 @@ export class MapService {
         // on ajoute les lieux dans les clusters visibles et les markers sur la map, si pa deja fait
         this.visibleClusters
             .filter(x => x.locationMarkers == undefined)
-            .map((cluster: Cluster) => 
+            .map((cluster: ClusterMap) => 
             { 
                 const locations = this.locations.filter(x => x.clusterID == cluster.id); // recup des lieux du cluster
 

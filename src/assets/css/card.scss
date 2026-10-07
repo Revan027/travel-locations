@@ -65,6 +65,27 @@
   letter-spacing: 0.3px;
 }
 
+.cluster-card{ 
+  display: flex;
+  padding: 5px;
+  background: var(--color-2b3a4e);
+  border-radius: 50%;
+
+  .cluster-card-counter{
+    width: 30px;
+    height: 30px;
+    background: linear-gradient(135deg, #f2a066, #e5683a);
+    padding: 5px;
+    font-size: var(--font-size-md) !important;
+    font-weight: bold;
+    color: white;
+    border-radius: 50%;    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
 
 .user-card{
   .user-card-header{
@@ -85,7 +106,6 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 15px;
     }
   }
 
