@@ -9,6 +9,7 @@ export class Location {
   latitude!: number;
   longitude!: number;
   countryID!: string;
+  clusterID!: string;
   typeID!: string;
   typeName!: string;
   typeIcon!: string;

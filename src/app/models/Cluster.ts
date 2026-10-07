@@ -2,9 +2,12 @@ import { Location } from "./Location";
 
 export class Cluster {
   constructor() {}
-  
-  isVisible?: boolean = false;
-  bounds!: L.LatLngBounds;
-  locations!: Location[];
-  locationsMarker:  L.Marker<any>[] = [];
+
+  id: string = "";
+  maxLat!: number;
+  maxLng!: number;
+  minLat!: number;
+  minLng!: number;
+  layer?: L.LayerGroup<any>;
+  locationMarkers?:  L.Marker<any>[];
 }

@@ -291,16 +291,8 @@ ion-popover{
     box-shadow: none!important;
   }
 
-  .leaflet-pane.removed{
-    .leaflet-interactive{ 
-      animation: fadeOut 0.7s ease-in-out;
-      animation-fill-mode: forwards;
-    }
-  }
-
   .leaflet-interactive{ 
-    animation: fadeIn 0.7s ease-in-out;
-
+    animation: fadeIn 0.3s ease-in-out;
   }
 
   @keyframes fadeIn {

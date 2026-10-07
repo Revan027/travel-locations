@@ -1,6 +1,7 @@
 export enum FirebaseCollectionEnum {
-    locationTypes = "location_types",
-    locations = "locations",
-    country = "country",
+    LocationTypes = "location_types",
+    Locations = "locations",
+    Country = "country",
     UserGeolocalisation = "user_geolocalisation",
+    Clusters = "clusters",
 }

@@ -5,6 +5,7 @@ import { LocationService } from './location.service';
 import { UserGeolocalisationService } from './user.geolocalisation.service';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ClusterService } from './cluster.service';
 
 @Injectable({
   providedIn: 'root',
@@ -15,6 +16,7 @@ export class AppInitService {
   constructor(
     private authentificationService: AuthentificationService, 
     private locationService: LocationService, 
+    private clusterService: ClusterService, 
     private userGeolocalisationService: UserGeolocalisationService,
     private router: Router,
     private destroyRef: DestroyRef
@@ -25,12 +27,15 @@ export class AppInitService {
     const p2 = this.locationService.loadDatas();
     const p3 = this.userGeolocalisationService.loadAll();
     const p4 = this.locationService.loadAll();
+    const p5 = this.clusterService.getAll();
 
     // on attend la résolution des promises
-    forkJoin([p1, p2, p3, p4])
+    forkJoin([p1, p2, p3, p4, p5])
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (results) => {
+          this.clusterService.loadClusters(results[4]);
+
           this.isAppInit.next(true);
 
           this.router.navigateByUrl('/map');

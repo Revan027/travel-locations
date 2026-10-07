@@ -7,6 +7,7 @@ import { Location, LocationRequest } from '../models/Location';
 import { DocumentData, DocumentReference, query, QueryConstraint, Timestamp, where } from 'firebase/firestore';
 import { LocationSearchRequest } from '../models/LocationSearchRequest';
 import moment from 'moment';
+import { Cluster } from '../models/Cluster';
 
 @Injectable({
     providedIn: 'root',
@@ -21,33 +22,39 @@ export class LocationService {
     constructor(private firestoreService: FirestoreService) {}
 
     async getAll(): Promise<Location[]>{
-        return this.firestoreService.getDocuments<Location[]>(FirebaseCollectionEnum.locations);
+        return this.firestoreService.getDocuments<Location[]>(FirebaseCollectionEnum.Locations);
     }
 
     get(id: string): Promise<Location>{
-        return this.firestoreService.getDocument<Location>(FirebaseCollectionEnum.locations, id);
+        return this.firestoreService.getDocument<Location>(FirebaseCollectionEnum.Locations, id);
+    }
+
+    async getByClusters(clusters: Cluster[]){
+        const ref = this.firestoreService.getCollectionRef(FirebaseCollectionEnum.Locations);
+
+        return this.firestoreService.search<Location[]>(query(ref, where("clusterID", "in", clusters.map(x => x.id))))
     }
 
     getRef(id: string): DocumentReference<DocumentData, DocumentData>{
-        return this.firestoreService.getDocumentRef(FirebaseCollectionEnum.locations, id);
+        return this.firestoreService.getDocumentRef(FirebaseCollectionEnum.Locations, id);
     }
 
     getFormatedDate(date?: Timestamp, format: string = "DD/MM/YYYY"): string {
         return date ? moment(date.toDate()).format(format): "";
     }
 
-    async loadAll(): Promise<void>{
+    async loadAll(): Promise<void>{  
         this.locations.set(await this.getAll());
     }
 
     async loadDatas(): Promise<void>{
-        this.locationTypes.set(await this.firestoreService.getDocuments<LocationType[]>(FirebaseCollectionEnum.locationTypes));
-        this.countries.set(await this.firestoreService.getDocuments<Country[]>(FirebaseCollectionEnum.country));
+        this.locationTypes.set(await this.firestoreService.getDocuments<LocationType[]>(FirebaseCollectionEnum.LocationTypes));
+        this.countries.set(await this.firestoreService.getDocuments<Country[]>(FirebaseCollectionEnum.Country));
     }
 
     async search(locationSearchRequest: LocationSearchRequest){
         let queryParts: QueryConstraint[] = [];
-        const ref = this.firestoreService.getCollectionRef(FirebaseCollectionEnum.locations);
+        const ref = this.firestoreService.getCollectionRef(FirebaseCollectionEnum.Locations);
 
         if (locationSearchRequest.limitDate !== undefined){
             queryParts.push(where("date", "<=", locationSearchRequest.limitDate));
@@ -67,18 +74,18 @@ export class LocationService {
     async create(locationRequest: LocationRequest): Promise<DocumentReference<DocumentData, DocumentData>>{     
  
         // on recup la ref des collections de données
-        locationRequest.typeRef = this.firestoreService.getDocumentRef(FirebaseCollectionEnum.locationTypes, locationRequest.typeID);
-        locationRequest.countryRef = this.firestoreService.getDocumentRef(FirebaseCollectionEnum.country, locationRequest.countryID);
+        locationRequest.typeRef = this.firestoreService.getDocumentRef(FirebaseCollectionEnum.LocationTypes, locationRequest.typeID);
+        locationRequest.countryRef = this.firestoreService.getDocumentRef(FirebaseCollectionEnum.Country, locationRequest.countryID);
 
-        return this.firestoreService.createDocument(FirebaseCollectionEnum.locations, locationRequest);
+        return this.firestoreService.createDocument(FirebaseCollectionEnum.Locations, locationRequest);
     }
 
     async update(id: string, locationRequest: LocationRequest): Promise<void>{
         const ref = this.getRef(id);
 
         // on recup la ref des collections de données
-        locationRequest.typeRef = this.firestoreService.getDocumentRef(FirebaseCollectionEnum.locationTypes, locationRequest.typeID);
-        locationRequest.countryRef = this.firestoreService.getDocumentRef(FirebaseCollectionEnum.country, locationRequest.countryID);
+        locationRequest.typeRef = this.firestoreService.getDocumentRef(FirebaseCollectionEnum.LocationTypes, locationRequest.typeID);
+        locationRequest.countryRef = this.firestoreService.getDocumentRef(FirebaseCollectionEnum.Country, locationRequest.countryID);
 
         await this.firestoreService.updateDocument(ref, locationRequest);
     }

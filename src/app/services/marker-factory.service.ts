@@ -107,7 +107,7 @@ export class MarkerFactoryService {
           <div class="location-card-footer ion-text-center">
             <ion-button class="button--main btn-see-location" [strong]="true">Voir la fiche</ion-button>
           </div>
-        </div>`, { maxWidth: 400, className: "location-popup", autoPanPadding: [50, 80] });
+        </div>`, { maxWidth: 350, className: "location-popup", autoPanPadding: [50, 80] });
   }
 
   buildNewLocationMarker(position: Position){

@@ -42,6 +42,7 @@ export class MapPage {
 
   async ngAfterViewInit(){
     await this.mapService.init();
+    this.mapService.initBaseBounds();
   }
 
   async ionViewDidEnter(){

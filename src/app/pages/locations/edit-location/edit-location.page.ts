@@ -18,6 +18,7 @@ import { AltitudeService } from 'src/app/services/altitude.service';
 import { CloudinaryUrlPipe } from 'src/app/pipes/cloudinary-url.pipe';
 import { AuthStatusComponent } from 'src/app/components/auth-status.component';
 import { DatetimeComponent } from 'src/app/components/datetime/datetime.component';
+import { ClusterService } from 'src/app/services/cluster.service';
 
 @Component({
   standalone: true,
@@ -48,6 +49,7 @@ export class EditLocationPage implements OnInit {
     private formBuilder: FormBuilder,
     private router: Router,
     private locationService: LocationService,
+    private clusterService: ClusterService,
     private mapService: MapService,
     private toastService: ToastService,
     private cloudinaryService: CloudinaryService,
@@ -137,7 +139,12 @@ export class EditLocationPage implements OnInit {
       await this.locationService.update(this.location.id, locationRequest).catch(() => isSuccess = false);
     }
     else{
-      isSuccess = await this.locationService.create(locationRequest).then(() => isSuccess = true).catch(() => isSuccess = false);
+      // On va chercher si un cluster pourrait englober ce lieux
+      await this.clusterService.search(locationRequest.latitude, locationRequest.longitude)
+      // oui alors on le réféérence dans le lieux
+
+      // non on crée un nouveau cluster
+      //isSuccess = await this.locationService.create(locationRequest).then(() => isSuccess = true).catch(() => isSuccess = false);
 
       this.mapService.removeNewLocationMarker();
     }

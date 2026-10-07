@@ -1,11 +1,10 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, Signal, signal } from '@angular/core';
 import * as L from 'leaflet';
 import { Position } from '../models/Position';
 import { Router } from '@angular/router';
 import { LocationService } from './location.service';
 import { Location } from '../models/Location';
 import { effect } from '@angular/core';
-import { Cluster } from '../models/Cluster';
 import { GeolocalisationService } from './geolocalisation.service';
 import { MarkerFactoryService } from './marker-factory.service';
 import { UserGeolocalisationService } from './user.geolocalisation.service';
@@ -13,6 +12,8 @@ import { AuthentificationService } from './authentification.service';
 import { App } from '@capacitor/app';
 import { PluginListenerHandle } from '@capacitor/core';
 import { Timestamp } from 'firebase/firestore';
+import { ClusterService } from './cluster.service';
+import { Cluster } from '../models/Cluster';
 
 
 @Injectable({
@@ -23,6 +24,8 @@ export class MapService {
     isMapInit = signal<boolean>(false);
     islocatingUsers = signal<boolean>(false);
 
+    readonly clusters2: Signal<Cluster[]>;
+
     appResumeListener?: PluginListenerHandle;
 
     private readonly degreeTolerance: number = 1;
@@ -30,8 +33,8 @@ export class MapService {
     private usersMarker: L.Marker<any>[] = [];
     private newLocationMarker?: L.Marker<any>;
     private locations: Location[] = [];
-    private clusters: Cluster[] = [];
-    private clustersLayer: L.LayerGroup<any>[] = [];
+    private visibleClusters: Cluster[] = [];
+    private invisibleClusters: Cluster[] = [];
 
     constructor(
         private router: Router, 
@@ -39,13 +42,16 @@ export class MapService {
         private geolocalisationService: GeolocalisationService,
         private authService: AuthentificationService,
         private markerFactoryService: MarkerFactoryService,
+        private clusterService: ClusterService,
         private userGeolocalisationService: UserGeolocalisationService) 
     {
+        this.clusters2 = this.clusterService.clusters;
+
         effect(async () => {
 
-            this.removeAllLocationMarkers(this.clusters);
+           /* this.removeAllLocationMarkers(this.clusters);
 
-            this.removeClustersLayer();
+            this.removeClustersLayer();*/
 
             this.resetClusters();
 
@@ -54,9 +60,6 @@ export class MapService {
 
                 this.locations = this.locationService.locations();
 
-                this.buildClusters();
-
-                this.updateMapDisplay();
             }
         });
     }
@@ -117,15 +120,17 @@ export class MapService {
     }
 
     private initMoveEndListener(){ 
-        this.map.on('moveend', () => {
-            this.updateMapDisplay();
+        this.map.on('moveend', (e) => {
+            if(this.isMapInit()){
+                this.updateMapDisplay();
+            }        
         });
     }
 
-    getCenter(){
-        return this.map.getCenter();
+    initBaseBounds(){
+        this.map.fitBounds([[41.3, -5.2], [51.1, 9.6]]); // on définie les contour visuel de la map en coordonnée une fois la map crée et resize pour éviter des incohérences
     }
-  
+ 
     private createMap(){
         // init de la map leaflet depuis la france. un padding de 10 pour avoir une carte en chargement plus fluide
         this.map = L.map('map', {
@@ -137,11 +142,11 @@ export class MapService {
             trackResize: false,      // Leaflet ne réagit plus tout seul au resize de la fenêtre (clavier) → plus de redraw/flash. On garde la main via resizeMap().
             renderer: L.svg({padding: 5})}
         )
-        .on("load", (e) => {
+        .setView([45.706179285330855, 2.9882812500000004], 6)
+        .on("resize", (e) => {
           this.isMapInit.set(true);
-        })
-        .setView([45.706179285330855, 2.9882812500000004], 5);
-   
+        });
+
         // On ajoute les infos de la map. updateWhenIdle a false pour accéler la chargement des parties de map
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '',  updateWhenIdle: false}).addTo(this.map);
 
@@ -151,6 +156,10 @@ export class MapService {
 
     resizeMap(){
         this.map?.invalidateSize();
+    }
+
+    flyTo(position: Position, lvlZoom: number){
+        this.map.flyTo([position.latitude, position.longitude], lvlZoom, {animate: true, duration: 1 });
     }
 
     async locateUsers(loadDatas: boolean = false){
@@ -214,145 +223,140 @@ export class MapService {
         });
     }
 
-    private updateMapDisplay(){
+    private async updateMapDisplay(){
         const zoom = this.map.getZoom();
 
+        this.visibleClusters = Object.values(this.clusters2()).filter((item: Cluster) => this.map.getBounds().intersects(this.getBounds(item)));
+        this.invisibleClusters = Object.values(this.clusters2()).filter((item: Cluster) => !this.map.getBounds().intersects(this.getBounds(item)));
+
         if(zoom >= 8){
-            this.removeClustersLayer();
+            this.resetClusters();
 
-            this.drawLocationsInBounds(this.map.getBounds());
+            //on requete que le cluster visible sans lieux, donc pas encore en cache.b
+            const clusterToLoad = this.getVisibleClustersToLoad();  
+
+            if(clusterToLoad.length > 0){
+                this.locations = await this.locationService.getByClusters(clusterToLoad);
+            }
+
+            this.drawLocations();
         }
-        else if(this.clustersLayer.length == 0){
-            this.removeAllLocationMarkers(this.clusters);
-
+        else{
+            //on gère les cluster dans la map   
+            this.resetLocations();     
+            this.resetInvisibleClusters();
             this.drawClusters();
         }
+    } 
+
+    getCenter(){
+        return this.map.getCenter();
+    }
+
+    private getBounds(cluster: Cluster): L.LatLngBounds{
+        return new L.LatLngBounds({lat: cluster.minLat , lng: cluster.minLng} as L.LatLngExpression, {lat: cluster.maxLat , lng: cluster.maxLng} as L.LatLngExpression)
+    }
+
+    private getVisibleClustersToLoad(){
+        return this.visibleClusters.filter(x => x.locationMarkers == undefined);
     }
 
     private drawClusters(){
-        // on parcours les clusteurs pour dessiner la zone
-        this.clusters.map((item: Cluster)=> {
-           const bounds = item.bounds,
-                center = bounds.getCenter(),
-                radius = center.distanceTo(bounds.getNorthEast());
+        // on parcours les clusteurs visible et pas deja sur la carte     
+         this.visibleClusters
+            .filter(x => x.layer == undefined)
+            .map((item: Cluster) => {
+                const bound = this.getBounds(item),
+                    center = bound.getCenter(),
+                    radius = center.distanceTo(bound.getNorthEast());
 
-            // on prépare la zone
-            const circle = L.circle(center, {stroke: false, 
-                color: 'white',
-                fillColor: 'var(--color-2b3a4e)', // couleur pleine (pas de rgba, sinon le cercle est transparent)
-                fillOpacity: 0.8,
-                radius: radius < 50000 ? 50000 : radius // en mètre
-            });
-
-            // on prépare le tooltip
-            const tooltip = L.tooltip({permanent: true, direction: "center", opacity: 1})
-                .setLatLng(center)
-                .setContent("<span class='cluster-indicator'>"+item.locations.length.toString()+"</span>")
-                .openOn(this.map);
-
-            // on ajoute le layer au group
-            const layerGroup = L.layerGroup([circle])
-                .addLayer(tooltip)
-                .addTo(this.map)
-
-            this.clustersLayer.push(layerGroup);
-        })
-    }
-
-    private drawLocationsInBounds(bound: L.LatLngBounds){
-        this.clusters.map((cluster: Cluster)=> 
-        { 
-            // Si la frontière visible est compris
-            if(bound.intersects(cluster.bounds))
-            {
-                cluster.locations.forEach((location: Location) => {
-
-                    // on ajoute un marker s'il est pas déja présent
-                    if(!cluster.locationsMarker.some((item: L.Marker<any>) => item.getLatLng().lat == location.latitude && item.getLatLng().lng == location.longitude)){
-                        const marker = this.markerFactoryService.buildLocationMarker(location); 
-
-                        marker.addTo(this.map);
-
-                        cluster.locationsMarker.push(marker);
-                    }                  
-                })
-            }
-            else{
-               this.removeLocationMarkers(cluster);
-            }
-        });
-    }
-    
-    private buildClusters(){
-        // on prend la permière entrée et on regarde si on a une concordance. Ensuite on l'injecte dans le cluster.
-        let locationCompare = this.locations[0],
-            maxLat = locationCompare.latitude + this.degreeTolerance,
-            minLat = locationCompare.latitude - this.degreeTolerance,
-            maxLng = locationCompare.longitude + this.degreeTolerance,
-            minLng = locationCompare.longitude - this.degreeTolerance;
-
-        // on filtre par rapport au lieu recup ceux qui sont près de lui. Avec une tolérance de 2°.
-        let locations = this.locations.filter((item: Location)=> {
-            return (item.latitude <= maxLat && item.latitude >= minLat) && (item.longitude <= maxLng && item.longitude >= minLng);
-        });
-
-        if (!locations){
-           locations = [locationCompare];
-        }
-
-        // création du cluster
-        this.clusters.push({
-            locationsMarker: [],
-            locations: locations,
-            bounds: L.latLngBounds(locations.map(x => ({ lat: x.latitude, lng: x.longitude })))
-        });
-
-        // on retire les lieux mis dans le cluster
-        this.locations = this.locations.filter((item: Location)=> {
-           return item.id != locationCompare.id && !locations.some(x => x.id == item.id)
-        })
-
-        // récursif si on a encore des lieux a traiter
-        if(this.locations.length > 0){
-            this.buildClusters();
-        }
-    }
-
-    flyTo(position: Position, lvlZoom: number){
-        this.map.flyTo([position.latitude, position.longitude], lvlZoom, {animate: true, duration: 1 });
-    }
-
-    private removeAllLocationMarkers(clusters: Cluster[]){
-        clusters.forEach((cluster: Cluster) => {
-           this.removeLocationMarkers(cluster);
-        })
-    }
-
-    private removeLocationMarkers(cluster: Cluster){
-        cluster.locationsMarker.forEach((marker: L.Marker<any>) => {
-            marker.remove();
-        })
-
-        cluster.locationsMarker = [];
-    }
-
-    private removeClustersLayer(){
-        this.clustersLayer.map((x) => {
-            x.getLayers().map(y => {
-                L.DomUtil.get(y.getPane() ?? '')?.classList.add("removed")
-            });
-
-            // on attend la fin de l'animation pour retirer la classe anim du wrapper, et on supprime les layers
-            setTimeout(()=> {
-                x.getLayers().map(y => {
-                    L.DomUtil.get(y.getPane() ?? '')?.classList.remove("removed")
+                // on prépare la zone
+                const circle = L.circle(center, {stroke: false, 
+                    color: 'white',
+                    fillColor: 'var(--color-2b3a4e)', // couleur pleine (pas de rgba, sinon le cercle est transparent)
+                    fillOpacity: 0.8,
+                    radius: 50000 // en mètre
                 });
 
-                x.remove();
-            },800)                                    
+                // on prépare le tooltip
+                const tooltip = L.tooltip({permanent: true, direction: "center", opacity: 1})
+                    .setLatLng(center)
+                    .setContent("<span class='cluster-indicator'>"+1+"</span>")
+                    .openOn(this.map);
+
+                // on ajoute le layer au group
+                const layerGroup = L.layerGroup([circle])
+                    .addLayer(tooltip)
+                    .addTo(this.map)
+
+                item.layer = layerGroup;
+            })
+    }
+
+    private drawLocations(){
+        // on reset les lieux des clusters dans lequel on se trouve pas ou plus
+        this.invisibleClusters.map((cluster: Cluster) => {
+            cluster.locationMarkers?.forEach((marker: L.Marker<any>) => {
+                marker.remove();
+            });
+            
+            cluster.locationMarkers = undefined;
+        })
+
+        // on ajoute les lieux dans les clusters visibles et les markers sur la map, si pa deja fait
+        this.visibleClusters
+            .filter(x => x.locationMarkers == undefined)
+            .map((cluster: Cluster) => 
+            { 
+                const locations = this.locations.filter(x => x.clusterID == cluster.id); // recup des lieux du cluster
+
+                cluster.locationMarkers = [];
+                
+                // on ajoute les markers
+                locations.forEach((location: Location) => {
+                    const marker = this.markerFactoryService.buildLocationMarker(location); 
+                    marker.addTo(this.map);
+                   
+                    cluster.locationMarkers?.push(marker);               
+                })
+            });
+    }
+
+    private resetLocations(){
+        this.invisibleClusters.map((x) => {
+            x.locationMarkers?.forEach((marker: L.Marker<any>) => {
+                marker.remove();
+            });
+            
+            x.locationMarkers = undefined;                     
         });
 
-        this.clustersLayer = [];
+        this.visibleClusters.map((x) => {
+           x.locationMarkers?.forEach((marker: L.Marker<any>) => {
+                marker.remove();
+            });
+            
+            x.locationMarkers = undefined;                   
+        });
+    }
+
+    private resetInvisibleClusters(){
+        this.invisibleClusters.map((x) => {
+           x.layer?.remove();   
+           x.layer = undefined;                      
+        });
+    }
+
+    private resetClusters(){
+        this.invisibleClusters.map((x) => {
+           x.layer?.remove();   
+           x.layer = undefined;                      
+        });
+
+        this.visibleClusters.map((x) => {
+           x.layer?.remove();   
+           x.layer = undefined;                      
+        });
     }
 
     removeUserMarkers(){
@@ -370,9 +374,5 @@ export class MapService {
         if (this.newLocationMarker != undefined){
             this.newLocationMarker.remove();
         }
-    }
-
-    private resetClusters(){
-       this.clusters = [];
     }
 }
