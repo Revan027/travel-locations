@@ -254,6 +254,10 @@ ion-popover{
     border-radius: 50%;
     top: 5px;
     right: 5px;
+
+    span{
+      transform: translateY(-3px);
+    }
   }
 
   .leaflet-popup-tip{

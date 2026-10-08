@@ -1,7 +1,6 @@
-export class Cluster {
+export class ClusterRequest {
   constructor() {}
 
-  id: string = "";
   maxLat!: number;
   maxLng!: number;
   minLat!: number;
@@ -9,10 +8,12 @@ export class Cluster {
   countLocation!: number;
 }
 
-export class ClusterRequest extends Cluster {
-  constructor() {
+export class Cluster extends ClusterRequest {
+  constructor() { 
     super();
   }
+
+  id: string = "";
 }
 
 export class ClusterMap extends Cluster {

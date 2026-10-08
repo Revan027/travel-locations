@@ -4,22 +4,24 @@ import { Country } from '../models/Country';
 import { FirebaseCollectionEnum } from '../constants/firebaseCollectionEnum';
 import { FirestoreService } from './firestore.services.common/firestore.service';
 import { Location, LocationRequest } from '../models/Location';
-import { DocumentData, DocumentReference, query, QueryConstraint, Timestamp, where } from 'firebase/firestore';
+import { DocumentData, DocumentReference, getCountFromServer, query, QueryConstraint, Timestamp, where } from 'firebase/firestore';
 import { LocationSearchRequest } from '../models/LocationSearchRequest';
 import moment from 'moment';
-import { Cluster } from '../models/Cluster';
+import { Cluster, ClusterRequest } from '../models/Cluster';
+import { ClusterService } from './cluster.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class LocationService {   
-
     locations = signal<Location[]>([]);
     locationTypes = signal<LocationType[]>([]);
     countries = signal<Country[]>([]);
     locationSearchRequest = signal<LocationSearchRequest>(new LocationSearchRequest);
     
-    constructor(private firestoreService: FirestoreService) {}
+    private readonly degreeTolerance: number = 0.5;
+
+    constructor(private firestoreService: FirestoreService, private clusterService: ClusterService) {}
 
     async getAll(): Promise<Location[]>{
         return this.firestoreService.getDocuments<Location[]>(FirebaseCollectionEnum.Locations);
@@ -28,11 +30,20 @@ export class LocationService {
     get(id: string): Promise<Location>{
         return this.firestoreService.getDocument<Location>(FirebaseCollectionEnum.Locations, id);
     }
-
+ 
     async getByClusters(clusters: Cluster[]){
         const ref = this.firestoreService.getCollectionRef(FirebaseCollectionEnum.Locations);
 
         return this.firestoreService.search<Location[]>(query(ref, where("clusterID", "in", clusters.map(x => x.id))))
+    }
+
+    async getCountLocations(clusters: Cluster[]){
+        if (!clusters.length) return 0;
+
+        const ref = this.firestoreService.getCollectionRef(FirebaseCollectionEnum.Locations);
+        const snapshot = await getCountFromServer(query(ref, where("clusterID", "in", clusters.map(x => x.id))));
+
+        return snapshot.data().count;
     }
 
     getRef(id: string): DocumentReference<DocumentData, DocumentData>{
@@ -71,8 +82,35 @@ export class LocationService {
         this.locations.set(await this.firestoreService.search<Location[]>(query(ref, ...queryParts)));    
     }
     
-    async create(locationRequest: LocationRequest): Promise<DocumentReference<DocumentData, DocumentData>>{     
- 
+    async create(locationRequest: LocationRequest): Promise<DocumentReference<DocumentData, DocumentData>>{  
+        // recherche si un cluster pourrait englober ce lieux   
+        const clusters = await this.clusterService.search(locationRequest.latitude, locationRequest.longitude);
+        let clusterID = "";
+;
+        if(clusters.length == 0){ // non trouvé, on créer un nouveau cluster
+            let cluster = new ClusterRequest();
+            cluster.maxLat = locationRequest.latitude + this.degreeTolerance;
+            cluster.minLat = locationRequest.latitude - this.degreeTolerance;
+            cluster.maxLng = locationRequest.longitude + this.degreeTolerance;
+            cluster.minLng = locationRequest.longitude - this.degreeTolerance;
+            cluster.countLocation = 1;
+
+            clusterID = (await this.clusterService.create(cluster)).id;
+        }else{ 
+            // on prend le plus petit ou le premier
+            let cluster = clusters.sort((x, y) => x.countLocation < y.countLocation ? 1 : -1).find((e, index) => index == 0) as Cluster ;
+
+            // on met à jour le compteur de lieux
+            const counter = await this.getCountLocations([cluster]);
+            cluster.countLocation = counter + 1;
+
+           this.clusterService.update(cluster.id, cluster);
+
+           clusterID = cluster.id;
+        }
+
+        locationRequest.clusterID = clusterID;
+
         // on recup la ref des collections de données
         locationRequest.typeRef = this.firestoreService.getDocumentRef(FirebaseCollectionEnum.LocationTypes, locationRequest.typeID);
         locationRequest.countryRef = this.firestoreService.getDocumentRef(FirebaseCollectionEnum.Country, locationRequest.countryID);
@@ -90,10 +128,24 @@ export class LocationService {
         await this.firestoreService.updateDocument(ref, locationRequest);
     }
 
-    async delete(id: string): Promise<void>{
-        const ref = this.getRef(id);
+    async delete(location: Location): Promise<void>{
+        const ref = this.getRef(location.id);
 
         await this.firestoreService.deleteDocument(ref);
+
+        // suppression du clsuter rattaché si il n'y as plus de lieux
+        const cluster = await this.clusterService.get(location.clusterID);
+        const counter = await this.getCountLocations([cluster]);
+
+        if(cluster.id && counter == 0){
+            const cluster = await this.clusterService.getRef(location.clusterID);
+
+            await this.clusterService.delete(cluster.id);
+        }else{
+            cluster.countLocation = counter;
+
+           this.clusterService.update(cluster.id, cluster);
+        }
     }
 
     goupByType(): { [key: string]: Location[] }{

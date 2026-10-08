@@ -1,7 +1,7 @@
 import { Injectable, Signal, signal } from '@angular/core';
 import { FirestoreService } from './firestore.services.common/firestore.service';
-import { Cluster, ClusterMap } from '../models/Cluster';
-import { query, QueryConstraint, where } from 'firebase/firestore';
+import { Cluster, ClusterMap, ClusterRequest } from '../models/Cluster';
+import { DocumentData, DocumentReference, query, QueryConstraint, where } from 'firebase/firestore';
 import { FirebaseCollectionEnum } from '../constants/firebaseCollectionEnum';
 
 @Injectable({
@@ -17,6 +17,14 @@ export class ClusterService {
         return this.firestoreService.getDocuments<Cluster[]>(FirebaseCollectionEnum.Clusters);
     }
 
+    getRef(id: string): DocumentReference<DocumentData, DocumentData>{
+        return this.firestoreService.getDocumentRef(FirebaseCollectionEnum.Clusters, id);
+    }
+
+    get(id: string): Promise<Cluster>{
+        return this.firestoreService.getDocument<Cluster>(FirebaseCollectionEnum.Clusters, id);
+    }
+
     async search(latitude: number, longitude: number){
         let queryParts: QueryConstraint[] = [];
         const ref = this.firestoreService.getCollectionRef(FirebaseCollectionEnum.Clusters);
@@ -27,6 +35,22 @@ export class ClusterService {
         queryParts.push(where("minLng", "<=", longitude));
 
         return this.firestoreService.search<Cluster[]>(query(ref, ...queryParts));  
+    }
+
+    create(cluster: ClusterRequest){
+        return this.firestoreService.createDocument(FirebaseCollectionEnum.Clusters, cluster);
+    }
+
+    async update(id: string, cluster: ClusterRequest): Promise<void>{
+        const ref = this.getRef(id);
+
+        await this.firestoreService.updateDocument(ref, cluster);
+    }
+
+    async delete(id: string){
+        const ref = this.getRef(id);
+
+        return this.firestoreService.deleteDocument(ref);
     }
 
     loadClusters(clusters: Cluster[]){

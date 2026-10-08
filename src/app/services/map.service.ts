@@ -24,11 +24,10 @@ export class MapService {
     isMapInit = signal<boolean>(false);
     islocatingUsers = signal<boolean>(false);
 
-    readonly clusters2: Signal<Cluster[]>;
+    readonly clusters: Signal<Cluster[]>;
 
     appResumeListener?: PluginListenerHandle;
 
-    private readonly degreeTolerance: number = 0.5;
     private map!: L.Map;
     private usersMarker: L.Marker<any>[] = [];
     private newLocationMarker?: L.Marker<any>;
@@ -45,22 +44,16 @@ export class MapService {
         private clusterService: ClusterService,
         private userGeolocalisationService: UserGeolocalisationService) 
     {
-        this.clusters2 = this.clusterService.clusters;
+        this.clusters = this.clusterService.clusters;
 
         effect(async () => {
+            this.locationService.locations();
 
-           /* this.removeAllLocationMarkers(this.clusters);
-
-            this.removeClustersLayer();*/
-
+this.clusterService.loadClusters(await this.clusterService.getAll());
             this.resetClusters();
+            this.resetLocations();     
 
-            // appelé à chaque mise à jour du signal de locations
-            if (this.locationService.locations().length > 0){
-
-                this.locations = this.locationService.locations();
-
-            }
+            this.updateMapDisplay();
         });
     }
 
@@ -226,8 +219,8 @@ export class MapService {
     private async updateMapDisplay(){
         const zoom = this.map.getZoom();
 
-        this.visibleClusters = Object.values(this.clusters2()).filter((item: ClusterMap) => this.map.getBounds().intersects(this.getBounds(item)));
-        this.invisibleClusters = Object.values(this.clusters2()).filter((item: ClusterMap) => !this.map.getBounds().intersects(this.getBounds(item)));
+        this.visibleClusters = Object.values(this.clusters()).filter((item: ClusterMap) => this.map.getBounds().intersects(this.getBounds(item)));
+        this.invisibleClusters = Object.values(this.clusters()).filter((item: ClusterMap) => !this.map.getBounds().intersects(this.getBounds(item)));
 
         if(zoom >= 8){
             this.resetClusters();

@@ -69,7 +69,7 @@ export class EditLocationPage implements OnInit {
       const id = params.get('id');
 
       if (id) {
-        this.location = this.locationService.locations().find((location) => location.id == id) || new Location();
+        this.location = await this.locationService.get(id) || new Location();
 
         this.createForm();
       } 
@@ -139,14 +139,7 @@ export class EditLocationPage implements OnInit {
       await this.locationService.update(this.location.id, locationRequest).catch(() => isSuccess = false);
     }
     else{
-      // On va chercher si un cluster pourrait englober ce lieux
-      const cluster = await this.clusterService.search(locationRequest.latitude, locationRequest.longitude);
-      console.log(cluster);
-      
-      // oui alors on le réféérence dans le lieux
-
-      // non on crée un nouveau cluster
-      //isSuccess = await this.locationService.create(locationRequest).then(() => isSuccess = true).catch(() => isSuccess = false);
+      isSuccess = await this.locationService.create(locationRequest).then(() => isSuccess = true).catch(() => isSuccess = false);
 
       this.mapService.removeNewLocationMarker();
     }
@@ -168,7 +161,7 @@ export class EditLocationPage implements OnInit {
     let callback = async function(){
       let isSuccess = true;
 
-      await me.locationService.delete(me.location.id).catch(() => isSuccess = false),
+      await me.locationService.delete(me.location).catch(() => isSuccess = false),
 
       await me.toastService.get(isSuccess ? MessageEnum.AppSuccess : MessageEnum.AppError, isSuccess ? StatusEnum.Success : StatusEnum.Danger);
       
