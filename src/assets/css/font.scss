@@ -28,24 +28,36 @@
   font-weight: bold; 
 }
 
-.card-title{
+@mixin alert-title  { 
+  font-family: var(--ion-font-family)!important;
+  font-size: var(--font-size-2xl)!important;
+  font-weight: bold!important;
+  color: var(--color-2b3a4e)!important;
+}
+
+@mixin alert-message  { 
+  font-family: var(--ion-font-family)!important;
+  font-size: var(--font-size-base)!important;
+  color: var(--color-2b3a4e)!important; 
+}
+
+.card-title,
+.card-title--white{
   font-family: var(--ion-font-family);
   font-size: var(--font-size-2xl);
   font-weight: bold;
   color: var(--color-2b3a4e);
-
-  &.--white{
-    color:white
-  }
 }
 
+.card-title--white{
+  color:white   
+}
 
 .current-text{
   font-family: var(--ion-font-family);
   font-size: var(--font-size-sm);
   color: var(--color-2b3a4e);
 }
-
 
 .meta-title{
   font-family: var(--ion-font-family);

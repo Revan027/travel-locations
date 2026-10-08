@@ -15,6 +15,7 @@ import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 })
 export class DatetimeComponent {
   @Input("date") date?: Timestamp;
+  @Input("ionClass") ionClass?: string; 
   @Input("controlName") controlName!: string;
   @Input("label") label!: string;
   @Input("formGroup") formGroup!: FormGroup;

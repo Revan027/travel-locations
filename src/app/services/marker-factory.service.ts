@@ -105,7 +105,7 @@ export class MarkerFactoryService {
           </div>
 
           <div class="location-card-footer ion-text-center">
-            <ion-button class="button--main btn-see-location" [strong]="true">Voir la fiche</ion-button>
+            <ion-button class="button-main btn-see-location" [strong]="true">Voir la fiche</ion-button>
           </div>
         </div>`, { maxWidth: 350, className: "location-popup", autoPanPadding: [50, 80] });
   }

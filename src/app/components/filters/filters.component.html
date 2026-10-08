@@ -1,19 +1,18 @@
-<ion-modal class="modal-filters" trigger="modal-filters" [initialBreakpoint]="0.4" [breakpoints]="[0, 0.25, 0.5, 0.6]">
+<ion-modal class="modal-filters" trigger="modal-filters">
     <ng-template>
       <ion-content>             
-        <ion-title class="ion-margin ion-text-center card-title"> Filtrer </ion-title>  
+        <ion-title class="ion-margin ion-text-center card-title--white"> Filtrer </ion-title>  
 
         @if(loaded){
           <form [formGroup]="formGroup" novalidate>
             <ion-grid>
               <ion-row class="ion-align-content-end">
                 <ion-col size="6" class="ion-align-content-end">
-                  <ion-label>
+                  <ion-label class="ion-label--white">
                     Type
                   </ion-label>
 
                   <ion-select
-                    label="Type"
                     formControlName="typeIDs"
                     interface="popover"
                     [interfaceOptions]="{ side: 'top' }"
@@ -30,34 +29,33 @@
                 </ion-col>
 
                 <ion-col size="6" class="ion-align-content-end">
-                  <ion-label>
+                  <ion-label class="ion-label--white">
                     Pays
                   </ion-label>
 
                   <ion-select
-                      label="Pays"
-                      formControlName="country"
-                      interface="popover"
-                      placeholder="-"
-                      fill="outline">
+                    formControlName="country"
+                    interface="popover"
+                    placeholder="-"
+                    fill="outline">
 
-                      @for(item of sortedCountries(); track item.name){
-                        <ion-select-option [value]="item.id">
-                          {{item.name}}
-                        </ion-select-option>
-                      }
-                    </ion-select>
+                    @for(item of sortedCountries(); track item.name){
+                      <ion-select-option [value]="item.id">
+                        {{item.name}}
+                      </ion-select-option>
+                    }
+                  </ion-select>
                 </ion-col>
 
                 <ion-col size="6" class="mt-2">
-                  <app-datetime [formGroup]="formGroup" (dateChanged)="onDateChanged($event)" [date]="locationSearchRequest().limitDate" controlName="limitDate" label="Date limite"></app-datetime>  
+                  <app-datetime [formGroup]="formGroup" (dateChanged)="onDateChanged($event)" ionClass="ion-label--white" [date]="locationSearchRequest().limitDate" controlName="limitDate" label="Date limite"></app-datetime>  
                 </ion-col>        
               </ion-row>
             </ion-grid>
            
             <div class="ion-display-flex ion-justify-content-end ion-margin">
-                <ion-button class="button--main ion-margin-end" [strong]="true" color="danger" (click)="onReset()">Annuler</ion-button>
-                <ion-button class="button--main" [strong]="true" [disabled]="formGroup.invalid" (click)="onSubmit(formGroup.value)">Filtrer</ion-button>
+                <ion-button class="button-main ion-margin-end" [strong]="true" color="danger" (click)="onReset()">Annuler</ion-button>
+                <ion-button class="button-main" [strong]="true" [disabled]="formGroup.invalid" (click)="onSubmit(formGroup.value)">Filtrer</ion-button>
             </div>
           </form>
         }

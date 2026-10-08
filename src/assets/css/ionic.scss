@@ -1,3 +1,6 @@
+@use './font' as f; 
+
+
 .mt-2{
   margin-top: 20px;
 }
@@ -296,4 +299,18 @@ ion-popover{
   color: var(--app-amber);
   margin-left: 5px;
   filter: drop-shadow(0 0 6px var(--app-amber-glow));
+}
+
+ion-alert{
+  .alert-title{
+    @include f.alert-title;
+  }
+
+  .alert-message {
+    @include f.alert-message;
+  }
+
+  .alert-confirm .alert-button-inner {
+    color: var(--ion-color-danger);
+  }
 }
