@@ -1,0 +1,92 @@
+@use './font' as f; 
+
+
+ion-button.button--main {
+    @include f.text-btn;
+    --background: linear-gradient(135deg, var(--color-f4a261), var(--color-e05e2f));
+    --background-hover: var(--color-e05e2f);
+    --background-activated: var(--ion-color-primary);
+    --background-focused: var(--ion-color-primary);
+
+    --color: white;
+
+    --border-radius: 10px;
+    --border-style: none;
+
+    --box-shadow: var(--color-box-shadow);
+
+    --padding-start: 40px;
+    --padding-end: 40px;
+    --padding-top: 20px;
+    --padding-bottom: 20px;
+    text-transform: none; 
+
+    &.--light{
+        --padding-start: 20px;
+        --padding-end: 20px;
+        --padding-top: 10px;
+        --padding-bottom: 10px;
+    }
+}
+
+ion-label{
+    @include f.label;
+    color: var(--color-2b3a4e);
+
+    &.ion-label--white{
+        color: white;
+    }
+}
+
+ion-input.input-fill-outline{ 
+    @include f.text-field;
+    --border-color: var(--color-EDEBF4)!important; 
+    --border-width: 1px;
+    --border-style: solid;
+    --border-radius: 12px;
+
+    --highlight-color-focused: var(--color-f4a261);
+    --highlight-color: var(--color-f4a261);
+
+    --background: #fff!important;
+     --color: var(--app-navy)!important;
+    --placeholder-color: var(--color-8A94A3);
+    --padding-start: 16px!important;
+    --padding-end: 16px!important;
+    min-height: 46px!important;
+
+    &:hover {
+        --border-color: var(--color-main);
+    }
+
+    &.has-focus {
+        --highlight-height: 1px;
+    }
+
+    ion-icon{
+        color: var(--color-muted);
+        @include f.label;
+    }
+}
+
+
+ion-select,
+ion-button.datetime{
+    --background: white!important;
+    --color: var(--app-navy)!important;
+   @include f.text-field; 
+    --border-color:  var(--color-EDEBF4);
+    --border-style: solid;
+    --border-width: 1px;
+    --placeholder-color: var(--color-8A94A3)!important;
+    --border-radius: 10px!important;
+    min-height: 46px!important;
+}
+
+ion-select::part(container) {
+    color: var(--app-navy);
+}
+
+ion-select-popover ion-item{
+    @include f.text-field ; 
+}

@@ -19,7 +19,7 @@
     max-width: 320px;
     max-height: 60vh;
     padding: 10px;
-    background: var(--app-glass-bg);
+    background: var(--color-2b3a4e);
     backdrop-filter: blur(var(--app-glass-blur));
     -webkit-backdrop-filter: blur(var(--app-glass-blur));
     border: 1px solid var(--app-glass-border);
@@ -37,11 +37,6 @@
         gap: 8px;
         margin-bottom: 12px;
     }
-    &__title {
-        flex: 1;
-        font-size: var(--font-size-lg);
-        font-weight: 700;
-    }
     &__title-icon {
         color: var(--app-amber);
         font-size: 1.3rem;
@@ -55,13 +50,6 @@
         display: flex;
         align-items: flex-end;
         gap: 8px;
-
-        ion-input {
-        flex: 1;
-        --background: var(--app-input-bg);
-        --color: var(--app-text-dark);
-        --placeholder-color: black;
-        }
     }
 
     &__results {

@@ -1,5 +1,5 @@
 import { Location as ALocation } from '@angular/common';
-import { Component, inject, DestroyRef, computed, ViewChild, ElementRef, OnInit } from '@angular/core';
+import { Component, inject, DestroyRef, computed, ViewChild, ElementRef, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GestureController, IonicModule } from '@ionic/angular';
@@ -31,6 +31,9 @@ export class EditLocationPage implements OnInit {
   @ViewChild('inputFile') inputFile!: ElementRef;
 
   private destroyRef = inject(DestroyRef);
+
+  protected disabledSubmit = signal<boolean>(false);
+  protected disabledDelete = signal<boolean>(false);
 
   loaded: boolean = false;
   uploadLoaded: boolean = false;
@@ -127,7 +130,7 @@ export class EditLocationPage implements OnInit {
   }
 
   async onSubmit(locationRequest: LocationRequest) {
-    this.uploadLoaded = true;
+    this.disabledSubmit.set(true);
 
     let isSuccess = true,
     locationsType = this.locationService.locationTypes().find(item => item.id == locationRequest.typeID);
@@ -144,28 +147,31 @@ export class EditLocationPage implements OnInit {
       this.mapService.removeNewLocationMarker();
     }
 
-    if (isSuccess){
-      this.toastService.get(MessageEnum.AppSuccess, StatusEnum.Success);
+    this.toastService.get(isSuccess ? MessageEnum.AppSuccess : MessageEnum.AppError, isSuccess ? StatusEnum.Success : StatusEnum.Danger);
 
-      this.locationService.search(this.locationService.locationSearchRequest());
+    this.locationService.search(this.locationService.locationSearchRequest());
 
-      this.uploadLoaded = false;
+    this.disabledSubmit.set(false);
 
-      this.router.navigate(['/map']);
-    }  
+    this.router.navigate(['/map']);
+  
   }
 
   async onDelete() {
     var me = this;
-
+    
     let callback = async function(){
       let isSuccess = true;
+
+      me.disabledDelete.set(true);
 
       await me.locationService.delete(me.location).catch(() => isSuccess = false),
 
       await me.toastService.get(isSuccess ? MessageEnum.AppSuccess : MessageEnum.AppError, isSuccess ? StatusEnum.Success : StatusEnum.Danger);
       
       await me.locationService.search(me.locationService.locationSearchRequest());
+
+      me.disabledDelete.set(false);
 
       me.router.navigate(['/map']);
     }

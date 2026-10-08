@@ -27,7 +27,7 @@
 }
 // CONTENT
 ion-content {
-  --background: var(--app-bg);
+  --background: var(--color-F7F6FB);
 }
 
 ion-content::part(scroll) {
@@ -97,80 +97,14 @@ ion-footer {
 }
 
 
-/* INPUTS */
-ion-input,
-ion-select,
-ion-searchbar {
-  --background: var(--app-input-bg) !important;
-  --color: var(--app-text-dark);
-  --placeholder-color: var(--app-text-muted);
-}
-
-ion-searchbar{
---border-radius: 4px!important;;
-}
-
-ion-select::part(label) {
-  color: var(--app-label-color);
-}
-
-ion-select::part(text) {
-  color: var(--app-text-dark);
-}
-
-ion-input .label-text {
-  line-height: 1.2!important;
-  color: var(--app-label-color);
-}
-
-// Datetime custom
-ion-button.datetime{
-  margin: 0px;
-  width: 100%;
-  --color: black;
-  border: 1px solid gray;
-  border-radius: 4px;  
-  min-height: 54px;
-  border-color: var(--ion-color-step-300, var(--ion-background-color-step-300, #b3b3b3));
-  --background: var(--app-input-bg) !important;
-}
-
-ion-button.datetime::part(native) {
-  --background-activated: transparent;
-  --background-focused: transparent;
-  --ripple-color: transparent;
-  border-radius: 4px;
-  transition: none !important;
-}
 
 ion-modal.datetime-modal{
   --height: auto;
   --width: auto;
 }
 
-.custom-datetime{
-  position: relative;
 
-  .custom-datetime-label{
-    color: var(--app-label-color);
-    position: absolute;
-    font-size: var(--font-size-xs);
-    left: 5%;
-    height: 100%;
 
-    ion-label{
-      position: relative;
-      top: 010%;
-      z-index: 100;
-      background: transparent;
-    }
-  }
-}
-
-/* BUTTONS */
-ion-button ion-label {
-  width: 100%;
-}
 
 
 ion-fab-button{
@@ -237,7 +171,7 @@ ion-popover{
     }
 
     &.new-location{
-      color: var(--app-amber-deep);
+      color: var(--app-navy);
       font-size: 35px;
     }
   }

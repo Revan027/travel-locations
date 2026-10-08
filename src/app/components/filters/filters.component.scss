@@ -1,16 +1,3 @@
 ion-modal.modal-filters ion-content{
-  --color: white;
-  --background: var(--app-footer-bg);
-}
-
-ion-input,
-ion-select,
-ion-searchbar {
-  --background: var(--app-input-bg) !important;
-  --color: black;
-  --placeholder-color: var(--app-text-muted);
-}
-
-ion-select::part(label) {
-  color: black !important;;
+  --background: var( --color-F7F6FB);
 }

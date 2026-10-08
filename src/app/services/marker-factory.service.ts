@@ -112,7 +112,7 @@ export class MarkerFactoryService {
 
   buildNewLocationMarker(position: Position){
     const newLocationIcon = L.divIcon({
-        html: '<ion-icon name="location"></ion-icon>',
+        html: '<ion-icon name="location"></ion-icon> <span class="text-marker-info">Clique ici</span>',
         iconAnchor: [16, 32],
         popupAnchor: [0, -32],
         className: 'custom-marker new-location'
