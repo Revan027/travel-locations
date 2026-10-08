@@ -47,29 +47,26 @@ ion-header {
   background: var(--app-header-bg);
   backdrop-filter: blur(var(--app-glass-blur));
   -webkit-backdrop-filter: blur(var(--app-glass-blur));
-  border-bottom: 1px solid var(--app-glass-border);
-  box-shadow: var(--app-glass-shadow);
+  box-shadow: var(--color-00000033);
 }
 
 ion-header ion-toolbar {
   --background: transparent;
-  --color: var(--app-text-light);
+  --color: white;
   --min-height: 60px;
 }
 
 ion-header ion-title {
-  color: var(--app-text-light);
+  color: white;
   font-weight: 600;
   font-size: var(--font-size-xl);
   letter-spacing: 0.5px;
 }
 
-ion-header ion-buttons {
-  color: var(--app-text-muted);
-}
+
 
 ion-header ion-back-button {
-  color: var(--app-text-light);
+  color: white;
 }
 
 .header-title {
@@ -274,7 +271,7 @@ ion-popover{
   text-transform: uppercase;
 
   .title-main {
-    color: var(--app-text-light);
+    color: white;
   }
 
   .title-accent {

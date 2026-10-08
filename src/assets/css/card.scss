@@ -6,8 +6,7 @@
 }
 
 .card--glass {
-  background: var(--app-glass-bg);
-  border: 1px solid var(--app-glass-border);
+  background: var(--color-0a1c30d9g);
   border-radius: var(--app-card-radius);
   box-shadow: var(--app-card-shadow);
   backdrop-filter: blur(var(--app-glass-blur));
@@ -28,7 +27,7 @@
 
   ion-icon {
     font-size: 40px;
-    color: var(--app-text-light);
+    color: white;
   }
 }
 
@@ -36,7 +35,7 @@
   margin: 0 0 10px;
   font-size: var(--font-size-2xl);
   font-weight: 700;
-  color: var(--app-text-light);
+  color: white;
 }
 
 .card__subtitle {

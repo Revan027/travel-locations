@@ -2,43 +2,17 @@
 // https://ionicframework.com/docs/theming/
 
 :root {
-  // Backdrop (overlay sombre derrière modals / éléments en avant-plan)
-  --app-backdrop: rgba(0, 0, 0, 0.2);
-
-  // Glass layers
-  --app-glass-bg: rgba(10, 28, 48, 0.85);
-  --app-glass-bg-heavy: rgba(10, 28, 48, 0.92);
-  --app-glass-border: rgba(255, 255, 255, 0.08);
   --app-glass-blur: 14px;
-  --app-glass-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
-
-  // Text
-  --app-text-light: #ffffff;
-  --app-text-dark: #1a1a1a;
-  --app-text-muted: rgba(255, 255, 255, 0.45);
-  --app-text-accent: var(--color-f4a261);
-  --app-label-color: black;
-
-  // Cards
   --app-card-radius: 16px;
-  --app-card-bg: rgba(255, 255, 255, 0.06);
-  --app-card-border: rgba(255, 255, 255, 0.1);
   --app-card-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
 
-  // Inputs
-  --app-input-bg: #f5f5f5;
-  --app-input-border: rgba(255, 255, 255, 0.15);
-
   // Header / Footer
-  --app-header-bg: var(--app-glass-bg);
-  --app-footer-bg: rgba(10, 28, 48, 0.92);
+  --app-header-bg: var(--color-0a1c30d9g);
+  --app-footer-bg: var(--color-0a1c30d9g);
 
   // Navigation
   --app-tab-active: var(--color-f4a261);
-  --app-tab-inactive: rgba(255, 255, 255, 0.4);
-
-  // Page theme (override per page)
-  --app-page-theme-color: var(--color-f4a261);
+  --app-tab-inactive: var(--color-ffffff73);
 
   // Success color (vert olive)
   --ion-color-success: #5a7d5a;
