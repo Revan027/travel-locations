@@ -21,7 +21,7 @@ import { AuthentificationService } from '../services/authentification.service';
                     </ion-col>
 
                     <ion-col>
-                        <ion-button class="btn-logout" fill="clear" (click)="signOut()">
+                        <ion-button fill="clear" (click)="signOut()">
                             <ion-icon slot="icon-only" color="primary" name="log-out-outline"></ion-icon>
                         </ion-button>
                     </ion-col>
@@ -29,7 +29,7 @@ import { AuthentificationService } from '../services/authentification.service';
             </ion-grid>
         }
         @else{
-            <ion-button class="btn-logout" fill="clear" (click)="signIn()">
+            <ion-button fill="clear" (click)="signIn()">
                 <ion-icon slot="icon-only" color="primary" name="log-in-outline"></ion-icon>
             </ion-button>
         }

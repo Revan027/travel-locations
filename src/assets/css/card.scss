@@ -22,8 +22,8 @@
   height: 84px;
   margin: 0 auto 24px;
   border-radius: 50%;
-  background: linear-gradient(145deg, var(--app-amber), var(--app-amber-deep));
-  box-shadow: 0 8px 24px var(--app-amber-glow),
+  background: linear-gradient(145deg, var(--color-f4a261), var(--color-e05e2f));
+  box-shadow: 0 8px 24px var(--color-f4a261-shadow),
     inset 0 1px 1px rgba(255, 255, 255, 0.25);
 
   ion-icon {
@@ -52,17 +52,12 @@
   gap: 10px;
 }
 
-.card__btn-confirm {
-  --border-radius: 12px;
-  height: 50px;
-  font-size: var(--font-size-base);
-  letter-spacing: 0.3px;
-}
 
 .card__btn-cancel {
   height: 46px;
   font-weight: 600;
   letter-spacing: 0.3px;
+  color: var(--color-f4a261)
 }
 
 .cluster-card{ 

@@ -37,10 +37,6 @@
         gap: 8px;
         margin-bottom: 12px;
     }
-    &__title-icon {
-        color: var(--app-amber);
-        font-size: 1.3rem;
-    }
     &__close {
         --color: var(--app-text-light);
         margin: 0;
@@ -75,7 +71,7 @@
         --border-radius: 12px;
         margin-bottom: 4px;
 
-        ion-icon { color: var(--app-amber); }
+        ion-icon { color: var(--color-f4a261); }
         h3 { font-weight: 700; }
         p {
             color: var(--app-text-muted);

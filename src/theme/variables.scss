@@ -2,26 +2,6 @@
 // https://ionicframework.com/docs/theming/
 
 :root {
-  // Thème
-  --app-bg: #f0f0f0;
-  --ion-color-primary: #f4a261;
-
-  // Palette Travel
-  --app-navy: #0a1c30;
-  --app-amber: #f4a261;
-  --app-amber-deep: #e05e2f;
-  --app-amber-glow: rgba(244, 162, 97, 0.55);
-  --app-teal: #2ec4b6;
-  --color-2b3a4e: #2b3a4e;
-  --color-e05e2f: #e05e2f; 
-  --color-f4a261: #f4a261;
-  --color-8A94A3: #8A94A3;
-   --color-F7F6FB: #F7F6FB;
-  --color-EDEBF4: #EDEBF4;
-  
-  .color-e05e2f{
-    color: var(--color-e05e2f);
-  }
   // Backdrop (overlay sombre derrière modals / éléments en avant-plan)
   --app-backdrop: rgba(0, 0, 0, 0.2);
 
@@ -36,7 +16,7 @@
   --app-text-light: #ffffff;
   --app-text-dark: #1a1a1a;
   --app-text-muted: rgba(255, 255, 255, 0.45);
-  --app-text-accent: var(--app-amber);
+  --app-text-accent: var(--color-f4a261);
   --app-label-color: black;
 
   // Cards
@@ -54,11 +34,11 @@
   --app-footer-bg: rgba(10, 28, 48, 0.92);
 
   // Navigation
-  --app-tab-active: var(--app-amber);
+  --app-tab-active: var(--color-f4a261);
   --app-tab-inactive: rgba(255, 255, 255, 0.4);
 
   // Page theme (override per page)
-  --app-page-theme-color: var(--app-amber);
+  --app-page-theme-color: var(--color-f4a261);
 
   // Success color (vert olive)
   --ion-color-success: #5a7d5a;

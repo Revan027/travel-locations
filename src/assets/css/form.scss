@@ -6,8 +6,8 @@ ion-button.button-main--light {
     @include f.text-btn;
     --background: linear-gradient(135deg, var(--color-f4a261), var(--color-e05e2f));
     --background-hover: var(--color-e05e2f);
-    --background-activated: var(--ion-color-primary);
-    --background-focused: var(--ion-color-primary);
+    --background-activated: var(--color-f4a261);
+    --background-focused: var(--color-f4a261);
 
     --color: white;
 
@@ -30,6 +30,15 @@ ion-button.button-main--light{
     --padding-bottom: 10px;   
 }
 
+ion-fab-button{
+ --background: linear-gradient(145deg, var(--color-f4a261), var(--color-e05e2f));
+ --box-shadow: 0 4px 20px var(--color-f4a261-shadow), inset 0 1px 1px rgba(255, 255, 255, 0.25);
+}
+
+ion-fab-button.fab-button-disabled{
+  opacity: 0.5;
+}
+
 ion-label{
     @include f.label;
     color: var(--color-2b3a4e);
@@ -50,7 +59,7 @@ ion-input.input-fill-outline{
     --highlight-color: var(--color-f4a261);
 
     --background: #fff!important;
-     --color: var(--app-navy)!important;
+     --color: var(--color-0a1c30)!important;
     --placeholder-color: var(--color-8A94A3);
     --padding-start: 16px!important;
     --padding-end: 16px!important;
@@ -74,7 +83,7 @@ ion-input.input-fill-outline{
 ion-select,
 ion-button.datetime{
     --background: white!important;
-    --color: var(--app-navy)!important;
+    --color: var(--color-0a1c30)!important;
    @include f.text-field; 
     --border-color:  var(--color-EDEBF4);
     --border-style: solid;
@@ -85,7 +94,7 @@ ion-button.datetime{
 }
 
 ion-select::part(container) {
-    color: var(--app-navy);
+    color: var(--color-0a1c30);
 }
 
 ion-select-popover ion-item{

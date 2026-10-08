@@ -79,7 +79,7 @@ ion-header ion-back-button {
 
   ion-icon {
     font-size: var(--font-size-xl);
-    color: var(--app-amber);
+    color: var(--color-f4a261);
   }
 
   span {
@@ -107,17 +107,6 @@ ion-modal.datetime-modal{
 }
 
 
-
-
-
-ion-fab-button{
- --background: linear-gradient(145deg, var(--app-amber), var(--app-amber-deep));
- --box-shadow: 0 4px 20px var(--app-amber-glow), inset 0 1px 1px rgba(255, 255, 255, 0.25);
-}
-
-ion-fab-button.fab-button-disabled{
-  opacity: 0.5;
-}
 
 // POPPOVER
 ion-popover{
@@ -174,7 +163,7 @@ ion-popover{
     }
 
     &.new-location{
-      color: var(--app-navy);
+      color: var(--color-0a1c30);
       font-size: 35px;
     }
   }
@@ -270,7 +259,7 @@ ion-popover{
 
   ion-spinner {
     transform: scale(3);
-    --color: var(--app-amber);
+    --color: var(--color-f4a261);
   }
 }
 
@@ -289,16 +278,16 @@ ion-popover{
   }
 
   .title-accent {
-    color: var(--app-amber);
+    color: var(--color-f4a261);
     font-weight: 700;
   }
 }
 
 .app-logo {
   font-size: 26px;
-  color: var(--app-amber);
+  color: var(--color-f4a261);
   margin-left: 5px;
-  filter: drop-shadow(0 0 6px var(--app-amber-glow));
+  filter: drop-shadow(0 0 6px var(--color-f4a261-shadow));
 }
 
 ion-alert{
