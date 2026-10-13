@@ -9,7 +9,8 @@ import { PhotonKomootResult } from '../models/PhotonKomootResult';
 })
 export class PhotonKomootService {
   
-  displayModal = signal(false);
+  private _displayModal = signal<boolean>(false);
+  displayModal = this._displayModal.asReadonly();
 
   constructor(private httpService: HttpService) {}
 
@@ -17,5 +18,13 @@ export class PhotonKomootService {
     const params = { q: search, limit: '10' };
 
     return firstValueFrom(this.httpService.get(`${apiURL.PhotonKomoot}`, params));
+  }
+
+  setDisplayModal(display: boolean){
+    this._displayModal.set(display);
+  }
+
+  updateDisplayModal(){
+    this._displayModal.update(v => !v);
   }
 }

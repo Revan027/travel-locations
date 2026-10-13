@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { App } from '@capacitor/app';
 
 @Component({
@@ -9,13 +9,13 @@ import { App } from '@capacitor/app';
 })
 export class MenuComponent implements OnInit{
 
-    numVersion!: string;
+    numVersion = signal<string>("");
 
     constructor() {}
 
     async ngOnInit() {
        const info = await App.getInfo();
 
-       this.numVersion = info.version;
+       this.numVersion.set(info.version);
     }
 }

@@ -1,4 +1,4 @@
-import { Component, HostListener, signal, WritableSignal } from '@angular/core';
+import { Component, HostListener, Signal, signal, WritableSignal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { PhotonKomootFeature, PhotonKomootResult } from 'src/app/models/PhotonKomootResult';
@@ -12,55 +12,72 @@ import { LoaderComponent } from '../loader.component';
   imports: [IonicModule, FormsModule, LoaderComponent],
   selector: 'app-api-search-modal',
   templateUrl: 'api-search-modal.component.html',
-  styleUrls: ['api-search-modal.component.scss']
+  styleUrls: ['api-search-modal.component.scss'],
+  host: {
+    '(document:click)': 'onDocumentClick($event)',
+  },
 })
 export class ApiSearchModalComponent {
-  @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
-    if (!this.photonKomootService.displayModal()) return;
+    if (!this.displayModal()) return;
 
     const target = event.target as HTMLElement;
 
     // on ne ferme pas si le clic est dans le modal ou sur le bouton qui l'ouvre
     if (!target.closest('.api-search-modal') && !target.closest('.btn-api-search-modal')) {
-      this.photonKomootService.displayModal.set(false);
+      this.photonKomootService.setDisplayModal(false);
     }
   }
 
-  displayModal: WritableSignal<boolean> = this.photonKomootService.displayModal;
+  protected displayModal: Signal<boolean>;
+  
+  protected apiSearchLoading = signal<boolean>(false);
+  protected apiSearchResult = signal<PhotonKomootResult | undefined>(undefined);
+  protected apiSearchError = signal<string>("");
 
-  apiSearchLoading = false;
-  apiSearchResult?: PhotonKomootResult;
-  apiSearchText: string = '';
-  apiSearchError: string = '';
+  protected apiSearchText = "";
 
   constructor(private mapService: MapService, private photonKomootService: PhotonKomootService) {
+    this.displayModal = this.photonKomootService.displayModal;
   }
 
   ngOnInit() {
   }
 
   async onSubmitPhotonKomootSearch(){
-    this.apiSearchLoading = true;
-    this.apiSearchError = '';
+    this.setApiSearchLoading(true);
+    this.setApiSearchError('');
 
     try {
-      this.apiSearchResult = await this.photonKomootService.search(this.apiSearchText);
+      this.setApiSearchResult(await this.photonKomootService.search(this.apiSearchText));
     }
     catch (e) {
-      this.apiSearchResult = undefined;
-      this.apiSearchError = 'La recherche a échoué. Réessaie dans un instant.';
+      this.setApiSearchResult(undefined);
+      this.setApiSearchError('La recherche a échoué. Réessaie dans un instant.');
     }
     finally {
-      this.apiSearchLoading = false;
+      this.setApiSearchLoading(false);
     }
   }
 
   onClickApiFeature(feature: PhotonKomootFeature){
-    this.photonKomootService.displayModal.set(false);
+    this.photonKomootService.setDisplayModal(false);
+
     const position: Position = {latitude: feature.geometry.coordinates[1], longitude: feature.geometry.coordinates[0]};
 
     this.mapService.flyTo(position, 14);
     this.mapService.placeNewLocationMarker(position);
+  }
+
+  private setApiSearchLoading(value: boolean){
+    this.apiSearchLoading.set(value)
+  }
+
+  private setApiSearchError(value: string){
+    this.apiSearchError.set(value)
+  }
+
+  private setApiSearchResult(value: PhotonKomootResult | undefined){
+    this.apiSearchResult.set(value)
   }
 }

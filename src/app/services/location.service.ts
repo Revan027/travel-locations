@@ -14,10 +14,15 @@ import { ClusterService } from './cluster.service';
     providedIn: 'root',
 })
 export class LocationService {   
-    locations = signal<Location[]>([]);
-    locationTypes = signal<LocationType[]>([]);
-    countries = signal<Country[]>([]);
-    locationSearchRequest = signal<LocationSearchRequest>(new LocationSearchRequest);
+    _locations = signal<Location[]>([]);
+    _locationTypes = signal<LocationType[]>([]);
+    _countries = signal<Country[]>([]);
+    _locationSearchRequest = signal<LocationSearchRequest>(new LocationSearchRequest);
+
+    locations = this._locations.asReadonly();
+    locationTypes = this._locationTypes.asReadonly();
+    countries = this._countries.asReadonly();
+    locationSearchRequest = this._locationSearchRequest.asReadonly();
     
     private readonly degreeTolerance: number = 0.5;
 
@@ -55,12 +60,12 @@ export class LocationService {
     }
 
     async loadAll(): Promise<void>{  
-        this.locations.set(await this.getAll());
+        this.setLocations(await this.getAll());
     }
 
     async loadDatas(): Promise<void>{
-        this.locationTypes.set(await this.firestoreService.getDocuments<LocationType[]>(FirebaseCollectionEnum.LocationTypes));
-        this.countries.set(await this.firestoreService.getDocuments<Country[]>(FirebaseCollectionEnum.Country));
+        this.setLocationTypes(await this.firestoreService.getDocuments<LocationType[]>(FirebaseCollectionEnum.LocationTypes));
+        this.setCountries(await this.firestoreService.getDocuments<Country[]>(FirebaseCollectionEnum.Country));
     }
 
     async search(locationSearchRequest: LocationSearchRequest){
@@ -79,7 +84,7 @@ export class LocationService {
             queryParts.push(where("country", "==", locationSearchRequest.country))
         }
 
-        this.locations.set(await this.firestoreService.search<Location[]>(query(ref, ...queryParts)));    
+        this.setLocations(await this.firestoreService.search<Location[]>(query(ref, ...queryParts)));    
     }
     
     async create(locationRequest: LocationRequest): Promise<DocumentReference<DocumentData, DocumentData>>{  
@@ -176,5 +181,21 @@ export class LocationService {
         Object.entries(groups).forEach((item) => {
             return item[1].sort((a, b) => a.date.toDate() < b.date.toDate()  ? 1 : -1)
         });
+    }
+
+    setLocations(value: Location[]){
+        this._locations.set(value);
+    }
+
+    setLocationTypes(value: LocationType[]){
+        this._locationTypes.set(value);
+    }
+
+    setCountries(value: Country[]){
+        this._countries.set(value);
+    }
+
+    setLocationSearchRequest(value: LocationSearchRequest){
+        this._locationSearchRequest.set(value);
     }
 }

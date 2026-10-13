@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { FirebaseError } from 'firebase/app';
@@ -17,8 +17,8 @@ import { AuthentificationService } from 'src/app/services/authentification.servi
 })
 export class SignInPage implements OnInit {
 
-  loading: boolean = false;
-  errorMsg: string = "";
+  protected loading = signal<boolean>(false);
+  protected errorMsg = signal<string>("");
   formGroup!: FormGroup;
 
   constructor(private formBuilder: FormBuilder, private location: Location, private authService: AuthentificationService, private mapService: MapService) { }
@@ -36,8 +36,8 @@ export class SignInPage implements OnInit {
 
   async onSignIn(datas: any) {
     let userCredential!: UserCredential;
-    this.loading = true;
-    this.errorMsg = "";
+    this.setLoading(true);
+     this.setErrorMsg("");
 
     try {
       userCredential = await this.authService.signIn(datas.email, datas.mdp);
@@ -46,7 +46,7 @@ export class SignInPage implements OnInit {
       let message = e as FirebaseError;
 
       if (message.code.includes("auth")){
-        this.errorMsg = "Mauvais login/mot de passe";
+        this.setErrorMsg("Mauvais login/mot de passe");
       }
     } 
     finally{
@@ -59,11 +59,19 @@ export class SignInPage implements OnInit {
 
         this.cancel();
       }
-      this.loading = false;
+      this.setLoading(false);
     }
   }
 
   cancel() {
     this.location.back();
+  }
+
+  private setLoading(value: boolean){
+    this.loading.set(value)
+  }
+
+  private setErrorMsg(value: string){
+    this.errorMsg.set(value)
   }
 }

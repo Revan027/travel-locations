@@ -53,7 +53,7 @@ export class ClusterService {
         return this.firestoreService.deleteDocument(ref);
     }
 
-    loadClusters(clusters: Cluster[]){
+    setClusters(clusters: Cluster[]){
         this._clusters.set({...clusters} as ClusterMap[]);
     }
 }

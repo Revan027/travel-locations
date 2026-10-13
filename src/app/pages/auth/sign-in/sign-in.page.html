@@ -17,7 +17,7 @@
         <ion-icon name="compass"></ion-icon>
       </div>
 
-      @if(loading){
+      @if(loading()){
         <h1 class="card__title">Connexion en cours...</h1>
         <app-loader></app-loader>
       }
@@ -29,7 +29,7 @@
         </p>
 
          <form [formGroup]="formGroup" novalidate>
-          <ion-text color="danger">{{errorMsg}}</ion-text>
+          <ion-text color="danger">{{errorMsg()}}</ion-text>
 
             <ion-grid>
               <ion-row class="ion-align-content-end">

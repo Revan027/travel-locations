@@ -1,4 +1,4 @@
-import { Component, WritableSignal } from '@angular/core';
+import { Component, Signal } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { User } from '../models/User';
 import { Router } from '@angular/router';
@@ -50,10 +50,11 @@ import { AuthentificationService } from '../services/authentification.service';
     `]
 })
 export class AuthStatusComponent {
-    user: WritableSignal<User> = this.authService.user;
+    user: Signal<User>;
 
     constructor(private router: Router, private authService: AuthentificationService)
     {
+        this.user = this.authService.user;
     }
 
     signOut(){

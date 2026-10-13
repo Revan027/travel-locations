@@ -16,18 +16,18 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" class="ion-padding-top">
-  @if(loaded){
+  @if(loaded()){
     <form [formGroup]="formGroup" novalidate>
       <ion-grid>
         <ion-row>
           <ion-col class="ion-text-center">
             <input #inputFile type="file" hidden (change)="onFileChanged($event)" />
 
-            @if(uploadLoaded){
+            @if(uploadLoaded()){
               <app-loader></app-loader>
             }
-            @else if(location.imgUrl){
-              <ion-img src="{{location.imgUrl | cloudinaryUrl }}" class="location-illustration" alt=""></ion-img>
+            @else if(location().imgUrl){
+              <ion-img src="{{location().imgUrl ?? '' | cloudinaryUrl }}" class="location-illustration" alt=""></ion-img>
             }
             @else{
               <ion-img src="../../../../assets/placeholder.webp" class="location-illustration" alt=""></ion-img>
@@ -56,7 +56,7 @@
           </ion-col>
 
           <ion-col size="6">
-            <app-datetime [formGroup]="formGroup" (dateChanged)="onDateChanged($event)" [date]="location.date" controlName="date" label="Date"></app-datetime>
+            <app-datetime [formGroup]="formGroup" (dateChanged)="onDateChanged($event)" [date]="location().date" controlName="date" label="Date"></app-datetime>
           </ion-col>
 
           <ion-col size="6">
@@ -158,7 +158,7 @@
       </ion-grid>
 
       <div class="ion-display-flex ion-justify-content-end ion-margin">
-        @if(location.id != ""){
+        @if(location().id != ""){
           <ion-button class="button-main ion-margin-end" color="danger" [strong]="true" (click)="onDelete()" [disabled]="disabledSubmit() || disabledDelete()">
             Supprimer
 

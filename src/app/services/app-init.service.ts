@@ -11,7 +11,8 @@ import { ClusterService } from './cluster.service';
   providedIn: 'root',
 })
 export class AppInitService {
-  isAppInit = new BehaviorSubject<boolean>(false);
+  private _isAppInit = new BehaviorSubject<boolean>(false);
+  isAppInit = this._isAppInit;
 
   constructor(
     private authentificationService: AuthentificationService, 
@@ -33,9 +34,9 @@ export class AppInitService {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (results) => {
-          this.clusterService.loadClusters(results[3]);
+          this.clusterService.setClusters(results[3]);
 
-          this.isAppInit.next(true);
+          this._isAppInit.next(true);
 
           this.router.navigateByUrl('/map');
         },

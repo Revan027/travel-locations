@@ -21,8 +21,11 @@ import { Cluster, ClusterMap } from '../models/Cluster';
 })
 export class MapService {
 
-    isMapInit = signal<boolean>(false);
-    islocatingUsers = signal<boolean>(false);
+    _isMapInit = signal<boolean>(false);
+    _islocatingUsers = signal<boolean>(false);
+
+    isMapInit = this._isMapInit.asReadonly();
+    islocatingUsers = this._islocatingUsers.asReadonly();
 
     readonly clusters: Signal<Cluster[]>;
 
@@ -49,7 +52,7 @@ export class MapService {
         effect(async () => {
             this.locationService.locations();
 
-this.clusterService.loadClusters(await this.clusterService.getAll());
+            this.clusterService.setClusters(await this.clusterService.getAll());
             this.resetClusters();
             this.resetLocations();     
 
@@ -137,7 +140,7 @@ this.clusterService.loadClusters(await this.clusterService.getAll());
         )
         .setView([45.706179285330855, 2.9882812500000004], 6)
         .on("resize", (e) => {
-          this.isMapInit.set(true);
+          this.setIsMapInit(true);
         });
 
         // On ajoute les infos de la map. updateWhenIdle a false pour accéler la chargement des parties de map
@@ -161,7 +164,7 @@ this.clusterService.loadClusters(await this.clusterService.getAll());
             return;
         } 
 
-        this.islocatingUsers.set(true);
+        this.setIslocatingUsers(true);
 
         if(loadDatas){
             await this.userGeolocalisationService.loadAll();
@@ -170,7 +173,7 @@ this.clusterService.loadClusters(await this.clusterService.getAll());
         const success = await this.geolocalisationService.getCurrentPosition();
 
         if (!success){
-            this.islocatingUsers.set(false);
+            this.setIslocatingUsers(false);
             
             return;
         } 
@@ -201,7 +204,7 @@ this.clusterService.loadClusters(await this.clusterService.getAll());
             this.usersMarker?.push(marker);
         });
 
-        this.islocatingUsers.set(false);
+        this.setIslocatingUsers(false);
     }
 
     placeNewLocationMarker(position: Position){
@@ -364,5 +367,13 @@ this.clusterService.loadClusters(await this.clusterService.getAll());
         if (this.newLocationMarker != undefined){
             this.newLocationMarker.remove();
         }
+    }
+
+    setIsMapInit(value: boolean){
+        this._isMapInit.set(value);
+    }
+
+    setIslocatingUsers(value: boolean){
+        this._islocatingUsers.set(value );
     }
 }

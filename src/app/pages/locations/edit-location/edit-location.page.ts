@@ -18,7 +18,6 @@ import { AltitudeService } from 'src/app/services/altitude.service';
 import { CloudinaryUrlPipe } from 'src/app/pipes/cloudinary-url.pipe';
 import { AuthStatusComponent } from 'src/app/components/auth-status.component';
 import { DatetimeComponent } from 'src/app/components/datetime/datetime.component';
-import { ClusterService } from 'src/app/services/cluster.service';
 
 @Component({
   standalone: true,
@@ -34,13 +33,12 @@ export class EditLocationPage implements OnInit {
 
   protected disabledSubmit = signal<boolean>(false);
   protected disabledDelete = signal<boolean>(false);
+  protected loaded = signal<boolean>(false);
+  protected uploadLoaded = signal<boolean>(false);
+  protected location = signal<Location>(new Location());
 
-  loaded: boolean = false;
-  uploadLoaded: boolean = false;
+  formGroup!: FormGroup;  
 
-  formGroup!: FormGroup;
-  location: Location = new Location();
-  
   sortedLocationsType = computed(() => this.locationService.locationTypes().sort((a, b) => a.name.trim().localeCompare(b.name.trim(), "fr", { sensitivity: "base" })));
   sortedCountries = computed(() => this.locationService.countries().sort((a, b) => a.name.trim().localeCompare(b.name.trim(), "fr", { sensitivity: "base" })));
 
@@ -52,11 +50,11 @@ export class EditLocationPage implements OnInit {
     private formBuilder: FormBuilder,
     private router: Router,
     private locationService: LocationService,
-    private clusterService: ClusterService,
     private mapService: MapService,
     private toastService: ToastService,
     private cloudinaryService: CloudinaryService,
-    private altitudeService: AltitudeService){
+    private altitudeService: AltitudeService)
+  {
     moment.locale("fr");  
   }
 
@@ -67,61 +65,46 @@ export class EditLocationPage implements OnInit {
   async ngOnInit() {  
     // Ecoute de l'event si l'url change. On ne repasse pas 2 fois dans un ngOnInit normalement
     this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(async (params) => {
-      this.loaded = false;
+      this.setLoaded(false);
 
       const id = params.get('id');
 
       if (id) {
-        this.location = await this.locationService.get(id) || new Location();
+        this.setLocation(await this.locationService.get(id) || new Location());
 
         this.createForm();
       } 
       else {
-        this.location.latitude = Number(params.get('lat'));
-        this.location.longitude = Number(params.get('lng'));
+        this.location().latitude = Number(params.get('lat'));
+        this.location().longitude = Number(params.get('lng'));
 
         this.createForm();
 
-        this.altitudeService.getAltitude(this.location.latitude, this.location.longitude)
+        this.altitudeService.getAltitude(this.location().latitude, this.location().longitude)
           .subscribe({
             next: (result) => {
-              this.location.altitude = result.elevation[0];
+              this.location().altitude = result.elevation[0];
 
-              this.formGroup.get('altitude')?.setValue(this.location.altitude);
+              this.formGroup.get('altitude')?.setValue(this.location().altitude);
             },
-            error: (err) => {this.location.altitude = undefined }
+            error: (err) => {this.location().altitude = undefined }
           });
       }
 
-      this.loaded = true;
+      this.setLoaded(true);
     });
-  }
-
-  ngAfterViewInit() {
-    // on active l'écoute du swipe pour le retour
-    /*const gesture = this.gestureCtrl.create({
-      el: this.el.nativeElement,
-      gestureName: 'swipe-back',
-      direction: 'x',
-      onEnd: (detail) => {
-        if (detail.deltaX > 50) {
-          this.goBack();
-        }
-      },
-    });
-    gesture.enable();*/
   }
 
   private createForm() { 
     this.formGroup = this.formBuilder.group({
-      name: [this.location.name, Validators.compose([Validators.required])],
-      altitude: [this.location.altitude],
-      latitude: [{ value: this.location.latitude, disabled: this.location.id != "" }, Validators.required],
-      longitude: [{ value: this.location.longitude, disabled: this.location.id != "" }, Validators.required],
-      typeID: [this.location.typeID, Validators.required],
-      countryID: [this.location.countryID, Validators.required],
-      date: [this.location.date, Validators.required],
-      imgUrl: [this.location.imgUrl],
+      name: [this.location().name, Validators.compose([Validators.required])],
+      altitude: [this.location().altitude],
+      latitude: [{ value: this.location().latitude, disabled: this.location().id != "" }, Validators.required],
+      longitude: [{ value: this.location().longitude, disabled: this.location().id != "" }, Validators.required],
+      typeID: [this.location().typeID, Validators.required],
+      countryID: [this.location().countryID, Validators.required],
+      date: [this.location().date, Validators.required],
+      imgUrl: [this.location().imgUrl],
     });
   }
 
@@ -130,7 +113,7 @@ export class EditLocationPage implements OnInit {
   }
 
   async onSubmit(locationRequest: LocationRequest) {
-    this.disabledSubmit.set(true);
+    this.setDisabledSubmit(true);
 
     let isSuccess = true,
     locationsType = this.locationService.locationTypes().find(item => item.id == locationRequest.typeID);
@@ -138,8 +121,8 @@ export class EditLocationPage implements OnInit {
     locationRequest.typeIcon = locationsType?.icon ?? "";
     locationRequest.typeName = locationsType?.name ?? "";
 
-    if (this.location.id){
-      await this.locationService.update(this.location.id, locationRequest).catch(() => isSuccess = false);
+    if (this.location().id){
+      await this.locationService.update(this.location().id, locationRequest).catch(() => isSuccess = false);
     }
     else{
       isSuccess = await this.locationService.create(locationRequest).then(() => isSuccess = true).catch(() => isSuccess = false);
@@ -151,7 +134,7 @@ export class EditLocationPage implements OnInit {
 
     this.locationService.search(this.locationService.locationSearchRequest());
 
-    this.disabledSubmit.set(false);
+    this.setDisabledSubmit(false);
 
     this.router.navigate(['/map']);
   
@@ -163,15 +146,15 @@ export class EditLocationPage implements OnInit {
     let callback = async function(){
       let isSuccess = true;
 
-      me.disabledDelete.set(true);
+      me.setDisabledDelete(true);
 
-      await me.locationService.delete(me.location).catch(() => isSuccess = false),
+      await me.locationService.delete(me.location()).catch(() => isSuccess = false),
 
       await me.toastService.get(isSuccess ? MessageEnum.AppSuccess : MessageEnum.AppError, isSuccess ? StatusEnum.Success : StatusEnum.Danger);
       
       await me.locationService.search(me.locationService.locationSearchRequest());
 
-      me.disabledDelete.set(false);
+      me.setDisabledDelete(false);
 
       me.router.navigate(['/map']);
     }
@@ -186,13 +169,33 @@ export class EditLocationPage implements OnInit {
   }
 
   async onFileChanged(event: any) {
-    this.uploadLoaded = true;
+    this.setUploadLoaded(true);
 
     const result =  await this.cloudinaryService.uploadImage(event.target.files[0]);
 
-    this.location.imgUrl = `${result.public_id}.${result.format}`;
-    this.formGroup.get("imgUrl")?.setValue(this.location.imgUrl);
+    this.location().imgUrl = `${result.public_id}.${result.format}`;
+    this.formGroup.get("imgUrl")?.setValue(this.location().imgUrl);
     
-    this.uploadLoaded = false;
+    this.setUploadLoaded(false);
+  }
+
+  private setDisabledSubmit(value: boolean){
+    this.disabledSubmit.set(value);
+  }
+
+  private setDisabledDelete(value: boolean){
+    this.disabledDelete.set(value);
+  }
+
+  private setLoaded(value: boolean){
+    this.loaded.set(value);
+  }
+
+  private setUploadLoaded(value: boolean){
+    this.uploadLoaded.set(value);
+  }
+
+  private setLocation(value: Location){
+    this.location.set(value);
   }
 }
