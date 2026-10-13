@@ -48,16 +48,6 @@ export class MapService {
         private userGeolocalisationService: UserGeolocalisationService) 
     {
         this.clusters = this.clusterService.clusters;
-
-        effect(async () => {
-            this.locationService.locations();
-
-            this.clusterService.setClusters(await this.clusterService.getAll());
-            this.resetClusters();
-            this.resetLocations();     
-
-            this.updateMapDisplay();
-        });
     }
 
     async init(){
@@ -367,6 +357,14 @@ export class MapService {
         if (this.newLocationMarker != undefined){
             this.newLocationMarker.remove();
         }
+    }
+
+    async reloadDatas(){
+        this.clusterService.setClusters(await this.clusterService.getAll());
+        this.resetClusters();
+        this.resetLocations();     
+
+        this.updateMapDisplay();
     }
 
     setIsMapInit(value: boolean){
