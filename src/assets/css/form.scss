@@ -20,14 +20,82 @@ ion-button.button-main--light {
     --padding-end: 40px;
     --padding-top: 20px;
     --padding-bottom: 20px;
-    text-transform: none; 
+    text-transform: uppercase; 
 }
 
 ion-button.button-main--light{
-    --padding-start: 20px;
-    --padding-end: 20px;
-    --padding-top: 10px;
-    --padding-bottom: 10px;   
+    --padding-start: 16px;
+    --padding-end: 16px;
+    --padding-top: 16px;
+    --padding-bottom: 16px;
+}
+
+ion-button.button-secondary--light,
+ion-button.button-empty--light.active,
+ion-button.button-white--light.active {
+    @include f.text-btn;
+    --background: var(--color-0a1c30d9g);
+    --background-hover: var(--color-0a1c30d);
+    --background-activated: var(--color-0a1c30);
+    --background-focused: var(--color-0a1c30);
+
+    --color: white;
+
+    --border-radius: 10px;
+    --border-style: none;
+
+    --box-shadow: 0 1px 3px rgba(0,0,0,.08);
+
+    --padding-start: 16px;
+    --padding-end: 16px;
+    --padding-top: 16px;
+    --padding-bottom: 16px;
+    text-transform: uppercase; 
+}
+
+ion-button.button-empty--light {
+    @include f.text-btn;
+    --background: transparent;
+    --background-hover: transparent;
+    --background-activated: transparent;
+    --background-focused: transparent;
+
+    --color: var(--color-8A94A3);
+
+    --box-shadow: none; 
+    --border-radius: 10px;
+    --border-style: none;
+
+    --padding-start: 16px;
+    --padding-end: 16px;
+    --padding-top: 16px;
+    --padding-bottom: 16px;
+    text-transform: uppercase; 
+}
+
+ion-button.button-white--light {
+    @include f.text-btn;
+    --background: white;
+    --background-hover: white;
+    --background-activated: white;
+    --background-focused: white;
+
+    --color: var(--color-0a1c30d9g); 
+    --border-radius: 10px;
+    --border-style: none;
+
+    --box-shadow: 0 1px 3px rgba(0,0,0,.08);
+
+    --padding-start: 16px;
+    --padding-end: 16px;
+    --padding-top: 16px;
+    --padding-bottom: 16px;
+    text-transform: uppercase; 
+}
+
+ion-button.rounded{
+    --border-radius: 25px!important;
+    --border-style: none;
 }
 
 ion-fab-button{

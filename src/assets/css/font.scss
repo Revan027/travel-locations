@@ -41,16 +41,30 @@
   color: var(--color-2b3a4e)!important; 
 }
 
-.card-title,
-.card-title--white{
+.title,
+.title--white{
   font-family: var(--ion-font-family);
   font-size: var(--font-size-2xl);
   font-weight: bold;
   color: var(--color-2b3a4e);
 }
 
-.card-title--white{
+.title--white{
   color:white   
+}
+
+.day-title{
+  font-family: var(--ion-font-family);
+  font-size: var(--font-size-3xl);
+  font-weight: bold;
+  color: var(--color-2b3a4e);
+}
+
+.sub-title{
+  font-family: var(--ion-font-family);
+  font-size: var(--font-size-xl);
+  font-weight: bold;
+  color: var(--color-2b3a4e);
 }
 
 .current-text{

@@ -4,11 +4,13 @@ import { Country } from '../models/Country';
 import { FirebaseCollectionEnum } from '../constants/firebaseCollectionEnum';
 import { FirestoreService } from './firestore.services.common/firestore.service';
 import { Location, LocationRequest } from '../models/Location';
-import { DocumentData, DocumentReference, getCountFromServer, query, QueryConstraint, Timestamp, where } from 'firebase/firestore';
+import { collection, DocumentData, DocumentReference, getCountFromServer, getDoc, limit, orderBy, query, QueryConstraint, startAfter, startAt, Timestamp, where } from 'firebase/firestore';
 import { LocationSearchRequest } from '../models/LocationSearchRequest';
 import moment from 'moment';
 import { Cluster, ClusterRequest } from '../models/Cluster';
 import { ClusterService } from './cluster.service';
+import { LocationGroup } from '../models/LocationGroup';
+
 
 @Injectable({
     providedIn: 'root',
@@ -26,7 +28,9 @@ export class LocationService {
     
     private readonly degreeTolerance: number = 0.5;
 
-    constructor(private firestoreService: FirestoreService, private clusterService: ClusterService) {}
+    constructor(private firestoreService: FirestoreService, private clusterService: ClusterService) { 
+        moment.locale("fr");  
+    }
 
     async getAll(): Promise<Location[]>{
         return this.firestoreService.getDocuments<Location[]>(FirebaseCollectionEnum.Locations);
@@ -35,10 +39,19 @@ export class LocationService {
     get(id: string): Promise<Location>{
         return this.firestoreService.getDocument<Location>(FirebaseCollectionEnum.Locations, id);
     }
+    
+    async getAvailableDates(): Promise<any>{
+        const [minSnap, maxSnap] = await Promise.all([
+            this.firestoreService.getDocuments<Location[]>(FirebaseCollectionEnum.Locations, 'date', 'asc', 1),
+            this.firestoreService.getDocuments<Location[]>(FirebaseCollectionEnum.Locations, 'date', 'desc', 1),
+        ]);
+
+        return {min: minSnap?.[0].date, max: maxSnap?.[0].date}
+    }
  
     async getByClusters(clusters: Cluster[]){
         const ref = this.firestoreService.getCollectionRef(FirebaseCollectionEnum.Locations);
-
+        // attention, pas plus de 30 ids dans le in
         return this.firestoreService.search<Location[]>(query(ref, where("clusterID", "in", clusters.map(x => x.id))))
     }
 
@@ -58,7 +71,7 @@ export class LocationService {
     getFormatedDate(date?: Timestamp, format: string = "DD/MM/YYYY"): string {
         return date ? moment(date.toDate()).format(format): "";
     }
-
+    
     async loadAll(): Promise<void>{  
         this.setLocations(await this.getAll());
     }
@@ -68,12 +81,19 @@ export class LocationService {
         this.setCountries(await this.firestoreService.getDocuments<Country[]>(FirebaseCollectionEnum.Country));
     }
 
-    async search(locationSearchRequest: LocationSearchRequest){
+    private getQuerySearch(locationSearchRequest: LocationSearchRequest){
         let queryParts: QueryConstraint[] = [];
-        const ref = this.firestoreService.getCollectionRef(FirebaseCollectionEnum.Locations);
 
         if (locationSearchRequest.limitDate !== undefined){
             queryParts.push(where("date", "<=", locationSearchRequest.limitDate));
+        }
+
+        if (locationSearchRequest.beginDate !== undefined){
+            queryParts.push(where("date", ">=", locationSearchRequest.beginDate));
+        }
+
+        if (locationSearchRequest.endDate !== undefined){
+            queryParts.push(where("date", "<=", locationSearchRequest.endDate));
         }
 
         if (locationSearchRequest.typeIDs.length > 0){
@@ -84,7 +104,25 @@ export class LocationService {
             queryParts.push(where("country", "==", locationSearchRequest.country))
         }
 
-        this.setLocations(await this.firestoreService.search<Location[]>(query(ref, ...queryParts)));    
+        return queryParts;
+    }
+
+    async getNextPage(locationSearchRequest: LocationSearchRequest): Promise<Location[]>{
+        let queryParts: QueryConstraint[] = this.getQuerySearch(locationSearchRequest);
+        const ref = this.firestoreService.getCollectionRef(FirebaseCollectionEnum.Locations);
+
+        queryParts.push(orderBy('date', "desc"));
+                
+        if(locationSearchRequest.currentPage > 1){ // si on est au moins à la seconde page, on doit passer le dernier élément connus à firestore pour démarrer la pagination
+            const ref = this.getRef(locationSearchRequest.lastIDResult as string);
+            const docSnap = await getDoc(ref);
+            queryParts.push(startAfter(docSnap));
+        }
+
+        queryParts.push(limit(locationSearchRequest.limit));
+
+
+        return this.firestoreService.search<Location[]>(query(ref, ...queryParts));  
     }
     
     async create(locationRequest: LocationRequest): Promise<DocumentReference<DocumentData, DocumentData>>{  
@@ -153,34 +191,25 @@ export class LocationService {
         }
     }
 
-    goupByType(): { [key: string]: Location[] }{
-        let groupLocation: { [key: string]: Location[] } = {};
+    goupByMonth(locations: Location[], locationGroups: LocationGroup[]){
+        // parcours des lieux ajoutés     
+        locations.map((location: Location) =>{
+            let key = moment(location.date.toDate()).format("MMMM_YYYY");
+            let locationGroup = locationGroups.find(x => x.key == key);
 
-        let sort = this.locations()
-            .sort((a, b) => 
-            {
-                return a.typeName
-                    .replace(/[^a-zA-Z0-9]/g, '') // on remplace les caractères qui ne sont pas des lettres puis on compare sans case sensitive
-                    .localeCompare(b.typeName.replace(/[^a-zA-Z0-9]/g, ''), "fr", { sensitivity: "base" }) > 0 ? 1 : -1 
-            });
-        
-        sort.map((item: Location) => {
+            if(locationGroup){ // controle si une clé existe deja. si oui, on le met à la fin du tableau
+                locationGroup.results.push(location);
+            }else{
+                locationGroup = new LocationGroup();
+                locationGroup.results.push(location);
+                locationGroup.date = moment(location.date.toDate()).format("MMMM YYYY");
+                locationGroup.key = key;
 
-            // si la clé existe pas on la crée à partir du type
-            if (groupLocation[item.typeName] == undefined){
-                groupLocation[item.typeName] = []
+                locationGroups.push(locationGroup);
             }
-
-            groupLocation[item.typeName].push(item);
-        }); 
-
-        return groupLocation;
-    }
-
-    sortLocation(groups: { [key: string]: Location[] }){
-        Object.entries(groups).forEach((item) => {
-            return item[1].sort((a, b) => a.date.toDate() < b.date.toDate()  ? 1 : -1)
         });
+
+      return locationGroups;
     }
 
     setLocations(value: Location[]){

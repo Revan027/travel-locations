@@ -4,7 +4,6 @@ import { Position } from '../models/Position';
 import { Router } from '@angular/router';
 import { LocationService } from './location.service';
 import { Location } from '../models/Location';
-import { effect } from '@angular/core';
 import { GeolocalisationService } from './geolocalisation.service';
 import { MarkerFactoryService } from './marker-factory.service';
 import { UserGeolocalisationService } from './user.geolocalisation.service';
@@ -359,7 +358,7 @@ export class MapService {
         }
     }
 
-    async reloadDatas(){
+    async refreshMap(){
         this.clusterService.setClusters(await this.clusterService.getAll());
         this.resetClusters();
         this.resetLocations();     

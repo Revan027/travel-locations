@@ -16,55 +16,90 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  @if(objectEntries(groupLocation).length == 0){
-    <p class="ion-margin">Aucun lieux</p>
-  }
-  
-  <ion-accordion-group [animated]="false">
-    @for(item of objectEntries(groupLocation); track item[0]){
-      <ion-accordion value="{{item[0]}}">
-        <ion-item slot="header" color="light">
-          <ion-label><span class="material-icons ion-margin-end">{{item[1][0].typeIcon}}</span> <span>{{ item[1][0].typeName }}</span></ion-label>
-        </ion-item>
+  <ion-row class="mt-2 ion-justify-content-between px-2">
+    <ion-col size="12" class="title">
+      10 lieux · 3 mois
+    </ion-col>
+  </ion-row>
 
-        <div slot="content">
-            <ion-list>
-              @for(location of item[1]; track location.id)
-              {
-                <ion-item routerLink="/locations/{{location.id}}">                   
-                    <ion-label>      
-                      <div class="location-list__date">Le {{ location.date | timestampPipe }}</div>
+  <ion-row class="mt-2 ion-justify-content-center px-2">
+     <ion-col size="auto"> 
+      <div class="filter-date">
+        @for(date of locationDates(); track date){
+          <ion-button class="button-empty--light" [class.active]="locationDate() === date" (click)="onDateChanged(date)">
+            {{date}}
+          </ion-button>
+        }
+      </div>   
+    </ion-col>
+  </ion-row>
 
-                      <div class="location-list__title ion-display-flex ion-align-items-center ion-margin-bottom">
-                         @if(location.imgUrl){
-                            <img src="{{location.imgUrl | cloudinaryUrl}}" class="location-illustration" alt=""/>
-                          }
-                          @else{
-                            <img src="../../../../assets/placeholder.webp" class="location-illustration" alt=""/>
-                          }        
-                        <span class="ion-margin-start">{{location.name}}</span>
-                      </div>
+  <ion-row class="filter-type ps-2">
+    <ion-col size="auto">
+      <ion-button class="button-secondary--light rounded" (click)="onTypeChanged()">
+        <span class="material-icons ion-margin-end color-f4a261">filter_list</span><span>Tous</span>
+      </ion-button>
+    </ion-col>
 
-                      <div class="location-list__section">
-                        <span class="material-icons ion-margin-end ">public</span>
-                        <span class="ion-text-capitalize">{{ location.countryID | titlecase }}</span>
-                      </div>
-
-                      <div class="location-list__section">
-                        <span class="material-icons ion-margin-end">location_on</span>
-                        <span>{{location.latitude.toFixed(4)}} {{location.longitude.toFixed(4)}}</span>
-                      </div>
-
-                      <div class="location-list__section">
-                        <span class="material-icons ion-margin-end">terrain</span>
-                        <span>{{location.altitude ?? "-"}}</span>
-                      </div> 
-                    </ion-label>
-                </ion-item>
-              }               
-          </ion-list>         
-        </div>
-      </ion-accordion>
+    @for(item of locationTypes(); track item.id){
+      <ion-col size="auto">
+        <ion-button class="button-white--light rounded" [class.active]="locationTypeIDs().includes(item.id)" (click)="onTypeChanged(item.id)">
+          <span class="material-icons ion-margin-end color-f4a261">{{item.icon}}</span> <span>{{ item.name }}</span>
+        </ion-button>
+      </ion-col>
     }
-  </ion-accordion-group>
+  </ion-row>
+
+  <ion-row class="ps-2 mt-2">
+    @for(group of locationGroups(); track group.key){
+      <ion-col class="sub-title ion-text-capitalize" size="12">
+        <div class="group-title">
+          <div>
+            {{group.date}}
+          </div>
+
+          <div class="group-title-badge">
+            <ion-badge>{{group.results.length}}</ion-badge>
+          </div>
+
+          <div class="group-title-hr">
+            <hr>
+          </div>
+        </div>        
+      </ion-col>
+
+       @for(item of group.results; track item.id){
+        <ion-col class="m-0 p-0" size="12">
+          <ion-row class="ps-2">
+            <ion-col size="2" class="day-title ">
+              {{item.date | timestampPipe:"DD"}}
+            </ion-col>
+
+            <ion-col size="auto" class="time-life">
+              
+            </ion-col>
+
+            <ion-col>
+                <div class="location-card">
+                  <div class="location-card-header">
+ @if(item.imgUrl){
+                        <img src="{{item.imgUrl | cloudinaryUrl}}" class="location-illustration" alt=""/>
+                      }
+                      @else{
+                        <img src="../../../../assets/placeholder.webp" class="location-illustration" alt=""/>
+                      }     
+                  </div>
+                    
+                </div>
+            </ion-col>
+          </ion-row>
+           
+        </ion-col>
+      }
+    }
+  </ion-row> 
+
+  <ion-infinite-scroll #LocationsInfinite (ionInfinite)="nextResults($event)" [disabled]="disabledInfiniteScroll()">
+   <ion-infinite-scroll-content loadingSpinner="dots"></ion-infinite-scroll-content>
+ </ion-infinite-scroll>
 </ion-content>

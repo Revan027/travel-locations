@@ -132,7 +132,7 @@ export class EditLocationPage implements OnInit {
 
     this.toastService.get(isSuccess ? MessageEnum.AppSuccess : MessageEnum.AppError, isSuccess ? StatusEnum.Success : StatusEnum.Danger);
 
-    this.mapService.reloadDatas();
+    this.mapService.refreshMap();
 
     this.setDisabledSubmit(false);
 
@@ -152,7 +152,7 @@ export class EditLocationPage implements OnInit {
 
       await me.toastService.get(isSuccess ? MessageEnum.AppSuccess : MessageEnum.AppError, isSuccess ? StatusEnum.Success : StatusEnum.Danger);
       
-      me.mapService.reloadDatas();
+      me.mapService.refreshMap();
 
       me.setDisabledDelete(false);
 

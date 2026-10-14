@@ -37,13 +37,13 @@ export class FiltersComponent{
   async onSubmit(locationSearchRequest: LocationSearchRequest) {
     this.locationService.setLocationSearchRequest(locationSearchRequest);
 
-    await this.locationService.search(locationSearchRequest);
+    await this.locationService.getNextPage(locationSearchRequest);
   }
 
   async onReset() {
     this.locationService.setLocationSearchRequest(new LocationSearchRequest());
     this.createForm();
-    await this.locationService.search(this.locationService.locationSearchRequest());
+    await this.locationService.getNextPage(this.locationService.locationSearchRequest());
   }
 
    onDateChanged(event: any){

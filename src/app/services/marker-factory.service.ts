@@ -30,7 +30,7 @@ export class MarkerFactoryService {
               ${UserGeolocalisation.getFirstLetter(userGeolocalisation)}
             </div>
 
-            <div class="card-title">
+            <div class="title">
                ${userGeolocalisation.displayName}
             </div>
           </div>
@@ -63,7 +63,7 @@ export class MarkerFactoryService {
           </div>
 
           <div class="location-card-content">
-            <div class="card-title">
+            <div class="title">
               ${location.name}
             </div>
 
