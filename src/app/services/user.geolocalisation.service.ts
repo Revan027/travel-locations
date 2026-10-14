@@ -1,4 +1,4 @@
-import { Injectable, signal, Signal } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { FirestoreService } from './firestore.services.common/firestore.service';
 import { FirebaseCollectionEnum } from '../constants/firebaseCollectionEnum';
 import { UserGeolocalisation } from '../models/UserGeolocalisation';
@@ -8,7 +8,8 @@ import { DocumentData, DocumentReference } from 'firebase/firestore';
   providedIn: 'root',
 })
 export class UserGeolocalisationService {
-  usersGeolocalisation = signal<UserGeolocalisation[]>([]);
+  private _usersGeolocalisation = signal<UserGeolocalisation[]>([]);
+  usersGeolocalisation = this._usersGeolocalisation.asReadonly();
 
   constructor(private firestoreService: FirestoreService) {}
 
@@ -21,7 +22,7 @@ export class UserGeolocalisationService {
   }
 
   async loadAll(){
-    this.usersGeolocalisation.set(await this.getAll());
+    this.setUsersGeolocalisation(await this.getAll());
   }
 
   private getRef(id: string): DocumentReference<DocumentData, DocumentData>{
@@ -32,5 +33,9 @@ export class UserGeolocalisationService {
     const ref = this.getRef(id);
 
     await this.firestoreService.updateDocument(ref, userGeolocalisation);
+  }
+
+  setUsersGeolocalisation(value: UserGeolocalisation[]){
+    this._usersGeolocalisation.set(value);
   }
 }

@@ -1,10 +1,26 @@
-import { Location } from "./Location";
-
-export class Cluster {
+export class ClusterRequest {
   constructor() {}
-  
-  isVisible?: boolean = false;
-  bounds!: L.LatLngBounds;
-  locations!: Location[];
-  locationsMarker:  L.Marker<any>[] = [];
+
+  maxLat!: number;
+  maxLng!: number;
+  minLat!: number;
+  minLng!: number;
+  countLocation!: number;
+}
+
+export class Cluster extends ClusterRequest {
+  constructor() { 
+    super();
+  }
+
+  id: string = "";
+}
+
+export class ClusterMap extends Cluster {
+  constructor() {
+    super();
+  }
+
+  layer?: L.LayerGroup<any>;
+  locationMarkers?:  L.Marker<any>[];
 }

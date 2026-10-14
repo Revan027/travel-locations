@@ -23,24 +23,20 @@
     }
   </ion-fab-button>
 
-   <ion-fab-button class="btn-add" size="small" expand="block" (click)="onActiveCreationLocation()">
-      <ion-icon name="add"></ion-icon>
-    </ion-fab-button>
+  <ion-fab-button class="btn-add" size="small" expand="block" (click)="onActiveCreationLocation()">
+    <ion-icon name="add"></ion-icon>
+  </ion-fab-button>
 
-    <ion-fab-button class="btn-filters" size="small" id="modal-filters" expand="block">
-      <ion-icon size="small" name="filter-outline"></ion-icon>
-    </ion-fab-button> 
-    
-    <ion-fab-button class="btn-api-search-modal" size="small" expand="block" (click)="onOpenSearchModal()">
-      <ion-icon name="search-outline"></ion-icon>
-    </ion-fab-button> 
+  <ion-fab-button class="btn-filters" size="small" id="modal-filters" expand="block">
+    <ion-icon size="small" name="filter-outline"></ion-icon>
+  </ion-fab-button> 
+  
+  <ion-fab-button class="btn-api-search-modal" size="small" expand="block" (click)="onOpenSearchModal()">
+    <ion-icon name="search-outline"></ion-icon>
+  </ion-fab-button> 
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  @if(!isMapInit()){
-    <app-loader></app-loader>
-  }
-  
   <app-api-search-modal></app-api-search-modal>
   
   <div id="map" class=""></div>

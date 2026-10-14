@@ -6,7 +6,8 @@ import { Position } from '../models/Position';
   providedIn: 'root',
 })
 export class GeolocalisationService {
-  position = signal<Position>(new Position);
+  _position = signal<Position>(new Position);
+  position = this._position.asReadonly();
 
   async getCurrentPosition(): Promise<boolean>{
     let authorisation = await this.checkAuthorisation();
@@ -20,7 +21,7 @@ export class GeolocalisationService {
     if (!position) 
       return false;
 
-    this.position.set({ latitude: position.coords.latitude, longitude: position.coords.longitude, altitude: position.coords.altitude} as Position);
+    this.setPosition({ latitude: position.coords.latitude, longitude: position.coords.longitude, altitude: position.coords.altitude} as Position);
 
     return true;
   }
@@ -35,5 +36,9 @@ export class GeolocalisationService {
     }
 
     return permission.location == "granted";
+  }
+
+  setPosition(value: Position){
+    this._position.set(value);
   }
 }

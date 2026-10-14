@@ -5,16 +5,17 @@ import moment from 'moment';
 import { UserGeolocalisation } from '../models/UserGeolocalisation';
 import { Position } from '../models/Position';
 import { LocationService } from './location.service';
+import { CloudinaryService } from './cloudinary.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MarkerFactoryService {
-  constructor(private locationService: LocationService) {}
+  constructor(private locationService: LocationService, private cloudinaryService: CloudinaryService) {}
 
   buildUserMarker(userGeolocalisation: UserGeolocalisation){
     const monIcon = L.divIcon({
-      html: `<span>${userGeolocalisation.displayName[0].toUpperCase() + userGeolocalisation.displayName[1]}</span>`,
+      html: UserGeolocalisation.getFirstLetter(userGeolocalisation),
       iconAnchor: [20, 20],
       iconSize: [40, 40],
       popupAnchor: [0, -20],
@@ -23,14 +24,28 @@ export class MarkerFactoryService {
 
     return L.marker([userGeolocalisation.latitude, userGeolocalisation.longitude], {icon: monIcon})
       .bindPopup(`
-        <span data-id="${userGeolocalisation.id}">
-          <p class="title">${userGeolocalisation.displayName}</p>
-          <p class="section"><span class="material-icons">calendar_month</span> Dernier relevé le : ${moment(userGeolocalisation.lastUpdateGeoloc.toDate()).format("DD/MM/YYYY à HH[h]mm")}</p>
-        </span>`, {className: "user-popup"});
+        <div class="user-card" data-id="${userGeolocalisation.id}">
+          <div class="user-card-header mb-1">
+            <div class="user-card-firstLetter">
+              ${UserGeolocalisation.getFirstLetter(userGeolocalisation)}
+            </div>
+
+            <div class="title">
+               ${userGeolocalisation.displayName}
+            </div>
+          </div>
+
+          <div class="user-card-content current-text">
+            <div class="color-e05e2f material-icons">schedule</div>
+
+            <div>
+              Dernier relevé :  <b>${moment(userGeolocalisation.lastUpdateGeoloc.toDate()).format("DD/MM/YYYY à HH[h]mm")}</b>
+            </div>
+          </div>
+        </div>`, {className: "user-popup"});
   }
 
   buildLocationMarker(location: Location){
-
     const locationIcon = L.divIcon({
       html: `<span class="material-icons">${location.typeIcon}</span>`,
       iconAnchor: [16, 32],
@@ -40,17 +55,62 @@ export class MarkerFactoryService {
 
     return L.marker([location.latitude, location.longitude], {icon: locationIcon})
       .bindPopup(`
-        <span data-id="${location.id}">
-          <p class="title">${location.name}</p>
-          <p class="section"><span class="material-icons">calendar_month</span>${this.locationService.getFormatedDate(location.date)}</p>
-          <p class="section"><span class="material-icons">location_on</span>${location.latitude.toFixed(4)}, ${location.longitude.toFixed(4)}</p>
-          <p class="section"><span class="material-icons">terrain</span>${location.altitude ?? "-"}</p> 
-        </span>`, { maxWidth: 220, minWidth: 180, className: "location-popup" });
+        <div class="location-card" data-id="${location.id}">
+          <div class="location-card-header mb-1">      
+            ${location.imgUrl ? `<ion-img src="${this.cloudinaryService.getImageUrl(location.imgUrl)}" class="location-illustration" alt=""></ion-img>` : `<div class="location-illustration img-placeholder"></div>`}
+          </div>
+
+          <div class="location-card-content">
+            <div class="title">
+              ${location.name}
+            </div>
+
+            <div class="curren-text">
+              ${location.countryID.toUpperCase()}
+            </div>
+
+            <div class="location-card-meta mt-2">
+              <div class="meta-item">
+                  <div class="meta-title mb-1">
+                    Visité
+                  </div>
+
+                  <div class="meta-data">
+                    ${this.locationService.getFormatedDate(location.date)}
+                  </div>
+              </div>
+
+              <div class="meta-item">
+                <div class="meta-title mb-1">
+                  Altitude
+                </div>
+
+                 <div class="meta-data">
+                    ${location.altitude ?? "-"}
+                  </div>
+              </div>
+
+              <div class="meta-item">
+                <div class="meta-title mb-1">
+                  GPS
+                </div>
+
+                 <div class="meta-data">
+                    ${location.latitude.toFixed(4)}, ${location.longitude.toFixed(4)}
+                  </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="location-card-footer ion-text-center">
+            <ion-button class="button-main btn-see-location" [strong]="true">Voir la fiche</ion-button>
+          </div>
+        </div>`, { maxWidth: 350, className: "location-popup", autoPanPadding: [50, 80] });
   }
 
   buildNewLocationMarker(position: Position){
     const newLocationIcon = L.divIcon({
-        html: '<ion-icon name="location"></ion-icon>',
+        html: '<ion-icon name="location"></ion-icon> <span class="text-marker-info">Clique ici</span>',
         iconAnchor: [16, 32],
         popupAnchor: [0, -32],
         className: 'custom-marker new-location'

@@ -1,11 +1,10 @@
-import { Component, WritableSignal } from '@angular/core';
+import { Component, Signal, WritableSignal } from '@angular/core';
 import { MapService } from 'src/app/services/map.service';
 import { Position } from 'src/app/models/Position';
 import { LocationService } from 'src/app/services/location.service';
 import { Location } from 'src/app/models/Location';
-import { FormGroup, FormsModule } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
-import { LoaderComponent } from 'src/app/components/loader.component';
 import { FiltersComponent } from 'src/app/components/filters/filters.component';
 import { AuthStatusComponent } from 'src/app/components/auth-status.component';
 import { GeolocalisationService } from 'src/app/services/geolocalisation.service';
@@ -17,18 +16,18 @@ import { PhotonKomootService } from 'src/app/services/photon-komoot.service';
 
 @Component({
   standalone: true,
-  imports: [IonicModule, LoaderComponent, FiltersComponent, AuthStatusComponent, ApiSearchModalComponent],
+  imports: [IonicModule, FiltersComponent, AuthStatusComponent, ApiSearchModalComponent],
   selector: 'app-map',
   templateUrl: 'map.page.html',
   styleUrls: ['map.page.scss'],
 })
 export class MapPage {
 
-  position: WritableSignal<Position> = this.geolocalisationService.position;
-  locations: WritableSignal<Location[]> = this.locationService.locations;
-  isMapInit: WritableSignal<boolean> = this.mapService.isMapInit;
-  user: WritableSignal<User> = this.authService.user;
-  islocatingUsers: WritableSignal<boolean> = this.mapService.islocatingUsers;
+  position: Signal<Position>;
+  locations: Signal<Location[]>;
+  isMapInit: Signal<boolean>;
+  user: Signal<User>;
+  islocatingUsers: Signal<boolean>;
 
   formGroup!: FormGroup;
 
@@ -37,11 +36,18 @@ export class MapPage {
     private geolocalisationService: GeolocalisationService,
     private locationService: LocationService,
     private authService: AuthentificationService,
-    private photonKomootService: PhotonKomootService){
+    private photonKomootService: PhotonKomootService)
+  {
+    this.user = this.authService.user;
+    this.locations = this.locationService.locations;
+    this.position = this.geolocalisationService.position;
+    this.isMapInit =  this.mapService.isMapInit;
+    this.islocatingUsers = this.mapService.islocatingUsers;
   }
 
   async ngAfterViewInit(){
     await this.mapService.init();
+    this.mapService.initBaseBounds();
   }
 
   async ionViewDidEnter(){
@@ -60,6 +66,6 @@ export class MapPage {
   } 
 
   onOpenSearchModal(){
-    this.photonKomootService.displayModal.update(v => !v);
+    this.photonKomootService.updateDisplayModal();
   }
 }

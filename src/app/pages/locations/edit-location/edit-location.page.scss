@@ -9,17 +9,7 @@ ion-content {
   
   ion-col {
     padding-top: 10px;
-    --ion-padding-top: 10px;
-  }
-
-  ion-img.location-illustration{  
-    max-width: 200px;
-    margin: 0 auto;
-
-    &::part(image){
-      border-radius: 50%;
-      object-fit: cover;
-      aspect-ratio: 1 / 1;
-    }
+    --ion-padding-top: 10px;    
+    align-content: center;
   }
 }

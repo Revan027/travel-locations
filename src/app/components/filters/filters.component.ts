@@ -1,4 +1,4 @@
-import { Component, computed, OnInit, WritableSignal } from '@angular/core';
+import { Component, computed, OnInit, Signal, WritableSignal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { LocationService } from 'src/app/services/location.service';
@@ -16,7 +16,7 @@ import { DatetimeComponent } from '../datetime/datetime.component';
 })
 export class FiltersComponent{
 
-  locationSearchRequest: WritableSignal<LocationSearchRequest> = this.locationService.locationSearchRequest;
+  locationSearchRequest: Signal<LocationSearchRequest> = this.locationService.locationSearchRequest;
   loaded: boolean = false; 
   formGroup!: FormGroup;
 
@@ -35,15 +35,15 @@ export class FiltersComponent{
   }
 
   async onSubmit(locationSearchRequest: LocationSearchRequest) {
-    this.locationService.locationSearchRequest.set(locationSearchRequest);
+    this.locationService.setLocationSearchRequest(locationSearchRequest);
 
-    await this.locationService.search(locationSearchRequest);
+    await this.locationService.getNextPage(locationSearchRequest);
   }
 
   async onReset() {
-    this.locationService.locationSearchRequest.set(new LocationSearchRequest());
+    this.locationService.setLocationSearchRequest(new LocationSearchRequest());
     this.createForm();
-    await this.locationService.search(this.locationService.locationSearchRequest());
+    await this.locationService.getNextPage(this.locationService.locationSearchRequest());
   }
 
    onDateChanged(event: any){

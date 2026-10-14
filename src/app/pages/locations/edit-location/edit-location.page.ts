@@ -1,5 +1,5 @@
 import { Location as ALocation } from '@angular/common';
-import { Component, inject, DestroyRef, computed, ViewChild, ElementRef, OnInit } from '@angular/core';
+import { Component, inject, DestroyRef, computed, ViewChild, ElementRef, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GestureController, IonicModule } from '@ionic/angular';
@@ -31,12 +31,14 @@ export class EditLocationPage implements OnInit {
 
   private destroyRef = inject(DestroyRef);
 
-  loaded: boolean = false;
-  uploadLoaded: boolean = false;
+  protected disabledSubmit = signal<boolean>(false);
+  protected disabledDelete = signal<boolean>(false);
+  protected loaded = signal<boolean>(false);
+  protected uploadLoaded = signal<boolean>(false);
+  protected location = signal<Location>(new Location());
 
-  formGroup!: FormGroup;
-  location: Location = new Location();
-  
+  formGroup!: FormGroup;  
+
   sortedLocationsType = computed(() => this.locationService.locationTypes().sort((a, b) => a.name.trim().localeCompare(b.name.trim(), "fr", { sensitivity: "base" })));
   sortedCountries = computed(() => this.locationService.countries().sort((a, b) => a.name.trim().localeCompare(b.name.trim(), "fr", { sensitivity: "base" })));
 
@@ -51,7 +53,8 @@ export class EditLocationPage implements OnInit {
     private mapService: MapService,
     private toastService: ToastService,
     private cloudinaryService: CloudinaryService,
-    private altitudeService: AltitudeService){
+    private altitudeService: AltitudeService)
+  {
     moment.locale("fr");  
   }
 
@@ -62,61 +65,46 @@ export class EditLocationPage implements OnInit {
   async ngOnInit() {  
     // Ecoute de l'event si l'url change. On ne repasse pas 2 fois dans un ngOnInit normalement
     this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(async (params) => {
-      this.loaded = false;
+      this.setLoaded(false);
 
       const id = params.get('id');
 
       if (id) {
-        this.location = this.locationService.locations().find((location) => location.id == id) || new Location();
+        this.setLocation(await this.locationService.get(id) || new Location());
 
         this.createForm();
       } 
       else {
-        this.location.latitude = Number(params.get('lat'));
-        this.location.longitude = Number(params.get('lng'));
+        this.location().latitude = Number(params.get('lat'));
+        this.location().longitude = Number(params.get('lng'));
 
         this.createForm();
 
-        this.altitudeService.getAltitude(this.location.latitude, this.location.longitude)
+        this.altitudeService.getAltitude(this.location().latitude, this.location().longitude)
           .subscribe({
             next: (result) => {
-              this.location.altitude = result.elevation[0];
+              this.location().altitude = result.elevation[0];
 
-              this.formGroup.get('altitude')?.setValue(this.location.altitude);
+              this.formGroup.get('altitude')?.setValue(this.location().altitude);
             },
-            error: (err) => {this.location.altitude = undefined }
+            error: (err) => {this.location().altitude = undefined }
           });
       }
 
-      this.loaded = true;
+      this.setLoaded(true);
     });
-  }
-
-  ngAfterViewInit() {
-    // on active l'écoute du swipe pour le retour
-    /*const gesture = this.gestureCtrl.create({
-      el: this.el.nativeElement,
-      gestureName: 'swipe-back',
-      direction: 'x',
-      onEnd: (detail) => {
-        if (detail.deltaX > 50) {
-          this.goBack();
-        }
-      },
-    });
-    gesture.enable();*/
   }
 
   private createForm() { 
     this.formGroup = this.formBuilder.group({
-      name: [this.location.name, Validators.compose([Validators.required])],
-      altitude: [this.location.altitude],
-      latitude: [{ value: this.location.latitude, disabled: this.location.id != "" }, Validators.required],
-      longitude: [{ value: this.location.longitude, disabled: this.location.id != "" }, Validators.required],
-      typeID: [this.location.typeID, Validators.required],
-      countryID: [this.location.countryID, Validators.required],
-      date: [this.location.date, Validators.required],
-      imgUrl: [this.location.imgUrl],
+      name: [this.location().name, Validators.compose([Validators.required])],
+      altitude: [this.location().altitude],
+      latitude: [{ value: this.location().latitude, disabled: this.location().id != "" }, Validators.required],
+      longitude: [{ value: this.location().longitude, disabled: this.location().id != "" }, Validators.required],
+      typeID: [this.location().typeID, Validators.required],
+      countryID: [this.location().countryID, Validators.required],
+      date: [this.location().date, Validators.required],
+      imgUrl: [this.location().imgUrl],
     });
   }
 
@@ -125,7 +113,7 @@ export class EditLocationPage implements OnInit {
   }
 
   async onSubmit(locationRequest: LocationRequest) {
-    this.uploadLoaded = true;
+    this.setDisabledSubmit(true);
 
     let isSuccess = true,
     locationsType = this.locationService.locationTypes().find(item => item.id == locationRequest.typeID);
@@ -133,8 +121,8 @@ export class EditLocationPage implements OnInit {
     locationRequest.typeIcon = locationsType?.icon ?? "";
     locationRequest.typeName = locationsType?.name ?? "";
 
-    if (this.location.id){
-      await this.locationService.update(this.location.id, locationRequest).catch(() => isSuccess = false);
+    if (this.location().id){
+      await this.locationService.update(this.location().id, locationRequest).catch(() => isSuccess = false);
     }
     else{
       isSuccess = await this.locationService.create(locationRequest).then(() => isSuccess = true).catch(() => isSuccess = false);
@@ -142,28 +130,31 @@ export class EditLocationPage implements OnInit {
       this.mapService.removeNewLocationMarker();
     }
 
-    if (isSuccess){
-      this.toastService.get(MessageEnum.AppSuccess, StatusEnum.Success);
+    this.toastService.get(isSuccess ? MessageEnum.AppSuccess : MessageEnum.AppError, isSuccess ? StatusEnum.Success : StatusEnum.Danger);
 
-      this.locationService.search(this.locationService.locationSearchRequest());
+    this.mapService.refreshMap();
 
-      this.uploadLoaded = false;
+    this.setDisabledSubmit(false);
 
-      this.router.navigate(['/map']);
-    }  
+    this.router.navigate(['/map']);
+  
   }
 
   async onDelete() {
     var me = this;
-
+    
     let callback = async function(){
       let isSuccess = true;
 
-      await me.locationService.delete(me.location.id).catch(() => isSuccess = false),
+      me.setDisabledDelete(true);
+
+      await me.locationService.delete(me.location()).catch(() => isSuccess = false),
 
       await me.toastService.get(isSuccess ? MessageEnum.AppSuccess : MessageEnum.AppError, isSuccess ? StatusEnum.Success : StatusEnum.Danger);
       
-      await me.locationService.search(me.locationService.locationSearchRequest());
+      me.mapService.refreshMap();
+
+      me.setDisabledDelete(false);
 
       me.router.navigate(['/map']);
     }
@@ -178,13 +169,33 @@ export class EditLocationPage implements OnInit {
   }
 
   async onFileChanged(event: any) {
-    this.uploadLoaded = true;
+    this.setUploadLoaded(true);
 
     const result =  await this.cloudinaryService.uploadImage(event.target.files[0]);
 
-    this.location.imgUrl = `${result.public_id}.${result.format}`;
-    this.formGroup.get("imgUrl")?.setValue(this.location.imgUrl);
+    this.location().imgUrl = `${result.public_id}.${result.format}`;
+    this.formGroup.get("imgUrl")?.setValue(this.location().imgUrl);
     
-    this.uploadLoaded = false;
+    this.setUploadLoaded(false);
+  }
+
+  private setDisabledSubmit(value: boolean){
+    this.disabledSubmit.set(value);
+  }
+
+  private setDisabledDelete(value: boolean){
+    this.disabledDelete.set(value);
+  }
+
+  private setLoaded(value: boolean){
+    this.loaded.set(value);
+  }
+
+  private setUploadLoaded(value: boolean){
+    this.uploadLoaded.set(value);
+  }
+
+  private setLocation(value: Location){
+    this.location.set(value);
   }
 }

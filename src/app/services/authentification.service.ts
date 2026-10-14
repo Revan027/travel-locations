@@ -1,4 +1,4 @@
-import { Injectable, signal, WritableSignal } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { User } from '../models/User';
 import { Auth, signInAnonymously } from '@angular/fire/auth';
 import { signInWithEmailAndPassword, UserCredential, User as AuthUser } from 'firebase/auth';
@@ -7,7 +7,8 @@ import { signInWithEmailAndPassword, UserCredential, User as AuthUser } from 'fi
   providedIn: 'root',
 })
 export class AuthentificationService {
-  user: WritableSignal<User> = signal(new User());
+  _user = signal<User>(new User());
+  user = this._user.asReadonly();
 
   constructor(private auth: Auth) {
   }
@@ -41,7 +42,7 @@ export class AuthentificationService {
   async signInAnonymously(): Promise<void>{
     await signInAnonymously(this.auth);
 
-    this.user.set(new User());
+    this.setUser(new User());
   }
 
   async loadUser(authUser: AuthUser): Promise<void>{
@@ -49,6 +50,10 @@ export class AuthentificationService {
     user.isAuthenticated = !authUser.isAnonymous;
     user.email = authUser.email || "";
 
-    this.user.set(user);
+    this.setUser(user);
   } 
+
+  setUser(user: User){
+    this._user.set(user);
+  }
 }

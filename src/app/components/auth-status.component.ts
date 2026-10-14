@@ -1,4 +1,4 @@
-import { Component, WritableSignal } from '@angular/core';
+import { Component, Signal } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { User } from '../models/User';
 import { Router } from '@angular/router';
@@ -21,7 +21,7 @@ import { AuthentificationService } from '../services/authentification.service';
                     </ion-col>
 
                     <ion-col>
-                        <ion-button class="btn-logout" fill="clear" (click)="signOut()">
+                        <ion-button fill="clear" (click)="signOut()">
                             <ion-icon slot="icon-only" color="primary" name="log-out-outline"></ion-icon>
                         </ion-button>
                     </ion-col>
@@ -29,7 +29,7 @@ import { AuthentificationService } from '../services/authentification.service';
             </ion-grid>
         }
         @else{
-            <ion-button class="btn-logout" fill="clear" (click)="signIn()">
+            <ion-button fill="clear" (click)="signIn()">
                 <ion-icon slot="icon-only" color="primary" name="log-in-outline"></ion-icon>
             </ion-button>
         }
@@ -41,7 +41,7 @@ import { AuthentificationService } from '../services/authentification.service';
 
         ion-col{
            --ion-grid-column-padding: 2px;
-            font-size: var(--ion-font-size-sm);
+            font-size: var(--font-size-sm);
         }
 
         ion-icon{
@@ -50,10 +50,11 @@ import { AuthentificationService } from '../services/authentification.service';
     `]
 })
 export class AuthStatusComponent {
-    user: WritableSignal<User> = this.authService.user;
+    user: Signal<User>;
 
     constructor(private router: Router, private authService: AuthentificationService)
     {
+        this.user = this.authService.user;
     }
 
     signOut(){

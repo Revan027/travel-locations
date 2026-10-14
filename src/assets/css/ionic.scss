@@ -1,8 +1,59 @@
-// Global Ionic component overrides TravelLocations design system
+@use './font' as f; 
 
+.m-0{
+  margin: 0px;
+}
+
+.p-0{
+  padding: 0px;
+}
+
+.mt-2{
+  margin-top: 20px;
+}
+
+.mt-1{
+  margin-top: 10px;
+}
+
+.mb-2{
+  margin-bottom: 20px;
+}
+
+.mb-1{
+  margin-bottom: 10px;
+}
+
+.px-2{
+  padding: 0 15px;
+}
+
+.me-2{
+  padding-right: 15px;
+}
+
+.pe-2{
+  padding-right: 15px;
+}
+
+.ps-2{
+  padding-left: 15px;
+}
+
+.img-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: repeating-linear-gradient(135deg, #e7e2d9 0 7px, #f0ece5 7px 14px);
+  color: #8b8478;
+  font: 500 10px ui-monospace, Menlo, monospace;
+  border-radius: 12px;
+  overflow: hidden;
+  height: 100%;
+}
 // CONTENT
 ion-content {
-  --background: var(--app-bg);
+  --background: var(--color-F7F6FB);
 }
 
 ion-content::part(scroll) {
@@ -19,29 +70,26 @@ ion-header {
   background: var(--app-header-bg);
   backdrop-filter: blur(var(--app-glass-blur));
   -webkit-backdrop-filter: blur(var(--app-glass-blur));
-  border-bottom: 1px solid var(--app-glass-border);
-  box-shadow: var(--app-glass-shadow);
+  box-shadow: var(--color-00000033);
 }
 
 ion-header ion-toolbar {
   --background: transparent;
-  --color: var(--app-text-light);
+  --color: white;
   --min-height: 60px;
 }
 
 ion-header ion-title {
-  color: var(--app-text-light);
+  color: white;
   font-weight: 600;
-  font-size: var(--ion-font-size-xl);
+  font-size: var(--font-size-xl);
   letter-spacing: 0.5px;
 }
 
-ion-header ion-buttons {
-  color: var(--app-text-muted);
-}
+
 
 ion-header ion-back-button {
-  color: var(--app-text-light);
+  color: white;
 }
 
 .header-title {
@@ -50,8 +98,8 @@ ion-header ion-back-button {
   gap: 8px;
 
   ion-icon {
-    font-size: var(--ion-font-size-xl);
-    color: var(--app-amber);
+    font-size: var(--font-size-xl);
+    color: var(--color-f4a261);
   }
 
   span {
@@ -72,170 +120,18 @@ ion-footer {
 }
 
 
-/* INPUTS */
-ion-input,
-ion-select,
-ion-searchbar {
-  --background: var(--app-input-bg) !important;
-  --color: var(--app-text-dark);
-  --placeholder-color: var(--app-text-muted);
-}
-
-ion-searchbar{
---border-radius: 4px!important;;
-}
-
-ion-select::part(label) {
-  color: var(--app-label-color);
-}
-
-ion-select::part(text) {
-  color: var(--app-text-dark);
-}
-
-ion-input .label-text {
-  line-height: 1.2!important;
-  color: var(--app-label-color);
-}
-
-// Datetime custom
-ion-button.datetime{
-  margin: 0px;
-  width: 100%;
-  --color: black;
-  border: 1px solid gray;
-  border-radius: 4px;  
-  min-height: 54px;
-  border-color: var(--ion-color-step-300, var(--ion-background-color-step-300, #b3b3b3));
-  --background: var(--app-input-bg) !important;
-}
-
-ion-button.datetime::part(native) {
-  --background-activated: transparent;
-  --background-focused: transparent;
-  --ripple-color: transparent;
-  border-radius: 4px;
-  transition: none !important;
-}
 
 ion-modal.datetime-modal{
   --height: auto;
   --width: auto;
 }
 
-.custom-datetime{
-  position: relative;
 
-  .custom-datetime-label{
-    color: var(--app-label-color);
-    position: absolute;
-    font-size: var(--ion-font-size-xs);
-    left: 5%;
-    height: 100%;
-
-    ion-label{
-      position: relative;
-      top: 010%;
-      z-index: 100;
-      background: transparent;
-    }
-  }
-}
-
-/* BUTTONS */
-ion-button ion-label {
-  width: 100%;
-}
-
-ion-button {
-  --background: linear-gradient(145deg, var(--app-amber), var(--app-amber-deep));
-  --color: #ffffff;
-  --border-radius: 12px;
-  font-weight: 600;
-}
-
-ion-fab-button{
- --background: linear-gradient(145deg, var(--app-amber), var(--app-amber-deep));
- --box-shadow: 0 4px 20px var(--app-amber-glow), inset 0 1px 1px rgba(255, 255, 255, 0.25);
-}
-
-ion-fab-button.fab-button-disabled{
-  opacity: 0.5;
-}
 
 // POPPOVER
 ion-popover{
   --max-height: 300px;
 }
-
-// CARD
-.card {
-  width: 100%;
-  max-width: 360px;
-  padding: 40px 28px 32px;
-  text-align: center;
-}
-
-.card--glass {
-  background: var(--app-glass-bg);
-  border: 1px solid var(--app-glass-border);
-  border-radius: var(--app-card-radius);
-  box-shadow: var(--app-card-shadow);
-  backdrop-filter: blur(var(--app-glass-blur));
-  -webkit-backdrop-filter: blur(var(--app-glass-blur));
-}
-
-.card__icon-badge {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 84px;
-  height: 84px;
-  margin: 0 auto 24px;
-  border-radius: 50%;
-  background: linear-gradient(145deg, var(--app-amber), var(--app-amber-deep));
-  box-shadow: 0 8px 24px var(--app-amber-glow),
-    inset 0 1px 1px rgba(255, 255, 255, 0.25);
-
-  ion-icon {
-    font-size: 40px;
-    color: var(--app-text-light);
-  }
-}
-
-.card__title {
-  margin: 0 0 10px;
-  font-size: var(--ion-font-size-2xl);
-  font-weight: 700;
-  color: var(--app-text-light);
-}
-
-.card__subtitle {
-  margin: 0 0 32px;
-  font-size: var(--ion-font-size-base);
-  line-height: 1.5;
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.card__actions {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.card__btn-confirm {
-  --border-radius: 12px;
-  height: 50px;
-  font-size: var(--ion-font-size-base);
-  letter-spacing: 0.3px;
-}
-
-.card__btn-cancel {
-  height: 46px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-}
-
 
 // MAP
 #map {
@@ -246,75 +142,107 @@ ion-popover{
     border: 0px solid transparent;
   }
 
+  .cluster-indicator{
+    color: white;
+    font-size: var(--font-size-sm);
+    font-weight: bold;
+  }
+
   .custom-marker {   
     &.user span{
-      background: linear-gradient(145deg, var(--app-amber), var(--app-amber-deep));
+      background: linear-gradient(135deg, #f2a066, #e5683a);
+      border: 3px solid var(--color-2b3a4e);
       border-radius: 50%;
       padding: 4px;
-      font-size: var(--ion-font-size-xxs)!important;
+      font-size: var(--font-size-xss)!important;
       z-index: 9999!important;
+      font-weight: bold;
+      color: white;
+      position: relative;
+
+      &::after{
+        position: absolute;
+        content: "arrow_drop_down";
+        font-family: "Material Icons";
+        font-size: 35px;
+        line-height: 1;
+        -webkit-font-smoothing: antialiased;
+        color: var(--color-2b3a4e);
+        left: 50%;
+        transform: translate(-50%, 6px);
+      }
     }
 
     &.location span{
       background-color: white;
-      border: 1px solid gray;
+      border: 3px solid var(--color-2b3a4e);
       border-radius: 50%;
-      padding: 4px;
-      font-size: var(--ion-font-size-base)!important;
+      padding: 8px;
+      font-size: var(--font-size-base)!important;
+      color: var(--color-2b3a4e);
     }
 
     &.new-location{
-      color: var(--app-amber-deep);
+      color: var(--color-0a1c30);
       font-size: 35px;
     }
   }
 
   .leaflet-popup-close-button{
-    color: white;
+    color: black;
+    font-size: var(--font-size-xl);
+    background: #F5F6F9;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    top: 5px;
+    right: 5px;
+
+    span{
+      transform: translateY(-3px);
+    }
   }
-    .leaflet-popup-tip{
-      background: linear-gradient(145deg, var(--app-amber), var(--app-amber-deep));
-    }
 
-  .leaflet-popup-content-wrapper{
-    background: linear-gradient(145deg, var(--app-amber), var(--app-amber-deep));
-    color: white;
+  .leaflet-popup-tip{
+    background: white;
+  }
 
-    .section{
-      font-size: var(--ion-font-size-xs);
-      margin: 5px;
-    }
+  .location-popup{
+    .leaflet-popup-content-wrapper{
+      padding: 0px;
 
-    .title{
-      text-align: center;
-      font-size: var(--ion-font-size-xl);
-      margin: 5px;
-    }
+      .leaflet-popup-content{
+        margin: 0;
+      }
+    }   
+  }
+  .user-popup .leaflet-popup-content-wrapper{
+    background: white;
+    padding: 10px;
 
     .material-icons{
       vertical-align: text-bottom;
-      font-size: var(--ion-font-size-base)!important;
+      font-size: var(--font-size-base)!important;
       margin-right: 5px;
+    }
+
+    .leaflet-popup-content{
+      margin: 10px 5px
     }
   }
 
   .leaflet-tooltip {
     background-color: transparent!important;
     border: none!important;
-    font-size: var(--ion-font-size-lg)!important;
+    font-size: var(--font-size-lg)!important;
     box-shadow: none!important;
   }
 
-  .leaflet-pane.removed{
-    .leaflet-interactive{ 
-      animation: fadeOut 0.7s ease-in-out;
-      animation-fill-mode: forwards;
-    }
-  }
-
   .leaflet-interactive{ 
-    animation: fadeIn 0.7s ease-in-out;
-
+    animation: fadeIn 0.3s ease-in-out;
   }
 
   @keyframes fadeIn {
@@ -331,13 +259,13 @@ ion-popover{
 
 // FONT
 .bold         { font-weight: 700; }
-.text-xs      { font-size: var(--ion-font-size-xs); }
-.text-sm      { font-size: var(--ion-font-size-sm); }
-.text-base    { font-size: var(--ion-font-size-base); }
-.text-lg      { font-size: var(--ion-font-size-lg); }
-.text-xl      { font-size: var(--ion-font-size-xl); }
-.text-2xl     { font-size: var(--ion-font-size-2xl); }
-.text-3xl     { font-size: var(--ion-font-size-3xl); }
+.text-xs      { font-size: var(--font-size-xs); }
+.text-sm      { font-size: var(--font-size-sm); }
+.text-base    { font-size: var(--font-size-base); }
+.text-lg      { font-size: var(--font-size-lg); }
+.text-xl      { font-size: var(--font-size-xl); }
+.text-2xl     { font-size: var(--font-size-2xl); }
+.text-3xl     { font-size: var(--font-size-3xl); }
 
 
 // UTILITIES
@@ -351,7 +279,7 @@ ion-popover{
 
   ion-spinner {
     transform: scale(3);
-    --color: var(--app-amber);
+    --color: var(--color-f4a261);
   }
 }
 
@@ -360,24 +288,38 @@ ion-popover{
   align-items: center;
   justify-content: center;
   gap: 5px;
-  font-size: var(--ion-font-size-lg);
+  font-size: var(--font-size-lg);
   font-weight: 300;
   letter-spacing: 2.5px;
   text-transform: uppercase;
 
   .title-main {
-    color: var(--app-text-light);
+    color: white;
   }
 
   .title-accent {
-    color: var(--app-amber);
+    color: var(--color-f4a261);
     font-weight: 700;
   }
 }
 
 .app-logo {
   font-size: 26px;
-  color: var(--app-amber);
+  color: var(--color-f4a261);
   margin-left: 5px;
-  filter: drop-shadow(0 0 6px var(--app-amber-glow));
+  filter: drop-shadow(0 0 6px var(--color-f4a261-shadow));
+}
+
+ion-alert{
+  .alert-title{
+    @include f.alert-title;
+  }
+
+  .alert-message {
+    @include f.alert-message;
+  }
+
+  .alert-confirm .alert-button-inner {
+    color: var(--ion-color-danger);
+  }
 }

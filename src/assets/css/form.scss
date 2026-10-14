@@ -1,0 +1,171 @@
+@use './font' as f; 
+
+
+ion-button.button-main,
+ion-button.button-main--light {
+    @include f.text-btn;
+    --background: linear-gradient(135deg, var(--color-f4a261), var(--color-e05e2f));
+    --background-hover: var(--color-e05e2f);
+    --background-activated: var(--color-f4a261);
+    --background-focused: var(--color-f4a261);
+
+    --color: white;
+
+    --border-radius: 10px;
+    --border-style: none;
+
+    --box-shadow: var(--color-box-shadow);
+
+    --padding-start: 20px;
+    --padding-end: 20px;
+    --padding-top: 20px;
+    --padding-bottom: 20px;
+    text-transform: uppercase; 
+}
+
+ion-button.button-main--light{ 
+   @include f.text-btn-light;
+    --padding-start: 8px;
+    --padding-end: 8px;
+    --padding-top: 8px;
+    --padding-bottom: 8px;
+}
+
+ion-button.button-secondary--light,
+ion-button.button-empty--light.active,
+ion-button.button-white--light.active {
+    @include f.text-btn;
+    --background: var(--color-0a1c30d9g);
+    --background-hover: var(--color-0a1c30d);
+    --background-activated: var(--color-0a1c30);
+    --background-focused: var(--color-0a1c30);
+
+    --color: white;
+
+    --border-radius: 10px;
+    --border-style: none;
+
+    --box-shadow: 0 1px 3px rgba(0,0,0,.08);
+
+    --padding-start: 8px;
+    --padding-end: 8px;
+    --padding-top: 8px;
+    --padding-bottom: 8px;
+    text-transform: uppercase; 
+}
+
+ion-button.button-empty--light {
+    @include f.text-btn-light;
+    --background: transparent;
+    --background-hover: transparent;
+    --background-activated: transparent;
+    --background-focused: transparent;
+
+    --color: var(--color-8A94A3);
+
+    --box-shadow: none; 
+    --border-radius: 10px;
+    --border-style: none;
+
+    --padding-start: 8px;
+    --padding-end: 8px;
+    --padding-top: 8px;
+    --padding-bottom: 8px;
+    text-transform: uppercase; 
+}
+
+ion-button.button-white--light {
+    @include f.text-btn-light;
+    --background: white;
+    --background-hover: white;
+    --background-activated: white;
+    --background-focused: white;
+
+    --color: var(--color-0a1c30d9g); 
+    --border-radius: 10px;
+    --border-style: none;
+
+    --box-shadow: 0 1px 3px rgba(0,0,0,.08);
+
+    --padding-start: 8px;
+    --padding-end: 8px;
+    --padding-top: 8px;
+    --padding-bottom: 8px;
+    text-transform: uppercase; 
+}
+
+ion-button.rounded{
+    --border-radius: 25px!important;
+    --border-style: none;
+}
+
+ion-fab-button{
+ --background: linear-gradient(145deg, var(--color-f4a261), var(--color-e05e2f));
+ --box-shadow: 0 4px 20px var(--color-f4a261-shadow), inset 0 1px 1px rgba(255, 255, 255, 0.25);
+}
+
+ion-fab-button.fab-button-disabled{
+  opacity: 0.5;
+}
+
+ion-label{
+    @include f.label;
+    color: var(--color-2b3a4e);
+
+    &.ion-label--white{
+        color: white;
+    }
+}
+
+ion-input.input-fill-outline{ 
+    @include f.text-field;
+    --border-color: var(--color-EDEBF4)!important; 
+    --border-width: 1px;
+    --border-style: solid;
+    --border-radius: 12px;
+
+    --highlight-color-focused: var(--color-f4a261);
+    --highlight-color: var(--color-f4a261);
+
+    --background: #fff!important;
+     --color: var(--color-0a1c30)!important;
+    --placeholder-color: var(--color-8A94A3);
+    --padding-start: 16px!important;
+    --padding-end: 16px!important;
+    min-height: 46px!important;
+
+    &:hover {
+        --border-color: var(--color-main);
+    }
+
+    &.has-focus {
+        --highlight-height: 1px;
+    }
+
+    ion-icon{
+        color: var(--color-muted);
+        @include f.label;
+    }
+}
+
+
+ion-select,
+ion-button.datetime{
+    --background: white!important;
+    --color: var(--color-0a1c30)!important;
+   @include f.text-field; 
+    --border-color:  var(--color-EDEBF4);
+    --border-style: solid;
+    --border-width: 1px;
+    --placeholder-color: var(--color-8A94A3)!important;
+    --border-radius: 10px!important;
+    min-height: 46px!important;
+}
+
+ion-select::part(container) {
+    color: var(--color-0a1c30);
+}
+
+ion-select-popover ion-item{
+    @include f.text-field ; 
+}

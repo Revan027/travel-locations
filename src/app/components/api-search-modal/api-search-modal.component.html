@@ -1,60 +1,54 @@
   @if(displayModal()){
-    <div class="api-search-modal__backdrop"></div>
+    <div class="api-search-modal-backdrop"></div>
   }
   
 <div class="api-search-modal"  [class.open]="displayModal()" [class.close]="!displayModal()">
-    <div class="api-search-modal__header">
-        <ion-icon name="search-outline" class="api-search-modal__title-icon"></ion-icon>
+    <div class="title--white mb-2">Rechercher un lieu</div>
 
-        <span class="api-search-modal__title">Rechercher un lieu</span>
-    </div>
+    <ion-grid>
+        <ion-row>
+            <ion-col size="12">
+                <ion-label class="ion-label--white">Lieu ou ville</ion-label>
+            </ion-col>
 
-    <div class="api-search-modal__field">
-        <ion-grid>
-            <ion-row>
-                <ion-col size="12">
-                    <ion-label>Lieu ou ville</ion-label>
-                </ion-col>
+            <ion-col size="12">
+                <ion-input [(ngModel)]="apiSearchText" fill="outline" placeholder="Ex : Saint-Malo"></ion-input>
+            </ion-col>
 
-                <ion-col size="auto">
-                    <ion-input [(ngModel)]="apiSearchText" fill="outline" placeholder="Ex : Saint-Malo"></ion-input>
-                </ion-col>
+            <ion-col size="12" class="ion-text-center ion-align-content-center">
+                <ion-button class="button-main--light" [disabled]="apiSearchLoading()" (click)="onSubmitPhotonKomootSearch()">
+                    Rechercher
+                </ion-button>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
 
-                <ion-col class="ion-text-end ion-align-content-center">
-                    <ion-button class="api-search-modal__btn" strong="true" [disabled]="apiSearchLoading" (click)="onSubmitPhotonKomootSearch()">
-                        <ion-icon slot="icon-only" name="search-outline"></ion-icon>
-                    </ion-button>
-                </ion-col>
-            </ion-row>
-        </ion-grid>
-    </div>
-
-    <div class="api-search-modal__results">
-        @if(apiSearchLoading){
+    <div class="api-search-modal-results">
+        @if(apiSearchLoading()){
             <app-loader></app-loader>
         }
-        @else if(apiSearchError){
-            <div class="api-search-modal__empty">{{ apiSearchError }}</div>
+        @else if(apiSearchError()){
+            <div class="text-info ion-text-center ">{{ apiSearchError() }}</div>
         }
         @else{
             <ion-list lines="none">
-                @for(item of apiSearchResult?.features || []; track item.properties.osm_id){
+                @for(item of apiSearchResult()?.features || []; track item.properties.osm_id){
                     <ion-item button detail="false"(click)="onClickApiFeature(item)">
                         <ion-icon name="location-outline" class="ion-margin-end"></ion-icon>
 
                         <ion-label>
-                        <h3>{{item.properties.name}}</h3>
+                            <h3>{{item.properties.name}}</h3>
 
-                        <p>
-                            {{ item.properties.type ? `Type : ${item.properties.type}, ` : "" }}
-                        </p>
+                            <p>
+                                {{ item.properties.type ? `Type : ${item.properties.type}, ` : "" }}
+                            </p>
 
-                        <p>
-                            {{ item.properties.county ? `${item.properties.county}, ` : "" }} 
-                            {{ item.properties.state ? `${item.properties.state}, ` : "" }}
-                            {{ item.properties.postcode ? `${item.properties.postcode.split(';')[0]}, ` : "" }}
-                            {{ item.properties.country ? `${item.properties.country}` : "" }}
-                        </p>
+                            <p>
+                                {{ item.properties.county ? `${item.properties.county}, ` : "" }} 
+                                {{ item.properties.state ? `${item.properties.state}, ` : "" }}
+                                {{ item.properties.postcode ? `${item.properties.postcode.split(';')[0]}, ` : "" }}
+                                {{ item.properties.country ? `${item.properties.country}` : "" }}
+                            </p>
                         </ion-label>
                     </ion-item>
                 }

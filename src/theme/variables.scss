@@ -1,68 +1,15 @@
-// For information on how to create your own theme, please refer to:
-// https://ionicframework.com/docs/theming/
-
 :root {
-  --ion-font-family: 'Nunito', sans-serif;
-  
-
-  // Thème
-  --app-bg: #f0f0f0;
-  --ion-color-primary: #f4a261;
-
-  // Font sizes (8-point scale)
-  --ion-font-size-xxs: 0.6rem;     
-  --ion-font-size-xs: 0.75rem;      // 12px
-  --ion-font-size-sm: 0.875rem;     // 14px
-  --ion-font-size-base: 1rem;       // 16px
-  --ion-font-size-lg: 1.125rem;     // 18px
-  --ion-font-size-xl: 1.25rem;      // 20px
-  --ion-font-size-2xl: 1.5rem;      // 24px
-  --ion-font-size-3xl: 2rem;        // 32px
-
-  // Palette Travel
-  --app-navy: #0a1c30;
-  --app-amber: #f4a261;
-  --app-amber-deep: #e05e2f;
-  --app-amber-glow: rgba(244, 162, 97, 0.55);
-  --app-teal: #2ec4b6;
-
-  // Backdrop (overlay sombre derrière modals / éléments en avant-plan)
-  --app-backdrop: rgba(0, 0, 0, 0.2);
-
-  // Glass layers
-  --app-glass-bg: rgba(10, 28, 48, 0.85);
-  --app-glass-bg-heavy: rgba(10, 28, 48, 0.92);
-  --app-glass-border: rgba(255, 255, 255, 0.08);
   --app-glass-blur: 14px;
-  --app-glass-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
-
-  // Text
-  --app-text-light: #ffffff;
-  --app-text-dark: #1a1a1a;
-  --app-text-muted: rgba(255, 255, 255, 0.45);
-  --app-text-accent: var(--app-amber);
-  --app-label-color: black;
-
-  // Cards
   --app-card-radius: 16px;
-  --app-card-bg: rgba(255, 255, 255, 0.06);
-  --app-card-border: rgba(255, 255, 255, 0.1);
   --app-card-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
 
-  // Inputs
-  --app-input-bg: #f5f5f5;
-  --app-input-border: rgba(255, 255, 255, 0.15);
-
   // Header / Footer
-  --app-header-bg: var(--app-glass-bg);
-  --app-footer-bg: rgba(10, 28, 48, 0.92);
+  --app-header-bg: var(--color-0a1c30d9g);
+  --app-footer-bg: var(--color-0a1c30d9g);
 
   // Navigation
-  --app-tab-active: var(--app-amber);
-  --app-tab-inactive: rgba(255, 255, 255, 0.4);
-
-  // Page theme (override per page)
-  --app-page-theme-color: var(--app-amber);
+  --app-tab-active: var(--color-f4a261);
+  --app-tab-inactive: var(--color-ffffff73);
 
   // Success color (vert olive)
   --ion-color-success: #5a7d5a;

@@ -10,7 +10,8 @@ import { IonicModule, ModalController } from '@ionic/angular';
 })
 export class DatetimeModalComponent {
   @Input("date") date: any;
-  newValue?: Date;
+  
+  private newValue?: Date;
 
   constructor(private modalCtrl: ModalController){
   }

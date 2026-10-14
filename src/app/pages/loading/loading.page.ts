@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { IonicModule } from '@ionic/angular';
 import { AppInitService } from 'src/app/services/app-init.service';
@@ -12,8 +12,8 @@ import { AppInitService } from 'src/app/services/app-init.service';
 })
 export class LoadingPage implements OnInit {
 
-  dots: string = ".";
-  timer?: number;
+  protected dots = signal<string>(".");
+  private timer?: number;
 
   constructor(private appInitService: AppInitService, private destroyRef: DestroyRef) { }
 
@@ -38,11 +38,15 @@ export class LoadingPage implements OnInit {
   fillDots(){
     this.timer = setInterval(() => {
       if(this.dots.length == 4 ){
-        this.dots = "."
+        this.setDots(".");
       }
       else{
-        this.dots += "."
+        this.setDots(this.dots() + ".");
       }
     }, 300);
+  }
+
+  private setDots(value: string){
+    this.dots.set(value)
   }
 }

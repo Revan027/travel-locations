@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { Location } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { LoaderComponent } from 'src/app/components/loader.component';
@@ -14,7 +14,7 @@ import { AuthentificationService } from 'src/app/services/authentification.servi
 })
 export class SignOutPage implements OnInit {
 
-  loading: boolean = false;
+  protected loading = signal<boolean>(false);
 
   constructor(private location: Location, private authService: AuthentificationService, private mapService: MapService) { }
 
@@ -22,7 +22,7 @@ export class SignOutPage implements OnInit {
   }
 
   async onSignOut() {
-    this.loading = true;
+    this.setLoading(true);
 
     try {
       // déconnexion vers le mode anonyme
@@ -34,11 +34,15 @@ export class SignOutPage implements OnInit {
 
       this.cancel();
 
-      this.loading = false;
+      this.setLoading(false);
     } 
   }
 
   cancel() {
     this.location.back();
+  }
+
+  setLoading(value: boolean){
+    this.loading.set(value);
   }
 }

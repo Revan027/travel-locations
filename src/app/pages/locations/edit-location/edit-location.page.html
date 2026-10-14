@@ -16,33 +16,37 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" class="ion-padding-top">
-  @if(loaded){
+  @if(loaded()){
     <form [formGroup]="formGroup" novalidate>
       <ion-grid>
         <ion-row>
-          <ion-col size="12" class="ion-text-center">
+          <ion-col class="ion-text-center">
             <input #inputFile type="file" hidden (change)="onFileChanged($event)" />
 
-            @if(uploadLoaded){
+            @if(uploadLoaded()){
               <app-loader></app-loader>
             }
-            @else if(location.imgUrl){
-              <ion-img src="{{location.imgUrl | cloudinaryUrl }}" class="location-illustration" alt=""></ion-img>
+            @else if(location().imgUrl){
+              <ion-img src="{{location().imgUrl ?? '' | cloudinaryUrl }}" class="location-illustration" alt=""></ion-img>
             }
             @else{
-              <ion-img src="../../../../assets/placeholder.webp" class="location-illustration" alt=""></ion-img>
+              <div class="location-illustration img-placeholder"></div>
             }
-            
-            <ion-button [strong]="true" (click)="onFileSelector($event)"> 
+          </ion-col>
+
+          <ion-col size="auto" class="ion-text-center">
+            <ion-button class="button-main--light" [strong]="true" (click)="onFileSelector($event)"> 
               <ion-icon name="document-outline" slot="start"></ion-icon> Choisir une image
             </ion-button>
           </ion-col>
 
           <ion-col size="12">
+            <ion-label>
+              Nom
+            </ion-label>
+
             <ion-input
-              label="Nom"
               formControlName="name"
-              label-placement="stacked"
               fill="outline">
             </ion-input>
             
@@ -52,16 +56,18 @@
           </ion-col>
 
           <ion-col size="6">
-            <app-datetime [formGroup]="formGroup" (dateChanged)="onDateChanged($event)" [date]="location.date" controlName="date" label="Date"></app-datetime>
+            <app-datetime [formGroup]="formGroup" (dateChanged)="onDateChanged($event)" [date]="location().date" controlName="date" label="Date"></app-datetime>
           </ion-col>
 
           <ion-col size="6">
+            <ion-label>
+              Altitude
+            </ion-label>
+
             <ion-input
-              label="Altitude"
               formControlName="altitude"
               type="number"
               placeholder="0"
-              label-placement="stacked"
               fill="outline">
               <ion-icon slot="start" name="trending-up-outline"></ion-icon>
             </ion-input>
@@ -72,39 +78,46 @@
           </ion-col>
 
           <ion-col size="6">
-             <ion-input
-                label="Latitude"
-                formControlName="latitude"
-                type="number"
-                label-placement="stacked"
-                fill="outline">
-                <ion-icon slot="start" name="navigate-outline"></ion-icon>
-              </ion-input>
+            <ion-label>
+              Latitude
+            </ion-label>
 
-              @if(formGroup.controls['latitude'].invalid && (formGroup.controls['latitude'].dirty || formGroup.controls['latitude'].touched)){
-                <ion-text color="danger"><p class="ion-no-margin ion-margin-bottom text-xs ion-padding-start">La latitude est requise</p></ion-text>
-              }  
+            <ion-input
+              formControlName="latitude"
+              type="number"
+              fill="outline">
+              <ion-icon slot="start" name="navigate-outline"></ion-icon>
+            </ion-input>
+
+            @if(formGroup.controls['latitude'].invalid && (formGroup.controls['latitude'].dirty || formGroup.controls['latitude'].touched)){
+              <ion-text color="danger"><p class="ion-no-margin ion-margin-bottom text-xs ion-padding-start">La latitude est requise</p></ion-text>
+            }  
           </ion-col>
 
           <ion-col size="6">
-             <ion-input
-                label="Longitude"
-                formControlName="longitude"
-                type="number"
-                label-placement="stacked"
-                fill="outline">
-                <ion-icon slot="start" name="navigate-outline"></ion-icon>
-              </ion-input>
+            <ion-label>
+              Longitude
+            </ion-label>
 
-              @if(formGroup.controls['longitude'].invalid && (formGroup.controls['longitude'].dirty || formGroup.controls['longitude'].touched)){
-                <ion-text color="danger"><p class="ion-no-margin ion-margin-bottom text-xs ion-padding-start">La longitude est requise</p></ion-text>
-              }
+            <ion-input
+              formControlName="longitude"
+              type="number"
+              fill="outline">
+              <ion-icon slot="start" name="navigate-outline"></ion-icon>
+            </ion-input>
+
+            @if(formGroup.controls['longitude'].invalid && (formGroup.controls['longitude'].dirty || formGroup.controls['longitude'].touched)){
+              <ion-text color="danger"><p class="ion-no-margin ion-margin-bottom text-xs ion-padding-start">La longitude est requise</p></ion-text>
+            }
           </ion-col>
 
           <ion-col size="6">
+            <ion-label>
+              Type
+            </ion-label>
+
             <ion-select
               class="ion-margin-bottom"
-              label="Type"
               formControlName="typeID"
               interface="popover"
               [interfaceOptions]="{ side: 'top' }"
@@ -122,30 +135,45 @@
           </ion-col>
 
           <ion-col size="6">
-            <ion-select
-                class="ion-margin-bottom"
-                label="Pays"
-                formControlName="countryID"
-                interface="popover"
-                [interfaceOptions]="{ side: 'top' }"
-                placeholder="-"
-                fill="outline">
+            <ion-label>
+              Pays
+            </ion-label>
 
-                @for(item of sortedCountries(); track item.name){
-                  <ion-select-option [value]="item.id">
-                    {{item.name}}
-                  </ion-select-option>
-                }
-              </ion-select>
+            <ion-select
+              class="ion-margin-bottom"
+              formControlName="countryID"
+              interface="popover"
+              [interfaceOptions]="{ side: 'top' }"
+              placeholder="-"
+              fill="outline">
+
+              @for(item of sortedCountries(); track item.name){
+                <ion-select-option [value]="item.id">
+                  {{item.name}}
+                </ion-select-option>
+              }
+            </ion-select>
           </ion-col>
         </ion-row>
       </ion-grid>
 
       <div class="ion-display-flex ion-justify-content-end ion-margin">
-        @if(location.id != ""){
-          <ion-button class="ion-margin-end" color="danger" [strong]="true" (click)="onDelete()">Supprimer</ion-button>
+        @if(location().id != ""){
+          <ion-button class="button-main ion-margin-end" color="danger" [strong]="true" (click)="onDelete()" [disabled]="disabledSubmit() || disabledDelete()">
+            Supprimer
+
+            @if(disabledSubmit()){
+              <ion-spinner name="dots"></ion-spinner>
+            }         
+          </ion-button>
         }
-        <ion-button [strong]="true" [disabled]="formGroup.invalid" (click)="onSubmit(formGroup.value)">Enregistrer</ion-button>
+        <ion-button class="button-main" [strong]="true" [disabled]="formGroup.invalid" (click)="onSubmit(formGroup.value)" [disabled]="disabledDelete() || disabledSubmit()">
+          Enregistrer
+
+          @if(disabledDelete()){
+            <ion-spinner name="dots"></ion-spinner>
+          }  
+        </ion-button>
       </div>
     </form>
   }
