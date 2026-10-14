@@ -14,6 +14,7 @@ import { LocationSearchRequest } from 'src/app/models/LocationSearchRequest';
 import { from, Subject, switchMap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LocationGroup } from 'src/app/models/LocationGroup';
+import { LocationSearchCounter } from 'src/app/models/LocationSearchCounter';
 
 @Component({
   standalone: true,
@@ -31,6 +32,7 @@ export class LocationsPage {
   protected locationDates = signal<string[]>([]);
   protected locationGroups = signal<LocationGroup[]>([]);
   protected locationSearchRequest = signal<LocationSearchRequest>(new LocationSearchRequest());
+  protected counter = signal<LocationSearchCounter>(new LocationSearchCounter());
 
   protected locationTypes: Signal<LocationType[]>;
 
@@ -75,6 +77,7 @@ export class LocationsPage {
     this.setLocationGroups([]);
 
     this._search$?.next(locationSearchRequest);// envoie d'une nouvelle requete 
+    this.setCounter(await this.locationService.getCounterSearch(locationSearchRequest));
   }
 
   searchCompleted(results: Location[]){
@@ -135,6 +138,10 @@ export class LocationsPage {
 
   private updateLocationDate(value: string){
     this.locationDate.update(x => value); 
+  } 
+
+  private setCounter(value: LocationSearchCounter){
+    this.counter.set({...value}); 
   } 
 
   private setLocationGroups(value: LocationGroup[]){

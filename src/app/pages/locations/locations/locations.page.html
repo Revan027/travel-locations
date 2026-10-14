@@ -18,11 +18,11 @@
 <ion-content [fullscreen]="true">
   <ion-row class="mt-2 ion-justify-content-between px-2">
     <ion-col size="12" class="title">
-      10 lieux · 3 mois
+      {{counter().countLocation}} lieux
     </ion-col>
   </ion-row>
 
-  <ion-row class="mt-2 ion-justify-content-center px-2">
+  <ion-row class="ion-justify-content-center">
      <ion-col size="auto"> 
       <div class="filter-date">
         @for(date of locationDates(); track date){
@@ -34,7 +34,7 @@
     </ion-col>
   </ion-row>
 
-  <ion-row class="filter-type ps-2">
+  <ion-row class="filter-type">
     <ion-col size="auto">
       <ion-button class="button-secondary--light rounded" (click)="onTypeChanged()">
         <span class="material-icons ion-margin-end color-f4a261">filter_list</span><span>Tous</span>
@@ -50,9 +50,9 @@
     }
   </ion-row>
 
-  <ion-row class="ps-2 mt-2">
+  <ion-row class="mt-2">
     @for(group of locationGroups(); track group.key){
-      <ion-col class="sub-title ion-text-capitalize" size="12">
+      <ion-col class="sub-title ion-text-capitalize ps-2 mb-1" size="12">
         <div class="group-title">
           <div>
             {{group.date}}
@@ -82,7 +82,7 @@
             </ion-col>
 
             <ion-col class="pe-2">
-                <div class="timeline-card mb-2">
+                <div class="timeline-card mb-2" routerLink="/locations/{{item.id}}">
                   <div class="timeline-card-header">
                       @if(item.imgUrl){
                         <img src="{{item.imgUrl | cloudinaryUrl}}" class="location-illustration" alt=""/>

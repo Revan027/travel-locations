@@ -13,7 +13,13 @@
 
 @mixin text-btn  { 
   font-family: var(--ion-font-family);
-  font-size:var(--font-size-base);   
+  font-size:var(--font-size-sm);   
+   font-weight: bold; 
+}
+
+@mixin text-btn-light  { 
+  font-family: var(--ion-font-family);
+  font-size:var(--font-size-xs);   
    font-weight: bold; 
 }
 

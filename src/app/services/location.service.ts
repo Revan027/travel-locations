@@ -4,12 +4,13 @@ import { Country } from '../models/Country';
 import { FirebaseCollectionEnum } from '../constants/firebaseCollectionEnum';
 import { FirestoreService } from './firestore.services.common/firestore.service';
 import { Location, LocationRequest } from '../models/Location';
-import { collection, DocumentData, DocumentReference, getCountFromServer, getDoc, limit, orderBy, query, QueryConstraint, startAfter, startAt, Timestamp, where } from 'firebase/firestore';
+import { DocumentData, DocumentReference, getCountFromServer, getDoc, limit, orderBy, query, QueryConstraint, startAfter, startAt, Timestamp, where } from 'firebase/firestore';
 import { LocationSearchRequest } from '../models/LocationSearchRequest';
 import moment from 'moment';
 import { Cluster, ClusterRequest } from '../models/Cluster';
 import { ClusterService } from './cluster.service';
 import { LocationGroup } from '../models/LocationGroup';
+import { LocationSearchCounter } from '../models/LocationSearchCounter';
 
 
 @Injectable({
@@ -71,16 +72,19 @@ export class LocationService {
     getFormatedDate(date?: Timestamp, format: string = "DD/MM/YYYY"): string {
         return date ? moment(date.toDate()).format(format): "";
     }
+
+    async getCounterSearch(locationSearchRequest: LocationSearchRequest): Promise<LocationSearchCounter>{
+        let locationSearchCounter = new LocationSearchCounter();
+        let queryParts: QueryConstraint[] = this.getQuerySearch(locationSearchRequest);
+        const ref = this.firestoreService.getCollectionRef(FirebaseCollectionEnum.Locations);
+               
+        const snapshot = await getCountFromServer(query(ref, ...queryParts));
+
+        locationSearchCounter.countLocation = snapshot.data().count;
+
+        return locationSearchCounter;
+    }
     
-    async loadAll(): Promise<void>{  
-        this.setLocations(await this.getAll());
-    }
-
-    async loadDatas(): Promise<void>{
-        this.setLocationTypes(await this.firestoreService.getDocuments<LocationType[]>(FirebaseCollectionEnum.LocationTypes));
-        this.setCountries(await this.firestoreService.getDocuments<Country[]>(FirebaseCollectionEnum.Country));
-    }
-
     private getQuerySearch(locationSearchRequest: LocationSearchRequest){
         let queryParts: QueryConstraint[] = [];
 
@@ -116,13 +120,39 @@ export class LocationService {
         if(locationSearchRequest.currentPage > 1){ // si on est au moins à la seconde page, on doit passer le dernier élément connus à firestore pour démarrer la pagination
             const ref = this.getRef(locationSearchRequest.lastIDResult as string);
             const docSnap = await getDoc(ref);
+            
             queryParts.push(startAfter(docSnap));
         }
 
         queryParts.push(limit(locationSearchRequest.limit));
 
-
         return this.firestoreService.search<Location[]>(query(ref, ...queryParts));  
+    }
+
+    goupByMonth(locations: Location[], locationGroups: LocationGroup[]){
+        // parcours des lieux ajoutés     
+        locations.map((location: Location) =>{
+            let key = moment(location.date.toDate()).format("MMMM_YYYY");
+            let locationGroup = locationGroups.find(x => x.key == key);
+
+            if(locationGroup){ // controle si une clé existe deja. si oui, on le met à la fin du tableau
+                locationGroup.results.push(location);
+            }else{
+                locationGroup = new LocationGroup();
+                locationGroup.results.push(location);
+                locationGroup.date = moment(location.date.toDate()).format("MMMMYYYY");
+                locationGroup.key = key;
+
+                locationGroups.push(locationGroup);
+            }
+        });
+
+      return locationGroups;
+    }
+
+    async loadDatas(): Promise<void>{
+        this.setLocationTypes(await this.firestoreService.getDocuments<LocationType[]>(FirebaseCollectionEnum.LocationTypes));
+        this.setCountries(await this.firestoreService.getDocuments<Country[]>(FirebaseCollectionEnum.Country));
     }
     
     async create(locationRequest: LocationRequest): Promise<DocumentReference<DocumentData, DocumentData>>{  
@@ -189,27 +219,6 @@ export class LocationService {
 
            this.clusterService.update(cluster.id, cluster);
         }
-    }
-
-    goupByMonth(locations: Location[], locationGroups: LocationGroup[]){
-        // parcours des lieux ajoutés     
-        locations.map((location: Location) =>{
-            let key = moment(location.date.toDate()).format("MMMM_YYYY");
-            let locationGroup = locationGroups.find(x => x.key == key);
-
-            if(locationGroup){ // controle si une clé existe deja. si oui, on le met à la fin du tableau
-                locationGroup.results.push(location);
-            }else{
-                locationGroup = new LocationGroup();
-                locationGroup.results.push(location);
-                locationGroup.date = moment(location.date.toDate()).format("MMMM YYYY");
-                locationGroup.key = key;
-
-                locationGroups.push(locationGroup);
-            }
-        });
-
-      return locationGroups;
     }
 
     setLocations(value: Location[]){
