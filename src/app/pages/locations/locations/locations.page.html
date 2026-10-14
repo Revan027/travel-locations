@@ -70,26 +70,42 @@
 
        @for(item of group.results; track item.id){
         <ion-col class="m-0 p-0" size="12">
-          <ion-row class="ps-2">
-            <ion-col size="2" class="day-title ">
-              {{item.date | timestampPipe:"DD"}}
+          <ion-row>
+            <ion-col class="me-2" size="2">
+              <div class="day-title ion-text-center">{{item.date | timestampPipe:"DD"}}</div>
+
+              <div class="text-info--8A94A3 ion-text-center">{{item.date | timestampPipe:"MMM"}}</div>
             </ion-col>
 
-            <ion-col size="auto" class="time-life">
-              
+            <ion-col size="1" class="time-life">
+              <div class="marker-type"> <span class="material-icons-outlined">{{item.typeIcon}}</span></div>             
             </ion-col>
 
-            <ion-col>
-                <div class="location-card">
-                  <div class="location-card-header">
- @if(item.imgUrl){
+            <ion-col class="pe-2">
+                <div class="timeline-card mb-2">
+                  <div class="timeline-card-header">
+                      @if(item.imgUrl){
                         <img src="{{item.imgUrl | cloudinaryUrl}}" class="location-illustration" alt=""/>
                       }
                       @else{
-                        <img src="../../../../assets/placeholder.webp" class="location-illustration" alt=""/>
+                        <div class="location-illustration img-placeholder"></div>
                       }     
                   </div>
-                    
+                  <div class="timeline-card-content">   
+                    <div class="sub-title mb-2">
+                      {{item.name}}
+                    </div>
+
+                    <div class="timeline-card-meta">
+                      <span class="meta-data">
+                        {{item.typeName}}
+                      </span>
+
+                      <span class="text-info--8A94A3">
+                        {{item.countryID.toUpperCase()}}
+                      </span>
+                    </div> 
+                   </div> 
                 </div>
             </ion-col>
           </ion-row>

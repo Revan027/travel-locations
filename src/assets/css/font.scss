@@ -55,7 +55,7 @@
 
 .day-title{
   font-family: var(--ion-font-family);
-  font-size: var(--font-size-3xl);
+  font-size: var(--font-size-xl);
   font-weight: bold;
   color: var(--color-2b3a4e);
 }
@@ -88,11 +88,17 @@
   font-weight: bold;
 }
 
-.text-info{
+.text-info,
+.text-info--8A94A3{
   font-family: var(--ion-font-family);
   font-size: var(--font-size-sm);
   color: var(--color-F7F6FB); 
 }
+
+.text-info--8A94A3{
+  color: var(--color-8A94A3); 
+}
+
 
 .text-marker-info{
   display: inline-block;

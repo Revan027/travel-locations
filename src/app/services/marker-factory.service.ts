@@ -46,8 +46,6 @@ export class MarkerFactoryService {
   }
 
   buildLocationMarker(location: Location){
-    const imgSrc = location.imgUrl ? this.cloudinaryService.getImageUrl(location.imgUrl) : "assets/placeholder.webp";
-
     const locationIcon = L.divIcon({
       html: `<span class="material-icons">${location.typeIcon}</span>`,
       iconAnchor: [16, 32],
@@ -59,7 +57,7 @@ export class MarkerFactoryService {
       .bindPopup(`
         <div class="location-card" data-id="${location.id}">
           <div class="location-card-header mb-1">      
-            <ion-img src="${imgSrc}" class="location-illustration" alt=""></ion-img>
+            ${location.imgUrl ? `<ion-img src="${this.cloudinaryService.getImageUrl(location.imgUrl)}" class="location-illustration" alt=""></ion-img>` : `<div class="location-illustration img-placeholder"></div>`}
           </div>
 
           <div class="location-card-content">

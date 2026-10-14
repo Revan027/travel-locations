@@ -28,6 +28,14 @@
   padding: 0 15px;
 }
 
+.me-2{
+  padding-right: 15px;
+}
+
+.pe-2{
+  padding-right: 15px;
+}
+
 .ps-2{
   padding-left: 15px;
 }
@@ -41,6 +49,7 @@
   font: 500 10px ui-monospace, Menlo, monospace;
   border-radius: 12px;
   overflow: hidden;
+  height: 100%;
 }
 // CONTENT
 ion-content {
