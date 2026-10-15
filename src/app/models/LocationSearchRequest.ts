@@ -3,7 +3,7 @@ import { DocumentData, DocumentReference, Timestamp } from "firebase/firestore";
 export class LocationSearchRequest {
   constructor() {}
 
-  limitDate?: Timestamp;
+  year: string = "";
   beginDate?: Timestamp;
   endDate?: Timestamp;
   typeIDs: string[] = [];

@@ -1,0 +1,33 @@
+ <ion-row class="ion-justify-content-center">
+     <ion-col size="auto"> 
+      <div class="filter-date">
+        @for(date of locationDates(); track date){
+          <ion-button class="button-empty--light" [class.active]="locationFilter().date == date" (click)="onDateChanged(date)">
+            {{date}}
+          </ion-button>
+        }
+
+         @if(showAllDate()){
+          <ion-button class="button-empty--light" [class.active]="locationFilter().date == ''" (click)="onDateChanged()">
+            Tous
+          </ion-button>
+        }   
+      </div>   
+    </ion-col>
+  </ion-row>
+
+  <ion-row class="filter-type">
+    <ion-col size="auto">
+      <ion-button class="button-secondary--light rounded" (click)="onTypeChanged()">
+        <span class="material-icons ion-margin-end color-f4a261">filter_list</span><span>Tous</span>
+      </ion-button>
+    </ion-col>
+
+    @for(item of locationTypes(); track item.id){
+      <ion-col size="auto">
+        <ion-button class="button-white--light rounded" [class.active]="locationFilter().typeIDs?.includes(item.id)" (click)="onTypeChanged(item.id)">
+          <span class="material-icons ion-margin-end color-f4a261">{{item.icon}}</span> <span>{{ item.name }}</span>
+        </ion-button>
+      </ion-col>
+    }
+  </ion-row>

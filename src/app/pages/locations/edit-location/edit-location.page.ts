@@ -132,12 +132,12 @@ export class EditLocationPage implements OnInit {
 
     this.toastService.get(isSuccess ? MessageEnum.AppSuccess : MessageEnum.AppError, isSuccess ? StatusEnum.Success : StatusEnum.Danger);
 
-    this.mapService.refreshMap();
-
+    this.locationService.setLocationsChanged();
+    
     this.setDisabledSubmit(false);
 
     this.router.navigate(['/map']);
-  
+
   }
 
   async onDelete() {
@@ -151,10 +151,10 @@ export class EditLocationPage implements OnInit {
       await me.locationService.delete(me.location()).catch(() => isSuccess = false),
 
       await me.toastService.get(isSuccess ? MessageEnum.AppSuccess : MessageEnum.AppError, isSuccess ? StatusEnum.Success : StatusEnum.Danger);
-      
-      me.mapService.refreshMap();
 
-      me.setDisabledDelete(false);
+      me.setDisabledDelete(false); 
+      
+      me.locationService.setLocationsChanged();
 
       me.router.navigate(['/map']);
     }

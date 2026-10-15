@@ -2,23 +2,6 @@ ion-content{
   padding: 0px 15px!important;
 }
 
-ion-row.filter-type {
-  overflow: auto;
-  flex-wrap: nowrap;
-
-   &::-webkit-scrollbar {          // Chrome, Safari, WebView Android/iOS
-      display: none;
-    }
-}
-
-.filter-date {
-  background-color: white;
-  padding: 3px;
-  border-radius: 15px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, .08);
-}
-
-
 .group-title{
   display: flex;
   gap: 10px;

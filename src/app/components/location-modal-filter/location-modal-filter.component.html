@@ -1,0 +1,9 @@
+<ion-modal class="modal-filters" trigger="modal-filters">
+    <ng-template>
+      <ion-content>             
+        <ion-title class="ion-margin ion-text-center title"> Filtrer </ion-title>  
+
+        <app-location-filter [showAllDate]="true" [date]="locationSearchRequest().year" [typeIDs]="locationSearchRequest().typeIDs" (filterChanged)="onFilterChanged($event)"></app-location-filter>          
+      </ion-content>
+    </ng-template>
+</ion-modal>
