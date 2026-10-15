@@ -67,7 +67,7 @@ export class MapService {
 
         this.appResumeListener = await App.addListener('appStateChange', (event: any) => {
             if (event.isActive && !this.islocatingUsers() && this.map){
-                //this.locateUsers(true);
+                this.locateUsers(true);
             }
       });
     }
@@ -359,7 +359,8 @@ export class MapService {
 
     async refreshMap(){
         // todo : ne pas relancer d'action tant que cette tache n'est pas finit
-        // todo : revoir l'archi sur les 3 première méthodes
+        // todo : revoir l'archi sur les 3 première méthodes, meem si le flow est bon
+        // une rehcherche lancé doit cemépcher de relancer uen recherche de suite 
         const clusterIDs = await this.locationService.searchCluster(this.locationService.locationSearchRequest())
 
         this.clusterService.setClusters(this.clusterService.cacheClusters().filter(x => clusterIDs.includes(x.id)));
