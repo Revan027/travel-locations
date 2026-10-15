@@ -35,6 +35,7 @@ export class AppInitService {
       .subscribe({
         next: (results) => {
           this.clusterService.setClusters(results[3]);
+          this.clusterService.setCacheClusters(results[3]);
 
           this._isAppInit.next(true);
 

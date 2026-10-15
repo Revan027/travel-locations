@@ -1,22 +1,23 @@
-import { Component, Signal, WritableSignal } from '@angular/core';
+import { Component, Signal } from '@angular/core';
 import { MapService } from 'src/app/services/map.service';
 import { Position } from 'src/app/models/Position';
-import { LocationService } from 'src/app/services/location.service';
-import { Location } from 'src/app/models/Location';
 import { FormGroup } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
-import { FiltersComponent } from 'src/app/components/filters/filters.component';
+import { LocationModalFilterComponent } from 'src/app/components/location-modal-filter/location-modal-filter.component';
 import { AuthStatusComponent } from 'src/app/components/auth-status.component';
 import { GeolocalisationService } from 'src/app/services/geolocalisation.service';
 import { User } from 'src/app/models/User';
 import { AuthentificationService } from 'src/app/services/authentification.service';
 import { ApiSearchModalComponent } from 'src/app/components/api-search-modal/api-search-modal.component';
 import { PhotonKomootService } from 'src/app/services/photon-komoot.service';
+import { ClusterService } from 'src/app/services/cluster.service';
+import { LocationService } from 'src/app/services/location.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 
 @Component({
   standalone: true,
-  imports: [IonicModule, FiltersComponent, AuthStatusComponent, ApiSearchModalComponent],
+  imports: [IonicModule, LocationModalFilterComponent, AuthStatusComponent, ApiSearchModalComponent],
   selector: 'app-map',
   templateUrl: 'map.page.html',
   styleUrls: ['map.page.scss'],
@@ -24,8 +25,6 @@ import { PhotonKomootService } from 'src/app/services/photon-komoot.service';
 export class MapPage {
 
   position: Signal<Position>;
-  locations: Signal<Location[]>;
-  isMapInit: Signal<boolean>;
   user: Signal<User>;
   islocatingUsers: Signal<boolean>;
 
@@ -35,14 +34,23 @@ export class MapPage {
     private mapService: MapService,
     private geolocalisationService: GeolocalisationService,
     private locationService: LocationService,
+    private clusterService: ClusterService,
     private authService: AuthentificationService,
     private photonKomootService: PhotonKomootService)
   {
     this.user = this.authService.user;
-    this.locations = this.locationService.locations;
     this.position = this.geolocalisationService.position;
-    this.isMapInit =  this.mapService.isMapInit;
     this.islocatingUsers = this.mapService.islocatingUsers;
+
+    // abonnement au changement de lieux
+    this.locationService.locationsChanged$
+      ?.pipe(takeUntilDestroyed())
+      .subscribe(async () => {
+        this.clusterService.setCacheClusters(await this.clusterService.getAll());    
+        this.mapService.refreshMap();
+
+      }
+    );
   }
 
   async ngAfterViewInit(){
@@ -53,6 +61,10 @@ export class MapPage {
   async ionViewDidEnter(){
     // problème classique Leaflet sur mobile : quand le clavier s'ouvre sur la page de création, il redimensionne le viewport. En revenant sur la map, Leaflet a gardé en mémoire l'ancienne taille du conteneur → rendu partiel.
     this.mapService.resizeMap();
+  }
+
+  async onFilterChanged(emit: boolean){
+    this.mapService.refreshMap();
   }
 
   async onRefreshPosition(){

@@ -20,16 +20,15 @@ import { Cluster, ClusterMap } from '../models/Cluster';
 })
 export class MapService {
 
-    _isMapInit = signal<boolean>(false);
     _islocatingUsers = signal<boolean>(false);
 
-    isMapInit = this._isMapInit.asReadonly();
     islocatingUsers = this._islocatingUsers.asReadonly();
 
     readonly clusters: Signal<Cluster[]>;
 
     appResumeListener?: PluginListenerHandle;
 
+    private isMapInit: boolean = false;
     private map!: L.Map;
     private usersMarker: L.Marker<any>[] = [];
     private newLocationMarker?: L.Marker<any>;
@@ -106,7 +105,7 @@ export class MapService {
 
     private initMoveEndListener(){ 
         this.map.on('moveend', (e) => {
-            if(this.isMapInit()){
+            if(this.isMapInit){
                 this.updateMapDisplay();
             }        
         });
@@ -129,7 +128,7 @@ export class MapService {
         )
         .setView([45.706179285330855, 2.9882812500000004], 6)
         .on("resize", (e) => {
-          this.setIsMapInit(true);
+          this.isMapInit = true;
         });
 
         // On ajoute les infos de la map. updateWhenIdle a false pour accéler la chargement des parties de map
@@ -221,7 +220,7 @@ export class MapService {
             const clusterToLoad = this.getVisibleClustersToLoad();  
 
             if(clusterToLoad.length > 0){
-                this.locations = await this.locationService.getByClusters(clusterToLoad);
+                this.locations = await this.locationService.searchByClusters(clusterToLoad, this.locationService.locationSearchRequest());
             }
 
             this.drawLocations();
@@ -359,15 +358,23 @@ export class MapService {
     }
 
     async refreshMap(){
-        this.clusterService.setClusters(await this.clusterService.getAll());
+        // todo : ne pas relancer d'action tant que cette tache n'est pas finit
+        // todo : revoir l'archi sur les 3 première méthodes
+        const clusterIDs = await this.locationService.searchCluster(this.locationService.locationSearchRequest())
+
+        this.clusterService.setClusters(this.clusterService.cacheClusters().filter(x => clusterIDs.includes(x.id)));
+
+        // on parrallèlise les promises des requetes de mise a jour des compteurs filtré
+        await Promise.all(this.clusterService.clusters()
+            .map((cluster) => this.locationService.getCountSearchByCluster(cluster, this.locationService.locationSearchRequest())))
+            .then((result) => 
+                this.clusterService.clusters().map((x, index) => x.countLocation = result[index])
+            )
+       
         this.resetClusters();
         this.resetLocations();     
 
         this.updateMapDisplay();
-    }
-
-    setIsMapInit(value: boolean){
-        this._isMapInit.set(value);
     }
 
     setIslocatingUsers(value: boolean){
