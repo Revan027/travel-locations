@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as L from 'leaflet';
-import { Location } from '../models/Location';
+import { LocationMap } from '../models/Location';
 import moment from 'moment';
 import { UserGeolocalisation } from '../models/UserGeolocalisation';
 import { Position } from '../models/Position';
@@ -22,7 +22,7 @@ export class MarkerFactoryService {
       className: 'custom-marker user'
     });
 
-    return L.marker([userGeolocalisation.latitude, userGeolocalisation.longitude], {icon: monIcon})
+    return L.marker([userGeolocalisation.latitude, userGeolocalisation.longitude], {icon: monIcon, zIndexOffset: 1000})
       .bindPopup(`
         <div class="user-card" data-id="${userGeolocalisation.id}">
           <div class="user-card-header mb-1">
@@ -45,7 +45,7 @@ export class MarkerFactoryService {
         </div>`, {className: "user-popup"});
   }
 
-  buildLocationMarker(location: Location){
+  buildLocationMarker(location: LocationMap){
     const locationIcon = L.divIcon({
       html: `<span class="material-icons">${location.typeIcon}</span>`,
       iconAnchor: [16, 32],

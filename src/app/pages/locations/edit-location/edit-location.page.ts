@@ -137,7 +137,6 @@ export class EditLocationPage implements OnInit {
     this.setDisabledSubmit(false);
 
     this.router.navigate(['/map']);
-
   }
 
   async onDelete() {

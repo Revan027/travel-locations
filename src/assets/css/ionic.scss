@@ -150,35 +150,51 @@ ion-popover{
   .leaflet-tile {
     border: 0px solid transparent;
   }
+  
+  .cluster-marker{ 
+    display: flex;
+    padding: 4px;
+    background: var(--color-2b3a4e);
+    border-radius: 50%;
 
-  .cluster-indicator{
-    color: white;
-    font-size: var(--font-size-sm);
-    font-weight: bold;
+    .cluster-marker-counter{
+      width: 25px;
+      height: 25px;
+      background: linear-gradient(135deg, #f2a066, #e5683a);
+      padding: 5px;
+      font-size: var(--font-size-sm) !important;
+      font-weight: bold;
+      color: white;
+      border-radius: 50%;    
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   }
 
   .custom-marker {   
-    &.user span{
-      background: linear-gradient(135deg, #f2a066, #e5683a);
-      border: 3px solid var(--color-2b3a4e);
-      border-radius: 50%;
-      padding: 4px;
-      font-size: var(--font-size-xss)!important;
-      z-index: 9999!important;
-      font-weight: bold;
-      color: white;
-      position: relative;
+    &.user{
+      span{ z-index: 9999!important;
+        background: var(--color-2b3a4e);
+        border-radius: 50%;
+        padding: 7px;
+        font-size: var(--font-size-xss)!important;
+        z-index: 9999!important;
+        font-weight: bold;
+        color: white;
+        position: relative;
 
-      &::after{
-        position: absolute;
-        content: "arrow_drop_down";
-        font-family: "Material Icons";
-        font-size: 35px;
-        line-height: 1;
-        -webkit-font-smoothing: antialiased;
-        color: var(--color-2b3a4e);
-        left: 50%;
-        transform: translate(-50%, 6px);
+        &::after{
+          position: absolute;
+          content: "arrow_drop_down";
+          font-family: "Material Icons";             
+          font-size: 35px;
+          line-height: 1;
+          -webkit-font-smoothing: antialiased;
+          color: var(--color-2b3a4e);
+          left: 50%;
+          transform: translate(-50%, 6px);
+        }
       }
     }
 
@@ -186,8 +202,8 @@ ion-popover{
       background-color: white;
       border: 3px solid var(--color-2b3a4e);
       border-radius: 50%;
-      padding: 8px;
-      font-size: var(--font-size-base)!important;
+      padding: 6px;
+      font-size: var(--font-size-sm)!important;
       color: var(--color-2b3a4e);
     }
 

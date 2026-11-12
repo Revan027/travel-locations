@@ -6,6 +6,8 @@ import { UserGeolocalisationService } from './user.geolocalisation.service';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ClusterService } from './cluster.service';
+import { App } from '@capacitor/app';
+import { Location } from '@angular/common';
 
 @Injectable({
   providedIn: 'root',
@@ -19,11 +21,14 @@ export class AppInitService {
     private locationService: LocationService, 
     private clusterService: ClusterService, 
     private userGeolocalisationService: UserGeolocalisationService,
-    private router: Router,
+    private router: Router, 
+    private location: Location,
     private destroyRef: DestroyRef
     ) { }
   
-  init(): void{
+  init(): void{ 
+    this.intBackListener();   
+
     const p1 = this.authentificationService.intUser();
     const p2 = this.locationService.loadDatas();
     const p3 = this.userGeolocalisationService.loadAll();
@@ -44,5 +49,16 @@ export class AppInitService {
         error: (err) => {
         },
       });
+  }
+
+  private intBackListener(){
+    App.addListener('backButton', (event: any) => {
+      if (event.canGoBack) {
+       this.location.back();
+      } 
+      else {
+        App.exitApp();
+      }
+    });
   }
 }

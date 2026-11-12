@@ -167,7 +167,7 @@
             }         
           </ion-button>
         }
-        <ion-button class="button-main" [strong]="true" [disabled]="formGroup.invalid" (click)="onSubmit(formGroup.value)" [disabled]="disabledDelete() || disabledSubmit()">
+        <ion-button class="button-main" [strong]="true" [disabled]="formGroup.invalid" (click)="onSubmit(formGroup.value)" [disabled]="disabledDelete() || disabledSubmit() || formGroup.invalid">
           Enregistrer
 
           @if(disabledDelete()){

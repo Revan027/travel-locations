@@ -24,4 +24,13 @@ export class LocationRequest extends Location {
 
   typeRef!: DocumentReference<DocumentData, DocumentData>;
   countryRef!: DocumentReference<DocumentData, DocumentData>; 
+  ntryRef!: DocumentReference<DocumentData, DocumentData>; 
+}
+
+export class LocationMap extends Location{
+  constructor() { 
+    super();
+  }
+
+  marker?: L.Marker<any>;
 }

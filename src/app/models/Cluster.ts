@@ -1,3 +1,5 @@
+import * as L from 'leaflet';
+import { LocationMap } from './Location';
 export class ClusterRequest {
   constructor() {}
 
@@ -22,5 +24,6 @@ export class ClusterMap extends Cluster {
   }
 
   layer?: L.LayerGroup<any>;
-  locationMarkers?:  L.Marker<any>[];
+  locations?: LocationMap[];
+  subClusterLayer?: L.LayerGroup<any>;
 }

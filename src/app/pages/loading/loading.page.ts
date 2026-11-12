@@ -37,7 +37,7 @@ export class LoadingPage implements OnInit {
 
   fillDots(){
     this.timer = setInterval(() => {
-      if(this.dots.length == 4 ){
+      if(this.dots().length == 4 ){
         this.setDots(".");
       }
       else{
